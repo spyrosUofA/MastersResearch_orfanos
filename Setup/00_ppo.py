@@ -31,9 +31,9 @@ def main():
 
     actor = nn.Sequential(
         nn.Linear(o_dim, ah1),
-        nn.Sigmoid(),
+        nn.ReLU(),
         nn.Linear(ah1, ah2),
-        nn.Sigmoid(),
+        nn.ReLU(),
         nn.Linear(ah2, a_dim),
         nn.Softmax(dim=-1))
 
@@ -254,7 +254,7 @@ def main():
     # Outputs from first hidden layer
     actorh1 = nn.Sequential(
         nn.Linear(o_dim, ah1),
-        nn.Sigmoid()
+        nn.ReLU()
     )
 
     with torch.no_grad():

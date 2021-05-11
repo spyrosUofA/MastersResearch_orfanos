@@ -7,6 +7,7 @@ import pandas as pd
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 seed = 0 if len(sys.argv) == 1 else int(sys.argv[1])
+np.random.seed(seed)
 
 # Task setup
 env = gym.make('CartPole-v1')
@@ -23,7 +24,7 @@ neurons = 2
 # Outputs from first hidden layer
 neuron_h1 = nn.Sequential(
     nn.Linear(o_dim, neurons),
-    nn.Sigmoid()
+    nn.ReLU()
 )
 
 with torch.no_grad():
@@ -37,7 +38,8 @@ predN2 = []
 
 # Generate a trajectory
 o = env.reset()
-for i in range(500):
+episode = 0
+for i in range(1000):
 
     # state, P1 and P2 (the neurons)
     obs.append(o)
@@ -55,12 +57,22 @@ for i in range(500):
     # Update environment
     if done:
         o = env.reset()
-        break
+        episode += 1
+        print(episode)
+        print(i+1)
+        #break
     else:
         o = op
 
-df = pd.DataFrame(obs, columns=['x', 'v', 'theta', 'omega'])
+df = pd.DataFrame(obs, columns=['o[0]', 'o[1]', 'o[2]', 'o[3]'])
+df['a'] = actions
 df['N1'] = predN1
 df['N2'] = predN2
 df.to_csv(path_or_buf="trajectory.csv", index=False)
 print(df)
+
+print(max(df['N1']))
+print(max(df['N2']))
+
+print(min(df['N1']))
+print(min(df['N2']))

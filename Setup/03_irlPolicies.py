@@ -90,25 +90,142 @@ def main():
             else:
                 return 1  # a=1
 
-    # Policy derived from structure of neuron 2's regression tree
-    def neuron2python_policy(o):
-        if o[3] < 0.09:
-            if o[2] < 0.03:
-                return 0  # a=0
+    def neuron1python_policy(X):
+        # v <= -0.17
+        if X[1] <= -0.168:
+            # x <= -0.37
+            if X[0] <= -0.372:
+                # omega <= 0.70
+                if X[3] <= 0.7:
+                    return 1  # a=0
+                # omega > 0.70
+                else:
+                    return 1
+            # x > -0.37
             else:
-                return 0  # a=0
+                # x <= 0.27
+                if X[0] <= 0.27:
+                    return 1
+                # x > 0.27
+                else:
+                    return 1
+        # v > -0.17
         else:
-            if o[2] < 0.01:
-                return 0  # a=0 # decision rule had equal split. With a=0 get great score. With a=1 get ~135 score.
+            # x <= -0.33
+            if X[0] <= -0.331:
+                # v <= 0.03
+                if X[1] <= 0.03:
+                    return 0
+                else:
+                    return 0
+            # x > -0.33
             else:
-                return 1  # a=1
+                # v <= 0.03
+                if X[1] <= -0.04:
+                    return 1
+                else:
+                    return 0
+
+    def neuron1python_policy(X):
+        # x <= 0.14
+        if X[0] <= 0.14:
+            # omega <= 0.24
+            if X[3] <= 0.24:
+                # omega <= 0.70
+                if X[3] <= 0.7:
+                    return 1  # a=0
+                # omega > 0.70
+                else:
+                    return 1
+            # x > -0.37
+            else:
+                # x <= 0.27
+                if X[0] <= 0.27:
+                    return 1
+                # x > 0.27
+                else:
+                    return 1
+        # v > -0.17
+        else:
+            # x <= -0.33
+            if X[0] <= -0.331:
+                # v <= 0.03
+                if X[1] <= 0.03:
+                    return 0
+                else:
+                    return 0
+            # x > -0.33
+            else:
+                # v <= 0.03
+                if X[1] <= -0.04:
+                    return 1
+                else:
+                    return 0
+
+    def neuron2relu_policy(X):
+        x = X[0]
+        v = X[1]
+        theta = X[2]
+        omega = X[3]
+
+        if omega <= 0.24:
+            if theta <= 0.05:
+                if theta <= 0.03:
+                    return 0 #0
+                if theta > 0.03:
+                    return 1 # 1 better than 0
+            if theta > 0.05:
+                if x <= 0.10:
+                    return 1 #same
+                if x > 0.10:
+                    return 1 #same
+        if omega > 0.24:
+            if theta <= 0.00:
+                if x <= 0.09:
+                    return 1 #1
+                if x > 0.09:
+                    return 1 #either
+            if theta > 0.00:
+                if theta <= 0.03:
+                    return 0
+                if theta > 0.03:
+                    return 1 # big difference if 0
+
+    def imitate_ppo(X):
+        x = X[0]
+        v = X[1]
+        theta = X[2]
+        omega = X[3]
+
+        if omega <= -0.06:
+            if theta <= 0.04:
+                if omega <= -0.31:
+                    return 0 #[0.11]
+                if omega > -0.31:
+                    return 0 #[0.27]
+            if theta > 0.04:
+                if v <= 0.22:
+                    return 1 #[1.00]
+                if v > 0.22:
+                    return 1 #[0.54]
+        if omega > -0.06:
+            if omega <= 0.20:
+                if theta <= 0.01:
+                    return 0 #[0.46]
+                if theta > 0.01:
+                    return 1 #[0.76]
+            if omega > 0.20:
+                if theta <= -0.04:
+                    return 0 #[0.59]
+                if theta > -0.04:
+                    return 1 #[0.89]
 
     num_steps = 500000
     checkpoint = 10000
     for steps in range(num_steps):
 
         # Select an action
-        a = neuron2python_policy(o)
+        a = imitate_ppo(o)
 
         # Observe, update environment
         op, r, done, infos = env.step(a)
@@ -128,7 +245,6 @@ def main():
             plt.ylim(0, 500)
             plt.plot(range(checkpoint, (steps + 1) + checkpoint, checkpoint), avgrets)
             plt.pause(0.001)
-
 
     name = sys.argv[0].split('.')[-2].split('_')[-1]
     data = np.zeros((2, len(avgrets)))
