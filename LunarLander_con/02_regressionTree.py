@@ -20,8 +20,6 @@ print(tree_rules)
 decision_rules = tree_rules.replace("|--- value:", "return")
 decision_rules = decision_rules.replace("|---", "if")
 decision_rules = decision_rules.replace("|", "")
-
-print(decision_rules)
 boolean_rules = re.findall(r'if (.*)', decision_rules)
 
 """

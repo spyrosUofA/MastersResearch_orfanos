@@ -191,7 +191,7 @@ def main():
                 if theta > 0.03:
                     return 1 # big difference if 0
 
-    def imitate_ppo1(X):
+    def imitate_ppo(X):
         x = X[0]
         v = X[1]
         theta = X[2]
@@ -220,22 +220,12 @@ def main():
                 if theta > -0.04:
                     return 1 #[0.89]
 
-    def piRL(obs):
-        if obs[3] < 0.04:
-            if obs[2] < 0.03:
-                return 0
-            else:
-                return 1
-        else:
-            return 1
-
-
     num_steps = 500000
     checkpoint = 10000
     for steps in range(num_steps):
 
         # Select an action
-        a = piRL(o)
+        a = imitate_ppo(o)
 
         # Observe, update environment
         op, r, done, infos = env.step(a)
