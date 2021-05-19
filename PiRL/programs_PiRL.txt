@@ -1,0 +1,4 @@
+Best programs:
+(if(obs[0] < 0.0) then act = 0 else act = 0.5)-0.0395414532655397
+(if(obs[0] < 0.19750315869778579) then act = 0.5 else act = 0)-0.03129821834744394
+(if(obs[0] < 0.046825382199248325) then act = 1 else act = 0)-0.027652681122395755
