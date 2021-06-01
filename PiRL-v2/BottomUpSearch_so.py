@@ -109,10 +109,9 @@ class BottomUpSearch():
         for p in new_programs:
             plist.insert(p)
 
-    def synthesize(self, bound, operations, constant_values, observation_values, action_values, observations, actions, boolean_programs, PiRL = False):
+    def synthesize(self, bound, operations, constant_values, observation_values, action_values, observations, actions, boolean_programs, name, PiRL = False):
 
         start = time.time()
-        print(start)
         elapsed_times = []
         current_evaluation = []
 
@@ -126,11 +125,15 @@ class BottomUpSearch():
         number_evaluations = 0
 
         self.outputs = set()
-        filename = "programs"
+        filename = "programs" + name
+        graph_name = "eval_time" + name
         if PiRL:
             filename+="_PiRL.txt"
+            graph_name += "_PiRL.png"
         else:
             filename+=".txt"
+            graph_name += ".png"
+
         with open(filename, "w") as text_file:
             text_file.write("Best programs:\n")
         parameter_finder = ParameterFinder(observations, actions)
@@ -146,9 +149,6 @@ class BottomUpSearch():
                         #print(reward)
                         #print(p_copy.toString())
                     number_evaluations += 1
-                    #print(p_copy.toString())
-                    #print("done")
-                    #"""
                     reward = self.evaluate(p_copy, 10)
                     if reward > best_reward:
                         reward = self.evaluate(p_copy, 100)
@@ -164,6 +164,13 @@ class BottomUpSearch():
                             elapsed_times.append(time.time() - start)
                             current_evaluation.append(number_evaluations)
 
+                            plt.clf()
+                            plt.step(elapsed_times, best_rewards, where='post')
+                            plt.ylim(0, 500)
+                            plt.title("CartPole-v1")
+                            plt.ylabel("Average Return")
+                            plt.xlabel("Elapsed Time (s)")
+                            plt.pause(0.01)
 
                     #"""
                     if number_evaluations % 1000 == 0:
@@ -180,30 +187,23 @@ class BottomUpSearch():
         current_evaluation.append(number_evaluations)
 
         plt.clf()
-        plt.step(elapsed_times, best_rewards)
+        plt.step(elapsed_times, best_rewards, where='post')
         plt.title("CartPole-v1")
+        plt.ylim(0, 500)
         plt.ylabel("Average Return")
         plt.xlabel("Elapsed Time (s)")
-        plt.savefig("reward_vs_time.png")
-        plt.show()
-
-        plt.clf()
-        plt.step(current_evaluation, best_rewards)
-        plt.title("CartPole-v1")
-        plt.ylabel("Average Return")
-        plt.xlabel("Number of Evaluations")
-        plt.savefig("reward_vs_evals.png")
+        plt.savefig(graph_name)
         plt.show()
 
         return best_policy, number_evaluations
 
-    def synthesize_neuron(self, bound, operations, constant_values, observation_values, observations, actions, PiRL = False):
+    def synthesize_neuron(self, bound, operations, constant_values, observation_values, observations, actions, neuron, PiRL = False):
 
         start = time.time()
 
         closed_list = []
         plist = ProgramList()
-        plist.init_plist(constant_values, observation_values, [], []) # Don't initialize AssignAction or BooleanPrograms
+        plist.init_plist(constant_values, observation_values, [], [])
 
         best_reward = -100 # distance instead of reward now...
         best_policy = None
@@ -213,8 +213,8 @@ class BottomUpSearch():
         elapsed_times = []
 
         self.outputs = set()
-        filename = "neuron_"
-        filename += str()
+        filename = "neuron_" + str(neuron)
+
         if PiRL:
             filename += "_PiRL.txt"
         else:
@@ -265,35 +265,46 @@ if __name__ == '__main__':
     trajs = pd.read_csv("../Setup/trajectory.csv")
     observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']].to_numpy()
 
-    actions = trajs['a'].to_numpy()
-    p, num = synthesizer.synthesize(10, [Ite, Lt], [0.25, 0.1], [0, 1, 2, 3], [0, 1], observations, actions, [], PiRL=True)
-    exit()
+    # Imitate Neurons
+    if False:
+        print("Neuron 1")
+        neuron1 = trajs['N1'].to_numpy()
+        neuron1_tree, num = synthesizer.synthesize_neuron(10, [Ite, Lt, AssignAction, Addition], [-0.25, 0.0, 0.25, 0.5, 0.8, 2], [0, 1, 2, 3], observations, neuron1, 1, PiRL=True)
+        pickle.dump(neuron1_tree, file=open("neuron1_tree.pickle", "wb"))
+        #(if(obs[3] < 0.1068607496172635) then act = 0.4 else act = 2.0) -0.019605807716307922
+        #neuron1_tree = Ite(Lt(Observation(1), Num(-0.33849702456845226)), AssignAction(Num(1.985333726874753)),
+        #                   Ite(Lt(Observation(1), Num(0.0030069121715175368)), AssignAction(Num(0.8942757185406707)),
+        #                       AssignAction(Num(0.0030069121715175368))))
 
-    #""" Imitate Neurons
-    print("Neuron 1")
-    neuron1 = trajs['N1'].to_numpy()
-    neuron1_tree, num = synthesizer.synthesize_neuron(10, [Ite, Lt, AssignAction, Addition], [0.4, 0.4, 0.8, 2.0], [0, 1, 2, 3], observations, neuron1, PiRL=True)
-    pickle.dump(neuron1_tree, file=open("neuron1_tree.pickle", "wb"))
-    exit()
-    #(if(obs[3] < 0.1068607496172635) then act = 0.4 else act = 2.0) -0.019605807716307922
+        print("Neuron 2")
+        neuron2 = trajs['N2'].to_numpy()
+        neuron2_tree, num = synthesizer.synthesize_neuron(10, [Ite, Lt, AssignAction, Addition],  [-0.25, 0.0, 0.25, 0.5, 0.8, 2], [0, 1, 2, 3],  observations, neuron2, 2, PiRL=True)
+        pickle.dump(neuron2_tree, file=open("neuron2_tree.pickle", "wb"))
 
-    print("Neuron 2")
-    neuron2 = trajs['N2'].to_numpy()
-    neuron2_tree, num = synthesizer.synthesize_neuron(10, [Ite, Lt], [0.1], [0, 1, 2, 3], [0, 0.5, 1, 2], observations, neuron2, PiRL=True)
-    pickle.dump(neuron2_tree, file=open("neuron2_tree.pickle", "wb"))
-    #"""
-
-    """ Imitate Neural Policy
+    #""" Imitate Neural Policy
     neuron1_tree = pickle.load(open("neuron1_tree.pickle", "rb")).getBooleans()
     neuron2_tree = pickle.load(open("neuron2_tree.pickle", "rb")).getBooleans()
     bool_programs = copy.deepcopy(neuron1_tree + neuron2_tree)
     #boolean_rules = re.findall(r'.if\((.*?)\)', p.toString())
+
+    if True:
+        bool_programs = []
+        bool_programs.append(Lt(Num(0.02), Observation(1)))
+        bool_programs.append(Lt(Observation(1), Num(0.02)))
+        bool_programs.append(Lt(Num(-0.34), Observation(1)))
+        bool_programs.append(Lt(Num(0.03), Observation(2)))
+        bool_programs.append(Lt(Observation(1), Num(-0.17)))
+        bool_programs.append(Lt(Observation(2), Num(0.0)))
+        bool_programs.append(Lt(Num(-0.17), Observation(1)))
+        bool_programs.append(Lt(Observation(3), Num(-0.01)))
+        bool_programs.append(Lt(Num(-0.01), Observation(3)))
 
     for i in range(len(bool_programs)):
         print(bool_programs[i].toString())
         bool_programs[i].size = 1
 
     actions = trajs['a'].to_numpy()
-    p, num = synthesizer.synthesize(15, [Ite, Lt], [0.25], [0, 1, 2, 3], [0, 1], observations, actions, bool_programs, PiRL=True)
+    p, num = synthesizer.synthesize(15, [Ite, Lt], [0.25, 0.0, -0.25], [0, 1, 2, 3], [0, 1], observations, actions,
+                                    [], "_direct", PiRL=True)
 
-    """
+    exit()

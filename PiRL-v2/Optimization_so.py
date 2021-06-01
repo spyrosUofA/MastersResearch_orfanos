@@ -1,7 +1,8 @@
 from bayes_opt import BayesianOptimization, UtilityFunction
 from scipy import spatial
 import numpy as np
-from DSL import Num, Ite, Lt
+from DSL import Num, Ite, Lt, AssignAction, Addition
+import copy
 
 def create_interval(value, delta):
     interval = (value - delta, value + delta)
@@ -27,12 +28,18 @@ class ParameterFinder():
                 i+=1
                 originals.append(node.value)
                 interval = create_interval(node.value, 0.1)
-                dict_ranges[name] = interval
+                dict_ranges[name] = copy.deepcopy(interval)
+                #print(type(interval))
             elif type(node) is Ite:
                 q.append(node.condition)
                 q.append(node.true_case)
                 q.append(node.false_case)
             elif type(node) is Lt:
+                q.append(node.left)
+                q.append(node.right)
+            #elif type(node) is AssignAction:
+            #    q.append(node.value)
+            elif type(node) is Addition:
                 q.append(node.left)
                 q.append(node.right)
         return dict_ranges, originals
@@ -57,6 +64,12 @@ class ParameterFinder():
                 q.append(node.true_case)
                 q.append(node.false_case)
             elif type(node) is Lt:
+                q.append(node.left)
+                q.append(node.right)
+            # does this belong?
+            #elif type(node) is AssignAction:
+            #    q.append(node.value)
+            elif type(node) is Addition:
                 q.append(node.left)
                 q.append(node.right)
         return
@@ -89,13 +102,9 @@ class ParameterFinder():
                                         pbounds=list_Nums_range, verbose=0)
         try:
             #bayesOpt.maximize(init_points=5, n_iter=10, kappa=5, **gp_params)
-            bayesOpt.maximize(init_points=20, n_iter=10, kappa=2.5)
+            bayesOpt.maximize(init_points=40, n_iter=10, kappa=2.5)
             #print(bayesOpt.max['params'])
             self.set_Num_value(bayesOpt.max['params'])
-
-            #print(self.find_distance())
-            #exit()
-            #print(bayesOpt.max)
 
             return bayesOpt.max['target']
         except Exception as error:
@@ -122,12 +131,18 @@ class ParameterFinder():
         actions_diff = spatial.distance.euclidean(actions, np.array(self.actions))
         diff_total = -(actions_diff)/float(len(self.actions))
 
+        #print(diff_total)
+
         return diff_total
 
     def optimize_neuron(self, tree):
         self.tree = tree
         #gp_params = {"alpha": 1e-5, "n_restarts_optimizer": 10}  # Optimizer configuration
         list_Nums_range, originals = self.get_Num_range()
+
+        #print(list_Nums_range)
+        #print(self.tree.toString())
+
         #print(list_Nums_range) # (originals-0.1, originals+0.1)
         #print(originals)  # originals
 
@@ -135,14 +150,16 @@ class ParameterFinder():
 
         try:
             #bayesOpt.maximize(init_points=5, n_iter=10, kappa=5, **gp_params)
-            bayesOpt.maximize(init_points=50, n_iter=5, kappa=2.5)
+            bayesOpt.maximize(init_points=25, n_iter=5, kappa=2.5)
             self.set_Num_value(bayesOpt.max['params'])
             #print("passed!!")
             #print(bayesOpt.max)
 
             return bayesOpt.max['target']
         except Exception as error:
-            print("Error", error)
+            #print(bayesOpt.max['params'])
+            #print(list_Nums_range)
+            print("Error!!!", error)
             self.set_Num_value(originals)
             return -100 #originals
 

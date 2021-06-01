@@ -242,7 +242,7 @@ class AssignAction(Node):
 
         new_programs = []
         # defines which nodes are accepted in the AST
-        accepted_nodes = set([Num.name(), Observation.name(), Addition.name(), Multiplication.name()])
+        accepted_nodes = set([Num.name()]) #, Observation.name(), Addition.name(), Multiplication.name()])
 
         # generates all combinations of cost of size 2 varying from 1 to size - 1
         combinations = list(range(1, size))  # [1], [1, 2], ..., [1, 2, 3, 4, 5, ..., 15]
