@@ -46,7 +46,7 @@ class Lt(Node):
     def grow(plist, size):
         new_programs = []
         # defines which nodes are accepted in the AST
-        accepted_nodes = set([Num.name(), Observation.name()])
+        accepted_nodes = set([Num.name(), Observation.name(), Addition.name()])
         
         # generates all combinations of cost of size 2 varying from 1 to size - 1
         combinations = list(itertools.product(range(1, size - 1), repeat=2))
@@ -222,13 +222,13 @@ class AssignAction_old(Node):
 class AssignAction(Node):
     def __init__(self, value):
         self.value = value
-        self.size = 1
+        self.size = self.value.getSize()
 
     def toString(self):
-        return 'act = ' + str(self.value)
+        return 'act = ' + str(self.value.toString())
 
     def interpret(self, env):
-        env['act'] = self.value
+        env['act'] = self.value.interpret(env)
 
     def __eq__(self, other):
         if type(other) != AssignAction:
@@ -237,51 +237,40 @@ class AssignAction(Node):
             return True
         return False
 
-    def grow(self, size):
-        def grow(plist, size):
-            new_programs = []
-            # defines which nodes are accepted in the AST
-            accepted_nodes = set([Num.name(), Observation.name()])
+    def grow(plist, size):
+        #print("grow action")
 
-            # generates all combinations of cost of size 2 varying from 1 to size - 1
-            combinations = list(itertools.product(range(1, size - 1), repeat=2))
+        new_programs = []
+        # defines which nodes are accepted in the AST
+        accepted_nodes = set([Num.name(), Observation.name(), Addition.name(), Multiplication.name()])
 
-            for c in combinations:
-                # skip if the cost combination exceeds the limit
-                if c[0] + c[1] + 1 != size:
+        # generates all combinations of cost of size 2 varying from 1 to size - 1
+        combinations = list(range(1, size))  # [1], [1, 2], ..., [1, 2, 3, 4, 5, ..., 15]
+
+        for c in combinations:
+            # skip if the cost combination exceeds the limit
+            if c + 1 != size:
+                continue
+
+            # retrive bank of programs with costs c[0] and c[1]
+            program_set1 = plist.get_programs(c)
+
+            #print("p1", program_set1)
+
+            # need this loop
+            for t1, programs1 in program_set1.items():
+                # skip if t1 isn't a node accepted by AA
+                if t1 not in accepted_nodes:
                     continue
 
-                # retrive bank of programs with costs c[0] and c[1]
-                program_set1 = plist.get_programs(c[0])
-                program_set2 = plist.get_programs(c[1])
-
                 # need this loop
-                for t1, programs1 in program_set1.items():
-                    # skip if t1 isn't a node accepted by Lt
-                    if t1 not in accepted_nodes:
-                        continue
+                for p1 in programs1:
+                    aa = AssignAction(p1)
+                    new_programs.append(aa)
 
-                    # need this loop
-                    for p1 in programs1:
-                        for t2, programs2 in program_set2.items():
-                            # skip if t1 isn't a node accepted by Lt
-                            if t2 not in accepted_nodes:
-                                continue
+                    yield aa
 
-                            # Boolean conditions have to have at least one observation
-                            if not (t1 == Observation.name() or t2 == Observation.name()):
-                                continue
-                            # Left and Right shoudn't be the same
-                            if t1 == t2: continue  #
-
-                            # p1 and all programs in programs2 satisfy constraints; grow the list
-                            for p2 in programs2:
-                                lt = Lt(p1, p2)
-                                new_programs.append(lt)
-
-                                yield lt
-            return new_programs
-
+        return new_programs
 
 class Observation(Node):
     def __init__(self, index):
@@ -300,7 +289,7 @@ class Observation(Node):
         if self.index == other.index:
             return True
         return False
-                
+
 class Addition(Node):
     def __init__(self, left, right):
         self.left = left
@@ -312,7 +301,7 @@ class Addition(Node):
         return "(" + self.left.toString() + " + " + self.right.toString() + ")"
 
     def interpret(self, env):
-        return self.left.interpret(env) - self.right.interpret(env)
+        return self.left.interpret(env) + self.right.interpret(env)
 
     def __eq__(self, other):
         if type(other) != Addition:
@@ -422,5 +411,3 @@ class Multiplication(Node):
 
                             yield mp
         return new_programs
-
-

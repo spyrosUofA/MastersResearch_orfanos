@@ -111,22 +111,15 @@ class ParameterFinder():
         # print(bayesOpt.max)
 
     def find_distance_neuron(self, **kwargs):
-        from BottomUpSearch import get_action
+        from BottomUpSearch_so import get_action
         numNodes = np.fromiter(kwargs.values(), dtype=float)
         self.set_Num_value(numNodes.tolist())
-        #print("Nums")
-        #print(numNodes)
-        #print(self.tree.toString())
 
-        print("get_action...")
-
+        # actions --> produced by AST
         actions = get_action(self.inputs, self.tree)
+
+        # self.actions --> given by trajectory
         actions_diff = spatial.distance.euclidean(actions, np.array(self.actions))
-
-        #print(actions_diff)
-        # self.actions --> from the trajectory.
-        # actions --> learned AST.
-
         diff_total = -(actions_diff)/float(len(self.actions))
 
         return diff_total
@@ -135,26 +128,24 @@ class ParameterFinder():
         self.tree = tree
         #gp_params = {"alpha": 1e-5, "n_restarts_optimizer": 10}  # Optimizer configuration
         list_Nums_range, originals = self.get_Num_range()
-        print(list_Nums_range) # (originals-0.1, originals+0.1)
+        #print(list_Nums_range) # (originals-0.1, originals+0.1)
         #print(originals)  # originals
-        #exit()
-        bayesOpt = BayesianOptimization(self.find_distance_neuron,
-                                        pbounds=list_Nums_range, verbose=0)
+
+        bayesOpt = BayesianOptimization(self.find_distance_neuron, pbounds=list_Nums_range, verbose=0)
+
         try:
             #bayesOpt.maximize(init_points=5, n_iter=10, kappa=5, **gp_params)
-            bayesOpt.maximize(init_points=5, n_iter=2, kappa=2.5)
-            print(bayesOpt.max['params'])
+            bayesOpt.maximize(init_points=50, n_iter=5, kappa=2.5)
             self.set_Num_value(bayesOpt.max['params'])
-
-            #print(self.find_distance())
-            #exit()
+            #print("passed!!")
             #print(bayesOpt.max)
 
             return bayesOpt.max['target']
         except Exception as error:
-            print(error)
+            print("Error", error)
             self.set_Num_value(originals)
-            return originals
+            return -100 #originals
+
         # utility = UtilityFunction(kind="ucb", kappa=2.5, xi=0.0)
         # for _ in range(5):
         #     next_point = bayesOpt.suggest(utility)

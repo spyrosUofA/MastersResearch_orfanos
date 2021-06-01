@@ -52,6 +52,7 @@ for i in range(1000):
     actions.append(a)
 
     # Observe, transition
+    #env.render()
     op, r, done, infos = env.step(a)
 
     # Update environment
