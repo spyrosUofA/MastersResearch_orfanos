@@ -1,0 +1,16 @@
+Best programs:
+(if(obs[0] < 0.17471436157196005) then act = 0 else act = 1)9.27
+(if(obs[0] < 0.31062099028240153) then act = 1 else act = 0)9.51
+(if(obs[0] < -0.0071631684108711645) then act = 1 else act = 0)29.42
+(if(obs[1] < 0.02015781690552783) then act = 1 else act = 0)42.43
+(if(obs[3] < 0.15608240111201316) then act = 0 else act = 1)57.53
+(if(obs[3] < -0.06087860666937097) then act = 0 else act = 1)111.37
+(if(obs[1] < -0.15) then act = 1 else (if(obs[2] < 0.04175912419801571) then act = 0 else act = 1))212.97
+(if(obs[1] < -0.15013961371095383) then act = 1 else (if(0.03902975227608663 < obs[2]) then act = 1 else act = 0))225.1
+(if(obs[2] < -0.03565029414628455) then act = 0 else (if(obs[1] < 0.16140230504786227) then act = 1 else act = 0))247.76
+(if(obs[2] < -0.03262736729366085) then act = 0 else (if(obs[3] < -0.15041542893783016) then act = 0 else act = 1))284.93
+(if(obs[3] < -0.150069794720197) then act = 0 else (if(obs[2] < -0.029449657219567313) then act = 0 else act = 1))305.08
+(if(obs[2] < 0.04021626437880239) then (if(obs[3] < 0.04021626437880239) then act = 0 else act = 1) else act = 1)313.93
+(if(obs[2] < 0.04065829450739483) then (if(0.04065829450739483 < obs[3]) then act = 1 else act = 0) else act = 1)320.43
+(if(obs[3] < 0.03558526391767871) then (if(obs[2] < 0.03558526391767871) then act = 0 else act = 1) else act = 1)404.38
+best: (if(obs[3] < 0.03558526391767871) then (if(obs[2] < 0.03558526391767871) then act = 0 else act = 1) else act = 1)401.153
