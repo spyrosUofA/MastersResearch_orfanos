@@ -1,0 +1,11 @@
+Best programs:
+(if(0.019261046443844763 < obs[1]) then act = 0 else act = 1)38.9
+(if(obs[2] < 0.011115023891564187) then act = 0 else act = 1)42.55
+(if(obs[3] < 0.1639536435927024) then act = 0 else act = 1)56.88
+(if(obs[3] < -0.06221025175596182) then act = 0 else act = 1)109.68
+(if(0.0035123927871710814 < obs[1]) then act = 0 else (if(obs[2] < -0.05505491178379279) then act = 0 else act = 1))118.42
+(if(obs[2] < -0.0350905527567947) then act = 0 else (if(0.018632669063565865 < obs[1]) then act = 0 else act = 1))164.6
+(if(obs[2] < -0.03724246860268836) then act = 0 else (if(obs[1] < 0.16553879488142298) then act = 1 else act = 0))237.13
+(if(obs[2] < -0.04111578491873878) then act = 0 else (if(obs[3] < -0.06237286633052648) then act = 0 else act = 1))262.02
+(if(obs[2] < -0.03301189009921954) then act = 0 else (if(0.18349787213560353 < obs[1]) then act = 0 else act = 1))282.41
+(if(obs[3] < 0.03743748625039647) then (if(obs[2] < 0.04395703262613348) then act = 0 else act = 1) else act = 1)302.99
