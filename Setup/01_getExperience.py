@@ -36,10 +36,11 @@ actions = []
 predN1 = []
 predN2 = []
 
+
 # Generate a trajectory
 o = env.reset()
 episode = 0
-for i in range(1000):
+for i in range(50000):
 
     # state, P1 and P2 (the neurons)
     obs.append(o)

@@ -12,7 +12,6 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-
 def get_action(obs, p):
     actions = []
     for ob in obs:
