@@ -26,8 +26,12 @@ def main():
     np.random.seed(seed)
 
     # Actor & Critic networks
-    ah1 = 4
-    ah2 = 32
+    ah1 = 64
+    ah2 = 64
+
+    ch1 = 64
+    ch2 = 64
+    ch3 = 64
 
     actor = nn.Sequential(
         nn.Linear(o_dim, ah1),
@@ -38,15 +42,17 @@ def main():
         nn.Softmax(dim=-1))
 
     critic = nn.Sequential(
-        nn.Linear(o_dim, 32),
+        nn.Linear(o_dim, ch1),
         nn.ReLU(),
-        nn.Linear(32, 32),
+        nn.Linear(ch1, ch2),
         nn.ReLU(),
-        nn.Linear(32, 1))
+        nn.Linear(ch2, ch3),
+        nn.ReLU(),
+        nn.Linear(ch3, 1))
 
     # Actor & Critic optimizers
-    opt_act = torch.optim.Adam(actor.parameters(), lr=0.05)
-    opt_cri = torch.optim.Adam(critic.parameters(), lr=0.05)
+    opt_act = torch.optim.Adam(actor.parameters(), lr=0.001)
+    opt_cri = torch.optim.Adam(critic.parameters(), lr=0.001)
 
     # Actionspace is [0, 1] in cartpole
     action_space = np.arange(env.action_space.n)
@@ -54,7 +60,7 @@ def main():
     # PPO parameters
     epsilon = 0.2
     gamma = 1
-    lam = 1
+    lam = 0.95
 
     # Batch update parameters
     k = 1   # initial episode number
@@ -118,7 +124,7 @@ def main():
     rets = []
     avgrets = []
     o = env.reset()
-    num_steps = 500000
+    num_steps = 1000000
     checkpoint = 10000
     for steps in range(num_steps):
         # Select an action
@@ -236,7 +242,7 @@ def main():
     # save final learning curve
     plt.clf()
     plt.plot(range(checkpoint, (steps + 1) + checkpoint, checkpoint), avgrets)
-    plt.title("Cartpole-v1 with PPO \n Actor: h1=" + str(ah1) + ", h2=" + str(ah2))
+    plt.title("LunarLander-v2 with PPO \n Actor: h1=" + str(ah1) + ", h2=" + str(ah2))
     plt.ylabel("Average Return")
     plt.xlabel("Timestep")
     #plt.savefig("small_PPO.png")

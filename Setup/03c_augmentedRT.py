@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 def evaluate_policy(num_eps, policy):
     env = gym.make('CartPole-v1')
-    env.seed(1)
     rew_eps = []
 
     for ep in range(num_eps):
@@ -19,9 +18,27 @@ def evaluate_policy(num_eps, policy):
         while not done:
             # state
             #obs.append(o)
+            #print(o)
+            X = pd.DataFrame([o])
+            X.columns = ['o[0]', 'o[1]', 'o[2]', 'o[3]']
+            # Addition
+            X['o[0]+o[1]'] = X['o[0]'] + X['o[1]']
+            X['o[0]+o[2]'] = X['o[0]'] + X['o[2]']
+            X['o[0]+o[3]'] = X['o[0]'] + X['o[3]']
+            X['o[1]+o[2]'] = X['o[1]'] + X['o[2]']
+            X['o[1]+o[3]'] = X['o[1]'] + X['o[3]']
+            X['o[2]+o[3]'] = X['o[2]'] + X['o[3]']
+            # Multiplication
+            X['o[0]*o[1]'] = X['o[0]'] * X['o[1]']
+            X['o[0]*o[2]'] = X['o[0]'] * X['o[2]']
+            X['o[0]*o[3]'] = X['o[0]'] * X['o[3]']
+            X['o[1]*o[2]'] = X['o[1]'] * X['o[2]']
+            X['o[1]*o[3]'] = X['o[1]'] * X['o[3]']
+            X['o[2]*o[3]'] = X['o[2]'] * X['o[3]']
+            #print(X)
 
             # take action
-            a = policy.predict([o])[0]
+            a = policy.predict(X)[0]
 
             # Observe, transition
             op, r, done, infos = env.step(a)
@@ -33,26 +50,45 @@ def evaluate_policy(num_eps, policy):
         # end of episode
         rew_eps.append(rew_this)
 
-    return np.mean(rew_eps), np.std(rew_eps)
+    return np.mean(rew_eps)
 
 def get_avg_rew(num_eps, demos, tree_depth):
     trajs = pd.read_csv("trajectory.csv", nrows=demos)
     X = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']]
+
+    # Addition
+    X['o[0]+o[1]'] = X['o[0]'] + X['o[1]']
+    X['o[0]+o[2]'] = X['o[0]'] + X['o[2]']
+    X['o[0]+o[3]'] = X['o[0]'] + X['o[3]']
+    X['o[1]+o[2]'] = X['o[1]'] + X['o[2]']
+    X['o[1]+o[3]'] = X['o[1]'] + X['o[3]']
+    X['o[2]+o[3]'] = X['o[2]'] + X['o[3]']
+
+    # Multiplication
+    X['o[0]*o[1]'] = X['o[0]'] * X['o[1]']
+    X['o[0]*o[2]'] = X['o[0]'] * X['o[2]']
+    X['o[0]*o[3]'] = X['o[0]'] * X['o[3]']
+    X['o[1]*o[2]'] = X['o[1]'] * X['o[2]']
+    X['o[1]*o[3]'] = X['o[1]'] * X['o[3]']
+    X['o[2]*o[3]'] = X['o[2]'] * X['o[3]']
+
     y = trajs['a']
     avg_rew_policies = []
-    std_rew_policies = []
 
     for alpha in tree_depth:
         # train policy
         tree_policy = tree.DecisionTreeClassifier(max_depth=alpha, random_state=1)
         tree_policy.fit(X, y)
 
-        # evaluate policy
-        avg_rew, std_rew = evaluate_policy(num_eps, tree_policy)
-        avg_rew_policies.append(avg_rew)
-        std_rew_policies.append(std_rew)
+        print(tree.export_text(tree_policy, feature_names=list(X.columns)))
 
-    return np.array(avg_rew_policies), np.array(std_rew_policies)
+        # evaluate policy
+        avg_rew = evaluate_policy(num_eps, tree_policy)
+
+        print(avg_rew)
+        avg_rew_policies.append(avg_rew)
+
+    return avg_rew_policies
 
 def generate_plots(num_eps, demos, tree_depth):
 
@@ -65,11 +101,10 @@ def generate_plots(num_eps, demos, tree_depth):
 
     for r in range(rows):
         for c in range(cols):
-            reward, std = get_avg_rew(num_eps, demos[i], tree_depth)
+            reward = get_avg_rew(num_eps, demos[i], tree_depth)
             axs[r, c].plot(tree_depth, reward, color=cmap(i))
             axs[r, c].set_title(str(demos[i]) + " Demonstrations")
             axs[r, c].set_ylim([0, 500])
-            axs[r, c].fill_between(tree_depth, reward-std, reward+std, color=cmap(i), alpha=0.2)
             #axs[r, c].set_xscale('log', base=2)
             axs[r, c].xaxis.set_ticks(tree_depth)
 
@@ -84,7 +119,6 @@ def generate_plots(num_eps, demos, tree_depth):
     for ax in axs.flat:
         ax.set(xlabel='Tree Depth', ylabel='Average Return')
         ax.label_outer()
-        ax.xaxis.set_tick_params(which='both', labelbottom=True)
 
     plt.show()
 
@@ -104,40 +138,8 @@ def generate_plots(num_eps, demos, tree_depth):
 
 # PARAMETERS
 NUM_EPS = 25
-TREE_DEPTH = range(1, 10) #[2**x for x in range(1, 10)]
-TIME_STEPS = [500, 2500, 5000, 10000, 25000, 50000]
+TREE_DEPTH = range(1, 10)
+TIME_STEPS = [500, 2500, 5000, 50000]
+
 
 generate_plots(NUM_EPS, TIME_STEPS, TREE_DEPTH)
-
-
-def dagger_history(p, oracle, timesteps):
-    steps = 0
-    averaged = 0
-
-    env = gym.make('CartPole-v1')
-
-    obs = []
-    actions_irl = []
-    actions_oracle = []
-
-    ob = env.reset()
-
-    for _ in range(timesteps):
-        reward = 0
-        obs.append(ob)
-        actions_oracle.append(np.random.choice(a=[0, 1], p=oracle(torch.FloatTensor(ob)).detach().numpy()))
-
-        namespace = {'obs': ob, 'act': 0}
-        p.interpret(namespace)
-        action = [namespace['act']]
-        ob, r_t, done, _ = env.step(action[0])
-
-        actions_irl.append(action[0])
-
-        steps += 1
-        reward += r_t
-
-        if done:
-            break
-
-    return np.array(obs).tolist(), actions_irl, actions_oracle

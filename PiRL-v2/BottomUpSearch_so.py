@@ -257,27 +257,24 @@ class BottomUpSearch():
 
     def synthesize_neurons(self, bound, operations, constant_values, observation_values, observations, neurons, PiRL = False):
 
-
-        # [[N1_0, N1_1, ..., N1_500], [N2_0, N2_1, ..., N2_500]]
+        # [[N1_0, N1_1, ..., N1_500], [N2_0, N2_1, ..., N2_500], ...]
         neuron_values = [trajs["N" + str(x)].to_numpy() for x in range(1, neurons+1, 1)]
         parameter_finder = [ParameterFinderCon(observations, neuron_values[i]) for i in range(neurons)]
-        #parameter_finder = ParameterFinderCon(observations, actions)
 
         closed_list = []
         plist = ProgramList()
         plist.init_plist(constant_values, observation_values, [], [])
 
         best_reward = [-100] * neurons
-        best_rewards = [None] * neurons
+        best_rewards = [[]] * neurons
         best_policy = [None] * neurons
         elapsed_times = [[]] * neurons
-
         number_evaluations = 0
 
         start = time.time()
 
         self.outputs = set()
-        filenames = ["../PiRL-v2/Logs/ImitateNeurons/N" + str(x) for x in range(1,neurons+1)]
+        filenames = ["../PiRL-v2/Logs/ImitateNeurons/N" + str(x) for x in range(1, neurons+1)]
         if PiRL:
             filenames = [x + "_PiRL.txt" for x in filenames]
         else:
@@ -303,16 +300,15 @@ class BottomUpSearch():
                         number_evaluations += 1
 
                         if reward > best_reward[i]:
-
                             current_time = time.time() - start
-
                             print(p_copy.toString(), reward)
                             with open(filenames[i], "a") as text_file:
-                                text_file.write(p_copy.toString()+str(reward) + " " + str(current_time)+"\n")
+                                text_file.write(p_copy.toString()+str(reward)+"\n")
+                            # Update best
                             best_reward[i] = reward
                             best_policy[i] = p_copy
 
-                            #best_rewards[i].append(best_reward[i])
+                            best_rewards[i].append(best_reward[i])
                             elapsed_times[i].append(time.time() - start)
 
                         if number_evaluations % 1000 == 0:
@@ -334,11 +330,12 @@ if __name__ == '__main__':
 
     NEURON_CONSTANTS = [-0.25, 0.0, 0.25, 0.5, 0.8, 2]
     NUM_CONSTANTS = [0.25, 0.0, -0.25]
+    NEURONS = 2
 
 
     #neuron_values = [trajs["N" + str(x)].to_numpy() for x in lala]
     neuron1_tree, num = synthesizer.synthesize_neurons(10, [Ite, Lt, AssignAction, Addition], NEURON_CONSTANTS,
-                                                      [0, 1, 2, 3], observations, 2, PiRL=True)
+                                                      [0, 1, 2, 3], observations, NEURONS, PiRL=True)
     exit()
 
 

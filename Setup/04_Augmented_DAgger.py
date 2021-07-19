@@ -18,10 +18,26 @@ def collect_reward(env, num_eps, policy):
 
         while not done:
             # state
-            #obs.append(o)
+            X = pd.DataFrame([o])
+            X.columns = ['o[0]', 'o[1]', 'o[2]', 'o[3]']
+            # Addition
+            X['o[0]+o[1]'] = X['o[0]'] + X['o[1]']
+            X['o[0]+o[2]'] = X['o[0]'] + X['o[2]']
+            X['o[0]+o[3]'] = X['o[0]'] + X['o[3]']
+            X['o[1]+o[2]'] = X['o[1]'] + X['o[2]']
+            X['o[1]+o[3]'] = X['o[1]'] + X['o[3]']
+            X['o[2]+o[3]'] = X['o[2]'] + X['o[3]']
+            # Multiplication
+            X['o[0]*o[1]'] = X['o[0]'] * X['o[1]']
+            X['o[0]*o[2]'] = X['o[0]'] * X['o[2]']
+            X['o[0]*o[3]'] = X['o[0]'] * X['o[3]']
+            X['o[1]*o[2]'] = X['o[1]'] * X['o[2]']
+            X['o[1]*o[3]'] = X['o[1]'] * X['o[3]']
+            X['o[2]*o[3]'] = X['o[2]'] * X['o[3]']
 
             # take action
-            a = policy.predict([o])[0]
+            a = policy.predict(X)[0]
+            #a = policy.predict([o])[0]
 
             # Observe, transition
             op, r, done, infos = env.step(a)
@@ -38,6 +54,20 @@ def collect_reward(env, num_eps, policy):
 def get_avg_rew(num_eps, demos, tree_depth):
     trajs = pd.read_csv("trajectory.csv", nrows=demos)
     X = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']]
+    # Addition
+    X['o[0]+o[1]'] = X['o[0]'] + X['o[1]']
+    X['o[0]+o[2]'] = X['o[0]'] + X['o[2]']
+    X['o[0]+o[3]'] = X['o[0]'] + X['o[3]']
+    X['o[1]+o[2]'] = X['o[1]'] + X['o[2]']
+    X['o[1]+o[3]'] = X['o[1]'] + X['o[3]']
+    X['o[2]+o[3]'] = X['o[2]'] + X['o[3]']
+    # Multiplication
+    X['o[0]*o[1]'] = X['o[0]'] * X['o[1]']
+    X['o[0]*o[2]'] = X['o[0]'] * X['o[2]']
+    X['o[0]*o[3]'] = X['o[0]'] * X['o[3]']
+    X['o[1]*o[2]'] = X['o[1]'] * X['o[2]']
+    X['o[1]*o[3]'] = X['o[1]'] * X['o[3]']
+    X['o[2]*o[3]'] = X['o[2]'] * X['o[3]']
     y = trajs['a']
     avg_rew_policies = []
 
@@ -95,16 +125,35 @@ def dagger_rollout(env, policy, oracle, roll_outs=1):
         print(ob)
         reward = 0
         while True:
-            obs.append(ob)
 
             # oracle's action (expectation)
             actions_oracle.append(np.random.choice(a=[0, 1], p=oracle(torch.FloatTensor(ob)).detach().numpy()))
 
+            X = pd.DataFrame([ob])
+            X.columns = ['o[0]', 'o[1]', 'o[2]', 'o[3]']
+            # Addition
+            X['o[0]+o[1]'] = X['o[0]'] + X['o[1]']
+            X['o[0]+o[2]'] = X['o[0]'] + X['o[2]']
+            X['o[0]+o[3]'] = X['o[0]'] + X['o[3]']
+            X['o[1]+o[2]'] = X['o[1]'] + X['o[2]']
+            X['o[1]+o[3]'] = X['o[1]'] + X['o[3]']
+            X['o[2]+o[3]'] = X['o[2]'] + X['o[3]']
+            # Multiplication
+            X['o[0]*o[1]'] = X['o[0]'] * X['o[1]']
+            X['o[0]*o[2]'] = X['o[0]'] * X['o[2]']
+            X['o[0]*o[3]'] = X['o[0]'] * X['o[3]']
+            X['o[1]*o[2]'] = X['o[1]'] * X['o[2]']
+            X['o[1]*o[3]'] = X['o[1]'] * X['o[3]']
+            X['o[2]*o[3]'] = X['o[2]'] * X['o[3]']
+
+            obs.append(X.to_numpy().tolist()[0])
+            #print(X.to_numpy().tolist()[0])
+            #exit()
+
             # student's action (reality)
-            action = policy.predict([ob])[0]
-            #namespace = {'obs': ob, 'act': 0}
-            #p.interpret(namespace)
-            #action = [namespace['act']]
+            action = policy.predict(X)[0]
+            #action = policy.predict([ob])[0]
+
             ob, r_t, done, _ = env.step(action)
 
             reward += r_t
@@ -134,7 +183,25 @@ def algo_NDPS(pomd, oracle, initial_hist, tree_size, nb_updates, roll_outs=1, se
 
     # initial trajectory from oracle
     trajs = pd.read_csv("../Setup/trajectory.csv", nrows=initial_hist)
-    observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']].to_numpy().tolist()
+
+    X = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']]
+    X.columns = ['o[0]', 'o[1]', 'o[2]', 'o[3]']
+    # Addition
+    X['o[0]+o[1]'] = X['o[0]'] + X['o[1]']
+    X['o[0]+o[2]'] = X['o[0]'] + X['o[2]']
+    X['o[0]+o[3]'] = X['o[0]'] + X['o[3]']
+    X['o[1]+o[2]'] = X['o[1]'] + X['o[2]']
+    X['o[1]+o[3]'] = X['o[1]'] + X['o[3]']
+    X['o[2]+o[3]'] = X['o[2]'] + X['o[3]']
+    # Multiplication
+    X['o[0]*o[1]'] = X['o[0]'] * X['o[1]']
+    X['o[0]*o[2]'] = X['o[0]'] * X['o[2]']
+    X['o[0]*o[3]'] = X['o[0]'] * X['o[3]']
+    X['o[1]*o[2]'] = X['o[1]'] * X['o[2]']
+    X['o[1]*o[3]'] = X['o[1]'] * X['o[3]']
+    X['o[2]*o[3]'] = X['o[2]'] * X['o[3]']
+
+    observations = X.to_numpy().tolist()
     actions = trajs['a'].to_numpy().tolist()
 
     # log times
@@ -144,7 +211,7 @@ def algo_NDPS(pomd, oracle, initial_hist, tree_size, nb_updates, roll_outs=1, se
     tree_policy = tree.DecisionTreeClassifier(max_depth=tree_size, random_state=seed)
     tree_policy.fit(observations, actions)
 
-    # evaluate initial 
+    # evaluate initial
     rew = collect_reward(env, 25, tree_policy)
     rewards = [rew]
 
@@ -157,6 +224,8 @@ def algo_NDPS(pomd, oracle, initial_hist, tree_size, nb_updates, roll_outs=1, se
         obs, act_oracle, rews = dagger_rollout(env, tree_policy, pi_oracle, roll_outs)
 
         # DAgger style imitation learning (update histories)
+        #print(observations)
+        #print(obs)
         observations.extend(obs)
         actions.extend(act_oracle)
 
@@ -217,14 +286,14 @@ def generate_plots(pomd, oracle, initial_hist, tree_size, nb_updates, roll_outs=
 
 
 POMD = "CartPole-v1"
-ORACLE = '../Setup/ppo_2x4_policy.pth'
+ORACLE = '../Setup/PPO_Sigmoid_2x4_policy.pth'
 INIT_HISTORY = 500
-TREE_SIZE = [2**x for x in range(1, 7)]
-tree_size = 8
+TREE_SIZE = range(1, 5)
+tree_size = 4
 NB_UPDATES = 100
 
 # Plot: Average Reward vs DAgger Rollouts for different tree sizes
-#generate_plots(POMD, ORACLE, INIT_HISTORY, TREE_SIZE , NB_UPDATES)
+#generate_plots(POMD, ORACLE, INIT_HISTORY, TREE_SIZE, NB_UPDATES)
 
 
 # Plot: Average Reward vs Time for 100 Dagger Updates
