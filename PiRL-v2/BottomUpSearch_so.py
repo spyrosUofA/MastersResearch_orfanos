@@ -1,5 +1,5 @@
 import gym
-from DSL import Ite, Lt, Observation, Num, AssignAction, Addition, Multiplication
+from DSL import Ite, Lt, Observation, Num, AssignAction, Addition, Multiplication, ReLU
 import numpy as np
 import copy
 from Optimization_so import ParameterFinder
@@ -274,7 +274,7 @@ class BottomUpSearch():
         start = time.time()
 
         self.outputs = set()
-        filenames = ["../PiRL-v2/Logs/ImitateNeurons/N" + str(x) for x in range(1, neurons+1)]
+        filenames = ["../PiRL-v2/Logs/ImitateNeurons/N_relu" + str(x) for x in range(1, neurons+1)]
         if PiRL:
             filenames = [x + "_PiRL.txt" for x in filenames]
         else:
@@ -332,13 +332,28 @@ if __name__ == '__main__':
     NUM_CONSTANTS = [0.25, 0.0, -0.25]
     NEURONS = 2
 
+    prog_relus = []
+    prog_relus.append(ReLU([1.1228,  0.0633, -3.4613, -2.2452], [0.1867]))
+    prog_relus.append(ReLU([-0.5183, -0.7270, -6.0250, -2.2768], [0.1656]))
+
+    obs0 = [-0.04456399, 0.04653909, 0.01326909, -0.02099827]
+    #print(prog_relus[0].interpret(obs0).toString())
+    #print(prog_relus[1].interpret(obs0).toString())
+
+    namespace = {'obs': obs0, 'act': 0}
+    print(namespace['obs'])
+    print(type(namespace['obs']))
+    print(prog_relus[0].interpret(namespace))
+
+    actions = trajs['a'].to_numpy()
+    p, num = synthesizer.synthesize(15, [Ite, Lt], [-0.0462, -0.0068], [0, 1, 2, 3], [0, 1], observations, actions,
+                                    prog_relus, "_relu_test", PiRL=True)
+    exit()
 
     #neuron_values = [trajs["N" + str(x)].to_numpy() for x in lala]
     neuron1_tree, num = synthesizer.synthesize_neurons(10, [Ite, Lt, AssignAction, Addition], NEURON_CONSTANTS,
                                                       [0, 1, 2, 3], observations, NEURONS, PiRL=True)
     exit()
-
-
 
     # Imitate Neurons
     if False:

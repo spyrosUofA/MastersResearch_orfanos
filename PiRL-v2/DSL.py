@@ -1,4 +1,5 @@
 import itertools
+import numpy as np
 
 class Node:
     def __init__(self):
@@ -46,7 +47,7 @@ class Lt(Node):
     def grow(plist, size):
         new_programs = []
         # defines which nodes are accepted in the AST
-        accepted_nodes = set([Num.name(), Observation.name(), Addition.name()])
+        accepted_nodes = set([Num.name(), Observation.name(), Addition.name(), ReLU.name()])
         
         # generates all combinations of cost of size 2 varying from 1 to size - 1
         combinations = list(itertools.product(range(1, size - 1), repeat=2))
@@ -219,6 +220,7 @@ class AssignAction_old(Node):
             return True
         return False
 
+
 class AssignAction(Node):
     def __init__(self, value):
         self.value = value
@@ -272,6 +274,7 @@ class AssignAction(Node):
 
         return new_programs
 
+
 class Observation(Node):
     def __init__(self, index):
         self.index = index
@@ -289,6 +292,28 @@ class Observation(Node):
         if self.index == other.index:
             return True
         return False
+
+
+class ReLU(Node):
+    def __init__(self, weight, bias):
+        self.weight = weight
+        self.bias = bias
+
+        self.size = 1
+
+    def toString(self):
+        return 'relu:' + str(self.weight) + " * o + " + str(self.bias)
+
+    def interpret(self, env):
+        return max(0, np.dot(self.weight, np.array(env['obs'])) + self.bias)
+
+    def __eq__(self, other):
+        if type(other) != ReLU:
+            return False
+        if self.weight == other.weight and self.bias == other.bias:
+            return True
+        return False
+
 
 class Addition(Node):
     def __init__(self, left, right):
@@ -350,6 +375,7 @@ class Addition(Node):
 
                             yield st
         return new_programs
+
 
 class Multiplication(Node):
     def __init__(self, left, right):
