@@ -1,0 +1,13 @@
+Best programs:
+(if(obs[0] < 0.15) then act = 0 else act = 1)-153.21561002089928
+(if(obs[0] < -0.33741709173698287) then act = 2 else act = 0)-146.5850637267598
+(if(obs[1] < 0.35) then act = 1 else act = 0)-131.32070781576928
+(if(obs[1] < 0.35) then act = 2 else act = 0)-126.58030106043627
+(if(obs[1] < -0.016482972907154808) then act = 1 else act = 0)-126.26190762924682
+(if(obs[1] < -0.25341480451973813) then act = 3 else act = 0)-122.91088315911969
+(if(obs[4] < 0.09320829079302193) then act = 1 else act = 3)-119.63757804914198
+(if(0.34551236258485796 < obs[1]) then act = 0 else act = 2)-110.51136581396906
+(if(obs[1] < 0.35) then act = 2 else (if(obs[1] < -0.32171916324435107) then act = 3 else act = 0))-106.72803537439515
+(if(obs[1] < 0.26739510462224025) then act = 2 else (if(obs[4] < 0.26739510462224025) then act = 1 else act = 3))-94.38592784916378
+(if(obs[1] < 0.3442690660826574) then act = 2 else (if(obs[4] < 0.09365489094771606) then act = 1 else act = 3))-87.13318278338318
+(if(obs[1] < 0.2904647697567838) then act = 2 else (if(obs[5] < 0.00561313411771551) then act = 1 else act = 3))-78.75322031982338
