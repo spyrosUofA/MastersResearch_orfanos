@@ -5,3 +5,8 @@ Best programs:
 (if(obs[0] < relu:[-0.5183, -0.727, -6.025, -2.2768] * o + [0.1656]) then act = 0 else act = 1)128.64
 (if(obs[2] < relu:[-0.5183, -0.727, -6.025, -2.2768] * o + [0.1656]) then act = 0 else act = 1)292.26
 (if(obs[3] < relu:[-0.5183, -0.727, -6.025, -2.2768] * o + [0.1656]) then act = 0 else act = 1)313.97
+(if(obs[1] < -0.05173942758429675) then act = 1 else (if(relu:[-0.5183, -0.727, -6.025, -2.2768] * o + [0.1656] < obs[2]) then act = 1 else act = 0))332.47
+(if(obs[2] < -0.05128963766057289) then act = 0 else (if(obs[3] < relu:[-0.5183, -0.727, -6.025, -2.2768] * o + [0.1656]) then act = 0 else act = 1))334.04
+(if(obs[2] < -0.0502896221896791) then act = 0 else (if(relu:[-0.5183, -0.727, -6.025, -2.2768] * o + [0.1656] < obs[3]) then act = 1 else act = 0))345.28
+(if(obs[3] < relu:[-0.5183, -0.727, -6.025, -2.2768] * o + [0.1656]) then act = 0 else (if(obs[2] < -0.04992288932485018) then act = 0 else act = 1))358.61
+(if(0.05380000000000001 < obs[3]) then act = 1 else (if(obs[1] < relu:[-0.5183, -0.727, -6.025, -2.2768] * o + [0.1656]) then act = 0 else act = 1))500.0

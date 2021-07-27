@@ -92,3 +92,7 @@ for activation in ["ReLU", "Sigmoid"]:
     df['N2'] = predN2
 
     df.to_csv(path_or_buf=file_name, index=False)
+
+
+
+

@@ -20,7 +20,8 @@ class Node:
     @classmethod
     def name(cls):
         return cls.__name__
-        
+
+
 class Lt(Node):
     def __init__(self, left, right):
         self.left = left
@@ -89,7 +90,8 @@ class Lt(Node):
                             
                             yield lt
         return new_programs 
-                
+
+
 class Ite(Node):
     def __init__(self, condition, true_case, false_case):
         self.condition = condition
@@ -215,7 +217,8 @@ class Ite(Node):
                                     
                                     yield ite
         return new_programs
-            
+
+
 class Num(Node):
     def __init__(self, value):
         self.value = value
@@ -234,7 +237,8 @@ class Num(Node):
             return True
         return False
 
-class AssignAction_old(Node):
+
+class AssignActionOld(Node):
     def __init__(self, value):
         self.value = value
         self.size = 1
@@ -343,7 +347,7 @@ class ReLU(Node):
     def __eq__(self, other):
         if type(other) != ReLU:
             return False
-        if self.weight == other.weight and self.bias == other.bias:
+        if (self.weight == other.weight).all() and (self.bias == other.bias).all():
             return True
         return False
 
@@ -460,8 +464,8 @@ class Multiplication(Node):
                         if t2 not in accepted_nodes:
                             continue
 
-                        if (t1 == Observation.name() and t2 == Observation.name()):
-                            continue
+                        #if (t1 == Observation.name() and t2 == Observation.name()):
+                        #    continue
 
                         # p1 and all programs in programs2 satisfy constraints; grow the list
                         for p2 in programs2:

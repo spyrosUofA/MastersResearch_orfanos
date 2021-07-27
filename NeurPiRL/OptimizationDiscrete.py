@@ -1,15 +1,25 @@
 from bayes_opt import BayesianOptimization, UtilityFunction
 from scipy import spatial
 import numpy as np
-from DSL import Num, Ite, Lt, AssignAction, Addition, ReLU
-from BottomUpSearch_so import get_action
+from NeurPiRL.DSL import Num, Ite, Lt, AssignAction, Addition, ReLU
+#from BottomUpSearch import get_action
 import copy
 
 def create_interval(value, delta):
     interval = (value - delta, value + delta)
     return interval
 
-class ParameterFinder():
+
+def get_action(obs, p):
+    actions = []
+    for ob in obs:
+        namespace = {'obs': ob, 'act': 0}
+        p.interpret(namespace)
+        actions.append(namespace['act'])
+    return actions
+
+
+class ParameterFinderDiscrete():
     def __init__(self, inputs, actions):
         #all observations
         self.inputs = inputs

@@ -15,7 +15,7 @@ def main():
 
     # Task setup block starts
     # Do not change
-    env = gym.make('LunarLander-v2')
+    env = gym.make('LunarLander')
     env.seed(seed)
     o_dim = env.observation_space.shape[0]
     a_dim = env.action_space.n
@@ -25,34 +25,30 @@ def main():
     torch.manual_seed(seed)
     np.random.seed(seed)
 
+    ####### Start
     # Actor & Critic networks
-    ah1 = 64
-    ah2 = 64
+    ah1 = 8
+    ah2 = 16
 
-    ch1 = 64
-    ch2 = 64
-    ch3 = 64
 
     actor = nn.Sequential(
-        nn.Linear(o_dim, ah1),
-        nn.ReLU(),
-        nn.Linear(ah1, ah2),
-        nn.ReLU(),
-        nn.Linear(ah2, a_dim),
-        nn.Softmax(dim=-1))
+        nn.Linear(o_dim, ah1), # 0
+        nn.Sigmoid(),           # 1
+        nn.Linear(ah1, ah2),     # 2
+        nn.Sigmoid(),           # 3
+        nn.Linear(ah2, a_dim), # 4
+        nn.Softmax(dim=-1))  #5
 
     critic = nn.Sequential(
-        nn.Linear(o_dim, ch1),
+        nn.Linear(o_dim, 32),
         nn.ReLU(),
-        nn.Linear(ch1, ch2),
+        nn.Linear(32, 32),
         nn.ReLU(),
-        nn.Linear(ch2, ch3),
-        nn.ReLU(),
-        nn.Linear(ch3, 1))
+        nn.Linear(32, 1))
 
     # Actor & Critic optimizers
-    opt_act = torch.optim.Adam(actor.parameters(), lr=0.001)
-    opt_cri = torch.optim.Adam(critic.parameters(), lr=0.001)
+    opt_act = torch.optim.Adam(actor.parameters(), lr=0.005)
+    opt_cri = torch.optim.Adam(critic.parameters(), lr=0.005)
 
     # Actionspace is [0, 1] in cartpole
     action_space = np.arange(env.action_space.n)
@@ -60,7 +56,7 @@ def main():
     # PPO parameters
     epsilon = 0.2
     gamma = 1
-    lam = 0.95
+    lam = 1
 
     # Batch update parameters
     k = 1   # initial episode number
@@ -124,22 +120,35 @@ def main():
     rets = []
     avgrets = []
     o = env.reset()
-    num_steps = 1000000
+    num_steps = 500000
     checkpoint = 10000
     for steps in range(num_steps):
+
+        #print(steps)
+
         # Select an action
+        ####### Start
         a = np.random.choice(a=action_space, p=actor(torch.FloatTensor(o)).detach().numpy())
+        ####### End
 
         # Observe
         op, r, done, infos = env.step(a)
 
         # Learn
+        ####### Start
+        # Here goes your learning update
         s_epi.append(o)
         a_epi.append(a)
         r_epi.append(r)
 
         if done:
+
+            # Episode Lambda returns
+            #print("T=", len(r_epi))
+
+            #print("LR")
             g_epi = lambda_return(lam, gamma, s_epi, r_epi, critic)
+            #print("done LR")
 
             # Adding episode to batch
             s_batch.extend(s_epi)
@@ -154,6 +163,7 @@ def main():
 
             # If episode is over and B episodes added to batch, then learn
             if k % K == 0:
+                #print("Update time!")
                 s_batch = torch.FloatTensor(s_batch)
                 a_batch = torch.LongTensor(a_batch)
                 g_batch = torch.FloatTensor(g_batch).squeeze()
@@ -165,6 +175,8 @@ def main():
                 policy_prime = torch.gather(actor(torch.FloatTensor(s_batch)), 1, a_batch.unsqueeze(1)).squeeze()
                 policy_old = policy_prime.detach()
 
+               # print(policy_prime)
+
                 for epoch in range(E):
                     # Shuffle
                     indx = np.random.permutation(a_batch.size()[0])
@@ -175,8 +187,16 @@ def main():
 
                     # indices of each batch
                     mini_batch_indx = [indx[x:(x + mini_batch_size)] for x in range(0, len(indx), mini_batch_size)]
+                    #print(mini_batch_indx)
+                    #print(mini_batch_size)
+
 
                     for mini in range(len(mini_batch_indx)):
+
+                        #print("begin shuffle")
+
+                        #print(mini_batch_indx[mini])
+
                         shuffled_states = s_batch[mini_batch_indx[mini]]
                         shuffled_actions = a_batch[mini_batch_indx[mini]]
 
@@ -186,6 +206,7 @@ def main():
                         shuffled_policy = torch.gather(actor(torch.FloatTensor(shuffled_states)), 1, shuffled_actions.unsqueeze(1)).squeeze()
                         shuffled_h = g_batch[mini_batch_indx[mini]] - critic(torch.FloatTensor(shuffled_states)).unsqueeze(1) # check thjis unsqeueeze
 
+                        #print("End shuffle.... now updating...")
                         # update actor....
                         zeta = torch.min(shuffled_policy / shuffled_policy_old * shuffled_h_old,
                                          torch.clamp(shuffled_policy / shuffled_policy_old, 1 - epsilon, 1 + epsilon) * shuffled_h_old)
@@ -194,11 +215,14 @@ def main():
                         loss_act.backward()
                         opt_act.step()
 
-                        # update critic...
+                        # update critic...help
                         loss_crit = (shuffled_h ** 2).mean()
                         opt_cri.zero_grad()
                         loss_crit.backward()
                         opt_cri.step()
+
+                        #print("done minibatch minibatch")
+
 
                 # Emptying after each batch
                 s_batch = []
@@ -208,8 +232,12 @@ def main():
                 #h_batch_prime = []
                 #h_batch = []
 
+                #print("update time over")
+
+
             # move onto next episode
             k += 1
+
         # Learning ends
 
         # Update environment
@@ -229,42 +257,39 @@ def main():
             plt.plot(range(checkpoint, (steps + 1) + checkpoint, checkpoint), avgrets)
             plt.pause(0.001)
 
-
-    # Save policy
-    #torch.save(actor, PATH)
+            # latest actor weights
+            #print(actor[0].weight)
 
     name = sys.argv[0].split('.')[-2].split('_')[-1]
     data = np.zeros((2, len(avgrets)))
     data[0] = range(checkpoint, num_steps + 1, checkpoint)
     data[1] = avgrets
     np.savetxt(name + str(seed) + ".txt", data)
+    #plt.show()
 
-    # save final learning curve
     plt.clf()
     plt.plot(range(checkpoint, (steps + 1) + checkpoint, checkpoint), avgrets)
-    plt.title("LunarLander-v2 with PPO \n Actor: h1=" + str(ah1) + ", h2=" + str(ah2))
+    plt.title("Cartpole-v1 with PPO \n Actor: h1=" + str(ah1) + ", h2=" + str(ah2))
     plt.ylabel("Average Return")
     plt.xlabel("Timestep")
-    #plt.savefig("small_PPO.png")
+    plt.savefig("small_PPO.png")
     plt.show()
 
-    # save final policy
-    #torch.save(actor, 'ppo_2x4_policy.pth')
 
     # Now with the fixed policy, we generate some episodes for training data
     obsO = []
-    actions = []
     predP1 = []
     predP2 = []
 
     # Outputs from first hidden layer
     actorh1 = nn.Sequential(
         nn.Linear(o_dim, ah1),
-        nn.ReLU()
+        nn.Sigmoid()
     )
 
     with torch.no_grad():
         actorh1[0].weight = actor[0].weight
+
 
     # Generate a trajectory
     o = env.reset()
@@ -278,7 +303,6 @@ def main():
 
         # take action
         a = np.random.choice(a=action_space, p=actor(torch.FloatTensor(o)).detach().numpy())
-        actions.append(a)
 
         # Observe, transition
         op, r, done, infos = env.step(a)
@@ -291,11 +315,9 @@ def main():
             o = op
 
         #print(done)
-    #np.savetxt("obsO_" + str(seed) + ".txt", obsO)
-    #np.savetxt("actions_" + str(seed) + ".txt", actions)
-    #np.savetxt("predP1_" + str(seed) + ".txt", predP1)
-    #np.savetxt("predP2_" + str(seed) + ".txt", predP2)
-    print(predP2)
+    np.savetxt("obsO_" + str(seed) + ".txt", obsO)
+    np.savetxt("predP1_" + str(seed) + ".txt", predP1)
+    np.savetxt("predP2_" + str(seed) + ".txt", predP2)
 
 
 if __name__ == "__main__":
