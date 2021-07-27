@@ -4,6 +4,10 @@ import numpy as np
 class Node:
     def __init__(self):
         self.size = 0
+
+        # NEW >>
+        self.number_children = 0
+        self.current_child = 0
     
     def getSize(self):
         return self.size
@@ -16,7 +20,13 @@ class Node:
     
     def grow(self, plist, new_plist):
         pass
-    
+
+    # NEW >>>
+    def get_number_children(self):
+        return self.number_children
+
+    # <<< NEW
+
     @classmethod
     def name(cls):
         return cls.__name__
@@ -48,7 +58,7 @@ class Lt(Node):
     def grow(plist, size):
         new_programs = []
         # defines which nodes are accepted in the AST
-        accepted_nodes = set([Num.name(), ReLU.name(), Observation.name()]) # Observation.name(), Addition.name(),
+        accepted_nodes = set([Num.name(), ReLU.name()]) # Observation.name(), Addition.name(),
         
         # generates all combinations of cost of size 2 varying from 1 to size - 1
         combinations = list(itertools.product(range(1, size - 1), repeat=2))
@@ -377,7 +387,7 @@ class Addition(Node):
     def grow(plist, size):
         new_programs = []
         # defines which nodes are accepted in the AST
-        accepted_nodes = set([Num.name(), Observation.name(), Multiplication.name()])
+        accepted_nodes = set([Num.name(), Observation.name(), Multiplication.name(), ReLU.name()])
 
         # generates all combinations of cost of size 2 varying from 1 to size - 1
         combinations = list(itertools.product(range(1, size - 1), repeat=2))
@@ -439,7 +449,7 @@ class Multiplication(Node):
     def grow(plist, size):
         new_programs = []
         # defines which nodes are accepted in the AST
-        accepted_nodes = set([Num.name(), Observation.name(), Addition.name()])
+        accepted_nodes = set([Num.name(), Observation.name(), Addition.name(), ReLU.name()])
 
         # generates all combinations of cost of size 2 varying from 1 to size - 1
         combinations = list(itertools.product(range(1, size - 1), repeat=2))

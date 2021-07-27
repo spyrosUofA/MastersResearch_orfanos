@@ -15,7 +15,7 @@ def main():
 
     # Task setup block starts
     # Do not change
-    env = gym.make('LunarLander')
+    env = gym.make('LunarLander-v2')
     env.seed(seed)
     o_dim = env.observation_space.shape[0]
     a_dim = env.action_space.n
@@ -28,6 +28,7 @@ def main():
     # Actor & Critic networks
     ah1 = 64
     ah2 = 64
+    ah3 = 64
 
     ch1 = 64
     ch2 = 64
@@ -38,7 +39,9 @@ def main():
         nn.ReLU(),
         nn.Linear(ah1, ah2),
         nn.ReLU(),
-        nn.Linear(ah2, a_dim),
+        nn.Linear(ah2, ah3),
+        nn.ReLU(),
+        nn.Linear(ah3, a_dim),
         nn.Softmax(dim=-1))
 
     critic = nn.Sequential(
@@ -58,39 +61,18 @@ def main():
     action_space = np.arange(env.action_space.n)
 
     # PPO parameters
-    epsilon = 0.2
-    gamma = 1
+    epsilon = 0.5
+    gamma = 0.99
     lam = 0.95
 
     # Batch update parameters
     k = 1   # initial episode number
-    K = 20 # nb of episodes per batch
+    K = 120 # nb of episodes per batch
     E = 10   # Nb of epochs
     N = 20   # Nb of mini-batches
     M = N   # Nb of mini-batches used
 
     # Lambda return for an episode
-    def lambda_return_naive(lam, gamma, s_vec, r_vec, a_critic):
-        G_n = []
-        G_l = []
-        T = len(r_vec)
-
-        for t in range(0, T):
-            # First calculate all the n-step returns for given t, and then append G_t
-            for n in range(1, T - t):
-                G_n.append(sum(np.multiply(r_vec[t:(t + n)], [gamma ** j for j in range(0, n)])) + a_critic(
-                    torch.FloatTensor(s_vec[t + n - 1])).detach())  # .data to remove grad req
-            # G_t
-            G_n.append(sum(np.multiply(r_vec[t:], [gamma ** (j - 1) for j in range(1, T - t + 1)])))
-
-            # the lambda return for t
-            G_l.append(
-                (1 - lam) * sum(np.multiply(G_n[:-1], [lam ** j for j in range(0, T - t - 1)])) + G_n[-1] * lam ** (
-                            T - t - 1))
-            G_n = []
-        return G_l
-
-
     def lambda_return(lam, gamma, s_vec, r_vec, a_critic):
         # R_vec = [R1, R2, ..., R_T]
         # S_vec = [s0, s1, ...., S_(T-1)]

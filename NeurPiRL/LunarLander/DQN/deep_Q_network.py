@@ -6,9 +6,10 @@ import numpy as np
 from collections import deque
 import matplotlib.pyplot as plt
 import pickle
+import pandas as pd
 
-env = gym.make('LunarLander')
-#env.seed(0)
+env = gym.make('LunarLander-v2')
+env.seed(0)
 print('State shape: ', env.observation_space.shape)
 print('Number of actions: ', env.action_space.n)
 
@@ -39,7 +40,7 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
         eps_decay (float): multiplicative factor (per episode) for decreasing epsilon
     """
     scores = []                        # list containing scores from each episode
-    scores_window = deque(maxlen=100)  # last 100 scores
+    scores_window = deque(maxlen=150)  # last 100 scores
     eps = eps_start                    # initialize epsilon
     steps = 0
     times = [time.time()]
@@ -63,10 +64,45 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
         if i_episode % 100 == 0:
             times.append(time.time())
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)), '\tsteps: {:.2f}'.format(steps))
-            torch.save(agent.qnetwork_local.state_dict(), 'checkpoints/'+ str(i_episode) +'.pth')
-        if np.mean(scores_window)>=200.0:
+            torch.save(agent.qnetwork_local.state_dict(), 'checkpoints/'+ str(i_episode) +'_220.pth')
+        if np.min(scores_window)>=220.0:
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, np.mean(scores_window)), '\tsteps: {:.2f}'.format(steps))
-            torch.save(agent.qnetwork_local.state_dict(), 'checkpoint_complete.pth')
+            torch.save(agent.qnetwork_local.state_dict(), 'checkpoint_complete_min220.pth')
+
+            n_episodes = 25
+            max_t = 1000
+            eps = 0.01
+
+            obs = []
+            actions = []
+            scores = []
+
+            for i_episode in range(1, n_episodes + 1):
+                state = env.reset()
+                score = 0
+                for t in range(max_t):
+
+                    action, _ = agent.act(state, eps)
+                    obs.append(state)
+                    actions.append(action)
+
+                    next_state, reward, done, _ = env.step(action)
+                    agent.step(state, action, reward, next_state, done)
+                    state = next_state
+                    score += reward
+
+                    if done:
+                        print("Score:" + str(score))
+                        scores.append(score)
+                        break
+
+            print(np.mean(scores))
+
+            df = pd.DataFrame(obs, columns=['o[0]', 'o[1]', 'o[2]', 'o[3]', 'o[4]', 'o[5]', 'o[6]', 'o[7]'])
+            df['a'] = actions
+            df.to_csv(path_or_buf="trajectory_fixed.csv", index=False)
+            print(df)
+
             break
     return scores, times
 
@@ -82,7 +118,7 @@ ax = fig.add_subplot(111)
 plt.plot(np.arange(len(scores)), scores)
 plt.ylabel('Score')
 plt.xlabel('Episode #')
-plt.savefig('learning_curve_2000.png')
+plt.savefig('learning_curve_2000_min220.png')
 plt.show()
 env.close()
 
