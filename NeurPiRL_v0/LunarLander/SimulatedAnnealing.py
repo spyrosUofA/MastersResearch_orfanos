@@ -1,20 +1,62 @@
-from DSL import *
+import gym
+from NeurPiRL.DSL import Node, Ite, Lt, Observation, Num, AssignAction, Addition, Multiplication, ReLU
 import numpy as np
-import random
+import copy
+from NeurPiRL.OptimizationDiscrete import ParameterFinderDiscrete
+from NeurPiRL.OptimizationContinuous import ParameterFinderContinuous
+
+import pandas as pd
+import pickle
 import time
+
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import pathlib
+
+import random
 from os.path import join
 import os
-import pickle
-import copy
+
+import warnings
+warnings.filterwarnings('error')
+
+
+def get_action(obs, p):
+    actions = []
+    for ob in obs:
+        namespace = {'obs': ob, 'act': 0}
+        p.interpret(namespace)
+        actions.append(namespace['act'])
+    return actions
+
+def evaluate(p, episode_count):
+    steps = 0
+    averaged = 0
+
+    env = gym.make('LunarLander-v2')
+
+    for _ in range(episode_count):
+        ob = env.reset()
+        reward = 0
+        while True:
+            namespace = {'obs': ob, 'act': 0}
+            p.interpret(namespace)
+            action = [namespace['act']]
+            ob, r_t, done, _ = env.step(action[0])
+            steps += 1
+            reward += r_t
+
+            if done: break
+        averaged += reward
+
+    return averaged / episode_count
+
 
 class SimulatedAnnealing():
 
     def __init__(self, log_file, program_file):
-        ncpus = 1#int(os.environ.get('SLURM_CPUS_PER_TASK', default=1))
-
         self.log_folder = 'logs/'
         self.program_folder = 'programs/'
-        self.binary_programs = 'binary_programs/'
 
         if not os.path.exists(self.log_folder):
             os.makedirs(self.log_folder)
@@ -22,12 +64,8 @@ class SimulatedAnnealing():
         if not os.path.exists(self.program_folder):
             os.makedirs(self.program_folder)
 
-        if not os.path.exists(self.binary_programs):
-            os.makedirs(self.binary_programs)
-
-        self.log_file = 'sa-' + str(ncpus) + '-cpus-' + log_file
-        self.program_file = 'sa-' + str(ncpus) + '-cpus-' + program_file
-        self.binary_program_file = self.binary_programs + 'sa-' + str(ncpus) + '-cpus-' + program_file + '.pkl'
+        self.log_file = 'sa-' + log_file
+        self.program_file = 'sa-' + program_file
 
     def mutate_inner_nodes_ast(self, p, index):
         self.processed += 1
@@ -56,7 +94,7 @@ class SimulatedAnnealing():
 
             if mutated:
 
-                # Fixing the size of all nodes in the AST along the modified branch 
+                # Fixing the size of all nodes in the AST along the modified branch
                 modified_size = 1
                 for j in range(p.get_number_children()):
                     if isinstance(p.children[j], Node):
@@ -74,13 +112,9 @@ class SimulatedAnnealing():
 
         # Mutating the root of the AST
         if index == 0:
-
-            if self.use_double_program:
-                p = StartSymbol()
-            else:
-                initial_types = Node.accepted_rules(0)
-                p = Node.factory(list(initial_types)[random.randrange(len(initial_types))])
-            self.fill_random_program(p, self.initial_depth_ast, self.max_mutation_depth)
+            initial_types = Node.accepted_rules(0)
+            p = Node.factory(list(initial_types)[random.randrange(len(initial_types))])
+            self.fill_random_program(p, 0, 4)
 
             return p
 
@@ -95,16 +129,15 @@ class SimulatedAnnealing():
         for t in types:
             child = p.factory(t)
 
-            if child.get_number_children() == 0 or isinstance(child, Num) or isinstance(child, Observation) or isinstance(
-                    child, AssignAction): # or (relu)
+            if child.get_number_children() == 0 or isinstance(child, Num) or isinstance(child, AssignAction):
                 terminal_types.append(child)
 
-        if len(terminal_types) == 0:
-            for t in types:
-                child = p.factory(t)
-
-                if child.get_number_children() == 1:
-                    terminal_types.append(child)
+        #         if len(terminal_types) == 0:
+        #             for t in types:
+        #                 child = p.factory(t)
+        #
+        #                 if child.get_number_children() == 1:
+        #                     terminal_types.append(child)
 
         if len(terminal_types) > 0:
             return terminal_types[random.randrange(len(terminal_types))]
@@ -117,38 +150,19 @@ class SimulatedAnnealing():
 
         for i in range(p.get_number_children()):
             types = p.accepted_rules(i)
-            print("Current Child #: ", i)
-            print("Current type: ", type(p))
-            print("Accepted types: ", types)
 
-            # work_around spyros
-            if isinstance(p, AssignAction):
-                print("0.0")
-                child = Num.new(list(types)[random.randrange(len(types))])
-                print(child)
-                p.add_child(child)
-                #next
-            elif isinstance(p, Observation):
-                print("0.1")
-                child = Num.new(list(types)[random.randrange(len(types))])
-                print(child)
-                p.add_child(child)
-                # next
-            elif isinstance(p, Num): # or (relu)
-                print("1")
+            if isinstance(p, Num):
                 child = list(types)[random.randrange(len(types))]
                 p.add_child(child)
 
                 size += 1
             elif depth >= max_depth:
-                print("2")
                 child = self.return_terminal_child(p, types)
                 p.add_child(child)
                 child_size = self.fill_random_program(child, depth + 1, max_depth)
 
                 size += child_size
             else:
-                print("3")
                 child = p.factory(list(types)[random.randrange(len(types))])
                 p.add_child(child)
                 child_size = self.fill_random_program(child, depth + 1, max_depth)
@@ -160,7 +174,8 @@ class SimulatedAnnealing():
 
     def random_program(self):
         if self.use_double_program:
-            p = StartSymbol()
+            print("Double program unavailable")
+            # p = DoubleProgram()
         else:
             initial_types = list(Node.accepted_initial_rules()[0])
             p = Node.factory(initial_types[random.randrange(len(initial_types))])
@@ -179,8 +194,11 @@ class SimulatedAnnealing():
     def search(self,
                operations,
                numeric_constant_values,
-               observation_values,
-               action_values,
+               #string_constant_values,
+               variables_scalar,
+               variables_list,
+               variables_scalar_from_array,
+               functions_scalars,
                eval_function,
                use_triage,
                use_double_program,
@@ -198,26 +216,33 @@ class SimulatedAnnealing():
 
         Node.filter_production_rules(operations,
                                      numeric_constant_values,
-                                     observation_values,
-                                     action_values)
+                                     #string_constant_values,
+                                     variables_scalar,
+                                     variables_list,
+                                     variables_scalar_from_array,
+                                     functions_scalars)
 
         self.max_mutation_depth = 4
         self.initial_depth_ast = 0
         self.initial_temperature = initial_temperature
         self.alpha = alpha
         self.beta = beta
-        self.slack_time = 600
 
-        Num.accepted_types = [set(numeric_constant_values)]
-        AssignAction.accepted_types = [set(action_values)]
-        Observation.accepted_types = [set(observation_values)]
+        NumericConstant.accepted_types = [set(numeric_constant_values)]
+        #StringConstant.accepted_types = [set(string_constant_values)]
+        VarList.accepted_types = [set(variables_list)]
+        VarScalar.accepted_types = [set(variables_scalar)]
+        VarScalarFromArray.accepted_types = [set(variables_scalar_from_array)]
 
         self.operations = operations
         self.numeric_constant_values = numeric_constant_values
+        #self.string_constant_values = string_constant_values
+        self.variables_list = variables_list
+        self.variables_scalar_from_array = variables_scalar_from_array
+        self.functions_scalars = functions_scalars
         self.eval_function = eval_function
-        #AssignAction.accepted_nodes = set([0, 1, 2, 3])
 
-        best_score = 0.0
+        best_score = -400.0
         best_program = None
 
         id_log = 1
@@ -228,8 +253,6 @@ class SimulatedAnnealing():
         else:
             current_program = self.random_program()
 
-        print(current_program.to_string())
-
         while True:
             self.current_temperature = self.initial_temperature
 
@@ -237,18 +260,16 @@ class SimulatedAnnealing():
                 current_score, _, number_matches_played = self.eval_function.eval_triage(current_program, best_score)
             else:
                 current_score, _, number_matches_played = self.eval_function.eval(current_program)
-                print(current_score)
-                print("HELLO")
             number_games_played += number_matches_played
 
             iteration_number = 1
 
+            if self.winrate_target is not None and current_score >= self.winrate_target:
+                return current_program, current_score
+
             if best_program is None or current_score > best_score:
                 best_score = current_score
                 best_program = current_program
-
-                #                 with open(self.binary_program_file, 'wb') as file_program:
-                #                     pickle.dump(current_program, file_program)
 
                 if self.winrate_target is None:
                     with open(join(self.log_folder + self.log_file), 'a') as results_file:
@@ -264,38 +285,28 @@ class SimulatedAnnealing():
 
                     id_log += 1
 
-            if id_log == 2:
-                exit()
-
             while self.current_temperature > 1:
 
                 time_end = time.time()
 
-                if time_end - time_start > time_limit - self.slack_time:
-                    if self.winrate_target is None:
-                        with open(join(self.log_folder + self.log_file), 'a') as results_file:
-                            results_file.write(("{:d}, {:f}, {:d}, {:f} \n".format(id_log,
-                                                                                   best_score,
-                                                                                   number_games_played,
-                                                                                   time_end - time_start)))
+                if time_end - time_start > time_limit - 60:
+                    with open(join(self.log_folder + self.log_file), 'a') as results_file:
+                        results_file.write(("{:d}, {:f}, {:d}, {:f} \n".format(id_log,
+                                                                               best_score,
+                                                                               number_games_played,
+                                                                               time_end - time_start)))
                     return best_score, best_program
 
                 copy_program = copy.deepcopy(current_program)
 
-                #                 print('Current: ')
-                #                 print(current_program.to_string())
                 mutation = self.mutate(copy_program)
-                #                 print('Mutated: ')
-                #                 print(mutation.to_string())
-                #                 print()
-
                 if use_triage:
                     next_score, _, number_matches_played = self.eval_function.eval_triage(mutation, best_score)
                 else:
                     next_score, _, number_matches_played = self.eval_function.eval(mutation)
 
                 if self.winrate_target is not None and next_score >= self.winrate_target:
-                    return next_score, mutation
+                    return mutation, next_score
 
                 number_games_played += number_matches_played
 
@@ -303,9 +314,6 @@ class SimulatedAnnealing():
 
                     best_score = next_score
                     best_program = mutation
-
-                    #                     with open(self.binary_program_file, 'wb') as file_program:
-                    #                         pickle.dump(current_program, file_program)
 
                     if self.winrate_target is None:
                         with open(join(self.log_folder + self.log_file), 'a') as results_file:
@@ -330,10 +338,6 @@ class SimulatedAnnealing():
                 if prob < prob_accept:
                     #                     print('Probability of accepting: ', prob_accept, next_score, current_score, self.current_temperature)
 
-                    #                     print(mutation.to_string())
-                    #                     print('Score: ', next_score)
-                    #                     print()
-
                     current_program = mutation
                     current_score = next_score
 
@@ -347,9 +351,54 @@ class SimulatedAnnealing():
             if initial_program is not None:
                 current_program = copy.deepcopy(initial_program)
             else:
-                if best_score == 0:
-                    current_program = self.random_program()
-                else:
-                    current_program = copy.deepcopy(best_program)
+                current_program = self.random_program()
 
         return best_score, best_program
+
+
+
+
+
+if __name__ == '__main__':
+    synthesizer = SimulatedAnnealing()
+
+    # LunarLander
+    if True:
+        # Load Trajectory
+        trajs = pd.read_csv("../LunarLander/trajectory_THREE.csv")
+        observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]', 'o[4]', 'o[5]', 'o[6]', 'o[7]']].to_numpy()
+        actions = trajs['a'].to_numpy()
+
+        # Load ReLU programs
+        with open("ReLU_programs_THREE.pickle", "rb") as fp:
+            programs = pickle.load(fp)
+
+        print(programs[0].toString())
+        print(programs[127].toString())
+
+    OPERATIONS = [Ite, Lt, Addition, Multiplication]
+    NUM_CONSTANTS = [1.0, 0.5, 0.25, 0.0, -0.25]
+    OBSERVATION_VALUES = [0, 1, 2, 3, 4, 5, 6, 7]
+    ACTION_VALUES = [0, 1, 2, 3]
+
+    p, num = synthesizer.search(OPERATIONS, NUM_CONSTANTS, , OBSERVATION_VALUES, ACTION_VALUES, observations,
+                                    actions, programs, "_THREEo", PiRL=True)
+
+    """
+    operations,
+    numeric_constant_values,
+    #string_constant_values,
+    variables_scalar,
+    variables_list,
+    variables_scalar_from_array,
+    functions_scalars,
+    eval_function,
+    use_triage,
+    use_double_program,
+    initial_temperature,
+    alpha,
+    beta,
+    time_limit,
+    winrate_target=None,
+    initial_program=None
+    """

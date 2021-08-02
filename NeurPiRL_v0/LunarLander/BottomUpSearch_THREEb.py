@@ -42,7 +42,7 @@ class ProgramList():
 
         self.plist[program.getSize()][program.name()].append(program)
 
-    def init_plist(self, constant_values, observation_values, action_values, my_programs):
+    def init_plist(self, constant_values, observation_values, action_values, boolean_programs):
         for i in observation_values:
             p = Observation(i)
             self.insert(p)
@@ -55,8 +55,8 @@ class ProgramList():
             p = AssignAction(Num(i))
             self.insert(p)
 
-        for i in range(len(my_programs)):
-            self.insert(my_programs[i])
+        for i in range(len(boolean_programs)):
+            self.insert(boolean_programs[i])
 
     def get_programs(self, size):
 
@@ -348,7 +348,7 @@ if __name__ == '__main__':
         print(programs[127].toString())
 
     OPERATIONS = [Ite, Lt] #, Addition, Multiplication]
-    NUM_CONSTANTS = [0.0, .5, 2.4]
+    NUM_CONSTANTS = [0.0]
     OBSERVATION_VALUES = [0, 1, 2, 3, 4, 5, 6, 7]
     ACTION_VALUES = [0, 1, 2, 3]
 

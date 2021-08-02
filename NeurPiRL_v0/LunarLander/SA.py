@@ -30,13 +30,13 @@ class Strategy:
 
 def evaluate(p, episode_count=25):
     steps = 0
-    averaged = 0.0
+    averaged = 0
 
     env = gym.make('LunarLander-v2')
 
     for _ in range(episode_count):
         ob = env.reset()
-        reward = 0.0
+        reward = 0
         while True:
             namespace = {'obs': ob, 'act': 0}
             p.interpret(namespace)
