@@ -14,7 +14,7 @@ class Node:
     def getSize(self):
         return self.size
     
-    def toString(self):
+    def to_string(self):
         raise Exception('Unimplemented method: toString')
     
     def interpret(self):
@@ -77,7 +77,6 @@ class Node:
     def factory(classname):
         if classname not in globals():
             return classname
-        print(globals()[classname])
         return globals()[classname]()
 
     @classmethod
@@ -103,12 +102,13 @@ class Node:
             rules.add(Observation.class_name())
 
         # NEW >>>>
-        AssignAction.accepted_nodes = set(action_values)
-        AssignAction.accepted_types = [AssignAction.accepted_nodes]
+        #AssignAction.accepted_nodes = set(action_values)
+        #AssignAction.accepted_types = [AssignAction.accepted_nodes]
 
-        Observation.accepted_nodes = set(observation_values)
-        Observation.accepted_types = [Observation.accepted_nodes]
+        #Observation.accepted_nodes = set(observation_values)
+        #Observation.accepted_types = [Observation.accepted_nodes]
         # <<< NEW
+
         rules.add(None)
 
         list_all_productions = [Node,
@@ -132,39 +132,30 @@ class Node:
 
     @staticmethod
     def restore_original_production_rules():
-        # WORKING: StartSymbol.accepted_nodes = set([AssignAction.class_name()])
-        StartSymbol.accepted_nodes = set([Ite.class_name()])
-        #FULL: StartSymbol.accepted_nodes = set([Ite.class_name(), AssignAction.class_name()])
+        StartSymbol.accepted_nodes = set([Ite.class_name(), AssignAction.class_name()])
         StartSymbol.accepted_types = [StartSymbol.accepted_nodes]
 
         Multiplication.accepted_nodes = set([Num.class_name(),
                                     Observation.class_name(),
+                                    ReLU.class_name(),
                                     Addition.class_name(),
                                     Multiplication.class_name()])
-
         Multiplication.accepted_types = [Multiplication.accepted_nodes, Multiplication.accepted_nodes]
 
         Addition.accepted_nodes = set([Num.class_name(),
                                     Observation.class_name(),
+                                    ReLU.class_name(),
                                     Addition.class_name(),
                                     Multiplication.class_name()])
         Addition.accepted_types = [Addition.accepted_nodes, Addition.accepted_nodes]
 
-        # Do I need this? This is a new addition.
-        Observation.accepted_nodes = set([Num.class_name()])
-        Observation.accepted_types = [Observation.accepted_nodes]
-
-        # OK???
-        AssignAction.accepted_nodes = set([Num.class_name()])
-        #AssignAction.accepted_nodes = set([0, 1, 2, 3])
-        AssignAction.accepted_types = [AssignAction.accepted_nodes]
-
         Ite.accepted_nodes_bool = set([Lt.class_name()])
-        Ite.accepted_nodes_block = set([AssignAction.class_name(), Addition.class_name(), Multiplication.class_name(), Ite.class_name()])
+        Ite.accepted_nodes_block = set([AssignAction.class_name(), Ite.class_name()])
         Ite.accepted_types = [Ite.accepted_nodes_bool, Ite.accepted_nodes_block, Ite.accepted_nodes_block]
 
         Lt.accepted_nodes = set([Num.class_name(),
                                  Observation.class_name(),
+                                 ReLU.class_name(),
                                  Addition.class_name(),
                                  Multiplication.class_name()])
         Lt.accepted_types = [Lt.accepted_nodes, Lt.accepted_nodes]
@@ -175,11 +166,11 @@ class Node:
     def name(cls):
         return cls.__name__
 
+
 class StartSymbol(Node):
     def __init__(self):
         super(StartSymbol, self).__init__()
         self.size = 0
-
         self.number_children = 1
 
     @classmethod
@@ -222,6 +213,93 @@ class Num(Node):
         return self.children[0]
 
 
+class AssignAction(Node):
+    def __init__(self):
+        super(AssignAction, self).__init__()
+        self.number_children = 1
+        self.size = 0
+
+    def to_string(self):
+        if len(self.children) == 0:
+            raise Exception('AssignAction: Incomplete Program')
+
+        return 'act = ' + str(self.children[0])
+
+    def interpret(self, env):
+        if len(self.children) == 0:
+            raise Exception('AssignAction: Incomplete Program')
+
+        env['act'] = self.children[0]
+
+    @classmethod
+    def new(cls, var):
+        inst = cls()
+        inst.add_child(var)
+
+        return inst
+
+
+class Observation(Node):
+    def __init__(self):
+        super(Observation, self).__init__()
+        self.number_children = 1 #?
+        self.size = 0 #?
+
+    @classmethod
+    def new(cls, var):
+        inst = cls()
+        inst.add_child(var)
+
+        return inst
+
+    def to_string(self):
+        if len(self.children) == 0:
+            raise Exception('Observation: Incomplete Program')
+
+        return 'obs[' + str(self.children[0]) + ']'
+
+    def interpret(self, env):
+        if len(self.children) == 0:
+            raise Exception('Observation: Incomplete Program')
+
+        return env['obs'][self.children[0]]
+
+    def __eq__(self, other):
+        if type(other) != Observation:
+            return False
+        if self.index == other.index:
+            return True
+        return False
+
+
+class ReLU(Node):
+    def __init__(self):
+        super(ReLU, self).__init__()
+        self.number_children = 1
+        self.size = 0
+
+    @classmethod
+    def new(cls, weight_bias):
+        inst = cls()
+        inst.add_child(weight_bias)
+        #inst.add_child(bias)
+
+        return inst
+
+    def to_string(self):
+        return 'max(0, ' + str(np.around(self.children[0][0], 3)) + " *dot* obs[:] + " + str(np.round(self.children[0][1], 3)) + ")"
+        #return 'max(0, ' + str(self.children[0][0]) + " *dot* obs[:] + " + str(self.children[0][1]) + ")"
+
+    def interpret(self, env):
+        return max(0.0, np.dot(self.children[0][0], env['obs']) + self.children[0][1])
+
+    def __eq__(self, other):
+        if type(other) != ReLU:
+            return False
+        if (self.weight == other.weight).all() and (self.bias == other.bias).all():
+            return True
+        return False
+
 
 class Lt(Node):
     def __init__(self):
@@ -241,7 +319,6 @@ class Lt(Node):
 
     def interpret(self, env):
         return self.children[0].interpret(env) < self.children[1].interpret(env)
-
 
 
 class Ite(Node):
@@ -268,92 +345,6 @@ class Ite(Node):
             return self.children[1].interpret(env)
         else:
             return self.children[2].interpret(env)
-
-
-class AssignAction(Node):
-    def __init__(self):
-        super(AssignAction, self).__init__()
-        self.number_children = 1
-
-    @classmethod
-    def new(cls, var):
-        inst = cls()
-        inst.add_child(var)
-
-        return inst
-
-    def to_string(self):
-        if len(self.children) == 0:
-            raise Exception('AssignActionToReturn: Incomplete Program')
-
-        return 'act = ' + self.children[0].to_string()
-
-    def interpret(self, env):
-        if len(self.children) == 0:
-            raise Exception('AssignActionToReturn: Incomplete Program')
-
-        #Levi: env['action_to_return'] = env['actions'][self.children[0].interpret(env)]
-        #return env['action_to_return']
-
-        #OLD: env['act'] = self.value.interpret(env)
-        env['act'] = self.children[0].interpret(env)
-
-
-class Observation_old(Node):
-    def __init__(self, index):
-        self.index = index
-        self.size = 1
-
-        self.number_children = 1
-
-    def toString(self):
-        return 'obs[' + str(self.index) + ']'
-
-    def to_string(self):
-        return 'obs[' + str(self.index) + ']'
-
-    def interpret(self, env):
-        return env['obs'][self.index]
-
-    def __eq__(self, other):
-        if type(other) != Observation:
-            return False
-        if self.index == other.index:
-            return True
-        return False
-
-
-class Observation(Node):
-    def __init__(self):
-        super(Observation, self).__init__()
-        self.number_children = 1 #?
-        self.size = 1 #?
-
-    @classmethod
-    def new(cls, var):
-        inst = cls()
-        inst.add_child(var)
-
-        return inst
-
-    def to_string(self):
-        if len(self.children) == 0:
-            raise Exception('Observation: Incomplete Program')
-
-        return 'obs[' + self.children[0].to_string() + ']'
-
-    def interpret(self, env):
-        if len(self.children) == 0:
-            raise Exception('AssignActionToReturn: Incomplete Program')
-
-        return env['obs'][self.children[0].interpret(env)]
-
-    def __eq__(self, other):
-        if type(other) != Observation:
-            return False
-        if self.index == other.index:
-            return True
-        return False
 
 
 class Addition(Node):

@@ -12,8 +12,8 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-from model import QNetwork
-from replay_buffer import ReplayBuffer
+from DQN.model import QNetwork
+from DQN.replay_buffer import ReplayBuffer
 
 BUFFER_SIZE = int(1e5)  # replay buffer size
 BATCH_SIZE = 64  # minibatch size

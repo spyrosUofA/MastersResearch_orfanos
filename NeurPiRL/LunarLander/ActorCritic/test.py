@@ -7,7 +7,7 @@ import pickle
 import pandas as pd
 
 
-def test(n_episodes=25, name='LunarLander_THREE.pth'):
+def test(n_episodes=50, name='LunarLander_THREE.pth'):
     env = gym.make('LunarLander-v2')
     policy = ActorCritic()
     
@@ -51,7 +51,7 @@ def test(n_episodes=25, name='LunarLander_THREE.pth'):
 
     df = pd.DataFrame(obs, columns=['o[0]', 'o[1]', 'o[2]', 'o[3]', 'o[4]', 'o[5]', 'o[6]', 'o[7]'])
     df['a'] = actions
-    df.to_csv(path_or_buf="trajectory_THREE.csv", index=False)
+    df.to_csv(path_or_buf="trajectory.csv", index=False)
 
     env.close()
             

@@ -29,15 +29,18 @@ neurons = 64 # len(relu_neuron[0].bias)
 
 # Extract weigths and biases, then save each as a ReLU program
 programs = []
+accepted_nodes = []
+
 for i in range(neurons):
-    w = agent.qnetwork_local.fc1.weight[i].detach().numpy()
-    b = agent.qnetwork_local.fc1.bias[i].detach().numpy()
+    w = agent.qnetwork_local.fc1.weight[i].detach().numpy().tolist()
+    b = agent.qnetwork_local.fc1.bias[i].detach().numpy().tolist()
 
-    programs.append(ReLU(w, b))
+    accepted_nodes.append([w, b])
 
-pickle.dump(programs, file=open("ReLU_programs.pickle", "wb"))
+#pickle.dump(programs, file=open("ReLU_programs.pickle", "wb"))
+pickle.dump(accepted_nodes, file=open("ReLU_accepted_nodes.pickle", "wb"))
 
-
+print(len(accepted_nodes))
 
 # VALIDATION..
 # Outputs from first hidden layer

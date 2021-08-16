@@ -1,6 +1,8 @@
-from evaluation import Evaluate
+from evaluation import *
 import argparse
 import numpy as np
+import pandas as pd
+import pickle
 #from search.bottom_up_search import BottomUpSearch
 from SimulatedAnnealing import SimulatedAnnealing
 import copy
@@ -25,7 +27,7 @@ def main():
                         default='Random', 
                         help='Simulation Function for UCT (Random or SA)')
      
-    parser.add_argument('-n', action='store', dest='number_games',
+    parser.add_argument('-n', action='store', dest='number_games', default=50,
                         help='Number of games played in each evaluation')
     
     parser.add_argument('-c', action='store', dest='uct_constant', default=1,
@@ -82,22 +84,25 @@ def main():
     parser.add_argument('--reuse-tree', action='store_true', default=False,
                     dest='reuse_tree',
                     help='UCT reuses its tree and SA starts with previous solution in between iterations of IBR')
-    
-    
-    parameters = parser.parse_args()
 
-    parameters.number_games = 5
-    
+
+    parameters = parser.parse_args()
     number_games = int(parameters.number_games)
     number_simulations = int(parameters.number_simulations)
     eval_function = globals()[parameters.eval_function](number_games)
-    
     time_limit = int(parameters.time_limit)
     algorithm = globals()[parameters.search_algorithm](parameters.log_file, parameters.program_file)
-    uct_constant = float(parameters.uct_constant)
-    bidirectional_depth = int(parameters.bidirectional_depth)
 
-        
+    # LOAD TRAJECTORY GIVEN BY NEURAL POLICY
+    if parameters.eval_function == "Imitation":
+        trajs = pd.read_csv("../LunarLander/trajectory.csv")
+        observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]', 'o[4]', 'o[5]', 'o[6]', 'o[7]']].to_numpy()
+        actions = trajs['a'].to_numpy()
+        eval_function.add_trajectory(observations, actions)
+        #print(trajs)
+
+    if True:
+        initial_program = pickle.load(open("../LunarLander/binary_programs/sa-1-cpus-program_test_Imitation.pkl", "rb"))
 
     if isinstance(algorithm, SimulatedAnnealing):
         
@@ -107,29 +112,31 @@ def main():
                                 Addition, \
                                 Multiplication, \
                                 Observation, \
+                                ReLU, \
                                 Num
         
         terminals = [AssignAction]
         
-        algorithm.search([Ite,
-                         Lt,
-                         Num,
-                         Observation,
-                         AssignAction],
-                            [0.236, 3.232],
-                            [0, 1, 2, 3, 4, 5, 6, 7],
-                            [0, 1, 2, 3],
-                            #[],
-                            #['neutrals', 'actions's],
-                            #['progress_value', 'move_value'],
-                            #terminals,
-                            eval_function,
-                            parameters.use_triage,
-                            parameters.use_double_programs,
-                            float(parameters.initial_temperature),
-                            float(parameters.alpha),
-                            float(parameters.beta),
-                            time_limit)
+        algorithm.search([AssignAction,
+                          Ite,
+                          Lt,
+                          Num,
+                          Observation,
+                          ReLU,
+                          Addition,
+                          Multiplication],
+                         [-0.5, 0.0, 0.5, 1.0, 2.0, 5.0],
+                         [0, 1, 2, 3, 4, 5, 6, 7],
+                         [0, 1, 2, 3],
+                         eval_function,
+                         parameters.use_triage,
+                         parameters.use_double_programs,
+                         float(parameters.initial_temperature),
+                         float(parameters.alpha),
+                         float(parameters.beta),
+                         time_limit,
+                         None,
+                         initial_program)
 
 if __name__ == "__main__":
     main()

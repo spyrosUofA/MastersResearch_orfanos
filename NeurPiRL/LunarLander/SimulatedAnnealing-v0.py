@@ -244,9 +244,6 @@ class SimulatedAnnealing():
             else:
                 current_score, number_matches_played = self.eval_function.evaluate(current_program)
 
-            # BayOpt
-
-
             number_games_played += number_matches_played
 
             iteration_number = 1

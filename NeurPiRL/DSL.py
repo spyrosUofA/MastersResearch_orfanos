@@ -99,6 +99,15 @@ class Node:
         if len(observation_values) > 0:
             rules.add(Observation.class_name())
 
+        # NEW >>>>
+        #AssignAction.accepted_nodes = set(action_values)
+        #AssignAction.accepted_types = [AssignAction.accepted_nodes]
+
+        Observation.accepted_nodes = set(observation_values)
+        Observation.accepted_types = [Observation.accepted_nodes]
+        # <<< NEW
+
+
         rules.add(None)
 
         list_all_productions = [Node,
@@ -138,8 +147,17 @@ class Node:
                                     Multiplication.class_name()])
         Addition.accepted_types = [Addition.accepted_nodes, Addition.accepted_nodes]
 
-        # ???
-        AssignAction.accepted_nodes = set([Num.class_name()])
+
+        # Do I need this? This is a new addition.
+        #Observation.accepted_nodes = set([Num.class_name()])
+        #Observation.accepted_nodes = set([Num.new(0), Num.new(1), Num.new(7)])
+        Observation.accepted_nodes = set([0, 1, 2, 3, 4, 5, 6, 7])
+        Observation.accepted_types = [Observation.accepted_nodes]
+
+        # OK???
+        #AssignAction.accepted_nodes = set([Num.class_name()])
+        #AssignAction.accepted_nodes = set([Num.new(0), Num.new(1), Num.new(3)])
+        AssignAction.accepted_nodes = set([0, 1, 2, 3])
         AssignAction.accepted_types = [AssignAction.accepted_nodes]
 
         Ite.accepted_nodes_bool = set([Lt.class_name()])
@@ -154,8 +172,6 @@ class Node:
 
         Node.accepted_types = [set([Ite.class_name(), AssignAction.class_name()])]
 
-        # added this?
-        StartSymbol.accepted_types = [set([Ite.class_name(), AssignAction.class_name()])]
 
     # <<< NEW
 
@@ -247,76 +263,6 @@ class Lt(Node):
 
     def interpret(self, env):
         return self.children[0].interpret(env) < self.children[1].interpret(env)
-
-
-class Lt_old(Node):
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-        
-        self.size = left.getSize() + right.getSize() + 1        
-
-    def setSize(self, size):
-        self.size = size
-
-    def toString(self):
-        return "(" + self.left.toString() + " < " + self.right.toString() + ")"
-    
-    def interpret(self, env):
-        return self.left.interpret(env) < self.right.interpret(env)
-
-    def __eq__(self, other):
-        if type(other) != Lt:
-            return False
-        if self.left == other.left and self.right == other.right:
-            return True
-        return False
-    
-    def grow(plist, size):
-        new_programs = []
-        # defines which nodes are accepted in the AST
-        accepted_nodes = set([Num.name(), ReLU.name()]) # Observation.name(), Addition.name(),
-        
-        # generates all combinations of cost of size 2 varying from 1 to size - 1
-        combinations = list(itertools.product(range(1, size - 1), repeat=2))
-
-        for c in combinations:
-            # skip if the cost combination exceeds the limit
-            if c[0] + c[1] + 1 != size:
-                continue
-            
-            # retrive bank of programs with costs c[0] and c[1]
-            program_set1 = plist.get_programs(c[0])
-            program_set2 = plist.get_programs(c[1])
-            
-            for t1, programs1 in program_set1.items():                
-                # skip if t1 isn't a node accepted by Lt
-                if t1 not in accepted_nodes:
-                    continue
-                
-                for p1 in programs1:
-                    for t2, programs2 in program_set2.items():
-                        # skip if t1 isn't a node accepted by Lt
-                        if t2 not in accepted_nodes:
-                            continue
-                        
-                        # Boolean conditions have to have at least one observation
-                        #if not (t1 == Observation.name() or t2 == Observation.name()):
-                        #    continue
-                        # Boolean conditions should not be Num1 < Num2
-                        if t1 == Num.name() and t2 == Num.name():
-                            continue
-                        # Left and Right shoudn't be the same
-                        if t1 == t2:
-                            continue
-                        
-                        # p1 and all programs in programs2 satisfy constraints; grow the list
-                        for p2 in programs2:
-                            lt = Lt(p1, p2)
-                            new_programs.append(lt)
-                            
-                            yield lt
-        return new_programs
 
 
 class Ite(Node):
@@ -460,7 +406,7 @@ class AssignAction(Node):
         if len(self.children) == 0:
             raise Exception('AssignActionToReturn: Incomplete Program')
 
-        return 'act = ' + self.children[0].to_string()
+        return 'act = ' + self.children[0] #.to_string()
 
     def interpret(self, env):
         if len(self.children) == 0:
@@ -470,7 +416,7 @@ class AssignAction(Node):
         #return env['action_to_return']
 
         #OLD: env['act'] = self.value.interpret(env)
-        env['act'] = self.children[0].interpret(env)
+        env['act'] = self.children[0] #.interpret(env)
 
 
 class AssignAction_old(Node):
