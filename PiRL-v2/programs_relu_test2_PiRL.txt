@@ -1,8 +1,0 @@
-Best programs:
-(if(obs[0] < -0.2910256679732202) then act = 0 else act = 1)9.32
-(if(obs[0] < -0.08875060536286179) then act = 0 else act = 1)9.44
-(if(obs[0] < -0.019069998962426477) then act = 1 else act = 0)30.59
-(if(obs[0] < max(0, [1.1228, 0.0633, -3.4613, -2.2452] * obs + 0.1867)) then act = 0 else act = 1)44.53
-(if(obs[0] < max(0, [-0.5183, -0.727, -6.025, -2.2768] * obs + 0.1656)) then act = 0 else act = 1)148.74
-(if(obs[2] < max(0, [-0.5183, -0.727, -6.025, -2.2768] * obs + 0.1656)) then act = 0 else act = 1)292.93
-(if(obs[3] < max(0, [-0.5183, -0.727, -6.025, -2.2768] * obs + 0.1656)) then act = 0 else act = 1)340.08
