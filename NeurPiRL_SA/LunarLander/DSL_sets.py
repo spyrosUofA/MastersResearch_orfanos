@@ -129,35 +129,35 @@ class Node:
 
     @staticmethod
     def restore_original_production_rules():
-        StartSymbol.accepted_nodes = [Ite.class_name(), AssignAction.class_name()] #list(dict.fromkeys([Ite.class_name(), AssignAction.class_name()]))
+        StartSymbol.accepted_nodes = set([Ite.class_name(), AssignAction.class_name()])
         StartSymbol.accepted_types = [StartSymbol.accepted_nodes]
 
-        Multiplication.accepted_nodes = [Num.class_name(),
+        Multiplication.accepted_nodes = set([Num.class_name(),
                                     Observation.class_name(),
                                     ReLU.class_name(),
                                     Addition.class_name(),
-                                    Multiplication.class_name()]
+                                    Multiplication.class_name()])
         Multiplication.accepted_types = [Multiplication.accepted_nodes, Multiplication.accepted_nodes]
 
-        Addition.accepted_nodes = [Num.class_name(),
+        Addition.accepted_nodes = set([Num.class_name(),
                                     Observation.class_name(),
                                     ReLU.class_name(),
                                     Addition.class_name(),
-                                    Multiplication.class_name()]
+                                    Multiplication.class_name()])
         Addition.accepted_types = [Addition.accepted_nodes, Addition.accepted_nodes]
 
-        Ite.accepted_nodes_bool = [Lt.class_name()]
-        Ite.accepted_nodes_block = [AssignAction.class_name(), Ite.class_name()]
+        Ite.accepted_nodes_bool = set([Lt.class_name()])
+        Ite.accepted_nodes_block = set([AssignAction.class_name(), Ite.class_name()])
         Ite.accepted_types = [Ite.accepted_nodes_bool, Ite.accepted_nodes_block, Ite.accepted_nodes_block]
 
-        Lt.accepted_nodes = [Num.class_name(),
+        Lt.accepted_nodes = set([Num.class_name(),
                                  Observation.class_name(),
                                  ReLU.class_name(),
                                  Addition.class_name(),
-                                 Multiplication.class_name()]
+                                 Multiplication.class_name()])
         Lt.accepted_types = [Lt.accepted_nodes, Lt.accepted_nodes]
 
-        Node.accepted_types = [[Ite.class_name(), AssignAction.class_name()]]
+        Node.accepted_types = [set([Ite.class_name(), AssignAction.class_name()])]
 
     @classmethod
     def name(cls):

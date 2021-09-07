@@ -347,7 +347,7 @@ if __name__ == '__main__':
 
     p, num = synthesizer.synthesize(11, [Ite, Lt], NUM_CONSTANTS, OBSERVATION_VALUES, ACTION_VALUES, observations, actions,
                                     [], "_LL_test", PiRL=True)
-    # Testing ReLUs on Cartpole
+    # Testing ReLU_programs on Cartpole
     if False:
         prog_relus = []
         prog_relus.append(ReLU([1.1228,  0.0633, -3.4613, -2.2452], 0.1867))

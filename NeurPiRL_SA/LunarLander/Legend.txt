@@ -1,0 +1,11 @@
+BayesOpt==True ==> 1---
+BayesOpt==False ==> 0---
+
+Eval==Environment ==> -E--
+BayesOpt==False ==> _I--
+
+run_boF_env_reluT_initF.sh
+
+
+
+

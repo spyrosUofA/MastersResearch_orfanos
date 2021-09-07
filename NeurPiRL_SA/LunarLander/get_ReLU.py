@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import pickle
 from DQN.dqn_agent import Agent
-from NeurPiRL_SA.DSL import ReLU
+from DSL import ReLU
 
 import os
 print(os.getcwd())
@@ -37,7 +37,8 @@ for i in range(neurons):
     accepted_nodes.append([w, b])
 
 #pickle.dump(programs, file=open("ReLU_programs.pickle", "wb"))
-pickle.dump(accepted_nodes, file=open("ReLU_accepted_nodes.pickle", "wb"))
+#pickle.dump(accepted_nodes, file=open("ReLU_accepted_nodes.pickle", "wb"))
+print((accepted_nodes))
 
 print(len(accepted_nodes))
 

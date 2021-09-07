@@ -7,10 +7,12 @@ import os
 import pickle
 import copy
 
+np.set_printoptions(precision=2)
+random.seed(0)
 
 class SimulatedAnnealing():
 
-    def __init__(self, folder_name, file_name, seed):
+    def __init__(self, folder_name, log_file, program_file, seed=0):
         ncpus = int(os.environ.get('SLURM_CPUS_PER_TASK', default=1))
 
         self.log_folder = 'logs/' + folder_name + '/'
@@ -26,13 +28,13 @@ class SimulatedAnnealing():
         if not os.path.exists(self.binary_programs):
             os.makedirs(self.binary_programs)
 
-        self.log_file = 'sa_cpus-' + str(ncpus) + '_run-' + str(seed) + file_name
-        self.program_file = 'sa_cpus-' + str(ncpus) + '_run-' + str(seed) + file_name
-        self.binary_program_file = self.binary_programs + 'sa_cpus-' + str(ncpus) + '_run-' + str(seed) + file_name + '.pkl'
+        self.log_file = 'sa-' + str(ncpus) + '-cpus' + log_file
+        self.program_file = 'sa-' + str(ncpus) + '-cpus' + program_file
+        self.binary_program_file = self.binary_programs + 'sa-' + str(ncpus) + '-cpus' + program_file + '.pkl'
 
         # Set seed
-        np.random.seed(seed)
-        random.seed(seed)
+        #np.random.seed(seed)
+        #random.seed(seed)
 
     def mutate_inner_nodes_ast(self, p, index):
         self.processed += 1
@@ -47,11 +49,11 @@ class SimulatedAnnealing():
                 types = p.accepted_rules(i)
 
                 # Generate instance of a random accepted rule
-                if isinstance(p, AssignAction) or isinstance(p, Observation) or isinstance(p, Num) or isinstance(p, ReLU):
+                if isinstance(p, AssignAction) or isinstance(p, Observation) or isinstance(p, Num):
                     child = list(types)[random.randrange(len(types))]
-                #elif isinstance(p, ReLU):
-                #    #types = ReLU.accepted_types
-                #    child = list(types)[random.randrange(len(types))]
+                elif isinstance(p, ReLU):
+                    types = ReLU.accepted_types
+                    child = list(types)[random.randrange(len(types))]
                 else:
                     child = Node.factory(list(types)[random.randrange(len(types))])
 
@@ -132,32 +134,41 @@ class SimulatedAnnealing():
 
         for i in range(p.get_number_children()):
 
-            #print("Current Child #: ", i)
-            #print("Current type: ", type(p))
-            #types = p.accepted_rules(i)
-            #print("Accepted types: ", types)
+            print("Current Child #: ", i)
+            print("Current type: ", type(p))
+            types = p.accepted_rules(i)
+            print("Accepted types: ", types)
 
-            if isinstance(p, AssignAction) or isinstance(p, Observation) or isinstance(p, Num) or isinstance(p, ReLU):
+            if isinstance(p, AssignAction) or isinstance(p, Observation) or isinstance(p, Num):
                 types = p.accepted_rules(i)
                 child = list(types)[random.randrange(len(types))]
                 p.add_child(child)
                 size += 1
-            #elif isinstance(p, ReLU):
-            #    types = ReLU.accepted_types
-            #    child = list(types)[random.randrange(len(types))]
-            #    p.add_child(child)
-            #    size += 1
+
+            elif isinstance(p, ReLU):
+                types = ReLU.accepted_types
+                #print(types)
+                child = list(types)[random.randrange(len(types))]
+                p.add_child(child)
+
+                size += 1
+
             elif depth >= max_depth:
                 types = p.accepted_rules(i)
                 child = self.return_terminal_child(p, types)
                 p.add_child(child)
                 child_size = self.fill_random_program(child, depth + 1, max_depth)
+
                 size += child_size
             else:
                 types = p.accepted_rules(i)
-                child = p.factory(list(types)[random.randrange(len(types))])
+                some_num = random.randrange(len(types))
+                child = p.factory(list(types)[some_num])
+                #child = p.factory(list(types)[random.randrange(len(types))])
+                print("Child", some_num, " ", child)
                 p.add_child(child)
                 child_size = self.fill_random_program(child, depth + 1, max_depth)
+
                 size += child_size
 
         p.set_size(size)
@@ -186,7 +197,6 @@ class SimulatedAnnealing():
                numeric_constant_values,
                observation_values,
                action_values,
-               relu_values,
                eval_function,
                use_triage,
                use_double_program,
@@ -197,6 +207,9 @@ class SimulatedAnnealing():
                winrate_target=None,
                initial_program=None,
                bayes_opt=False):
+
+        np.random.seed(0)
+        random.seed(0)
 
         time_start = time.time()
 
@@ -218,7 +231,7 @@ class SimulatedAnnealing():
         Num.accepted_types = [set(numeric_constant_values)]
         AssignAction.accepted_types = [set(action_values)]
         Observation.accepted_types = [set(observation_values)]
-        ReLU.accepted_types = [relu_values]
+        ReLU.accepted_types = pickle.load(open("ReLU_accepted_nodes.pickle", "rb"))
 
         self.operations = operations
         self.numeric_constant_values = numeric_constant_values
@@ -234,6 +247,9 @@ class SimulatedAnnealing():
             current_program = copy.deepcopy(initial_program)
         else:
             current_program = self.random_program()
+
+        print(current_program.to_string())
+        exit()
 
         while True:
             # is this the right spot?
@@ -292,7 +308,6 @@ class SimulatedAnnealing():
                 mutation = self.mutate(copy_program)
                 #print('Mutated: ')
                 #print(mutation.to_string(), '\n')
-
 
                 # is this the right spot?
                 if bayes_opt:

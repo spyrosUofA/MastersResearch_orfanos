@@ -2,14 +2,16 @@ from model import ActorCritic
 import torch
 import gym
 from PIL import Image
-from NeurPiRL_SA.DSL import ReLU
+#from NeurPiRL_SA.LunarLander.DSL import ReLU
 import pickle
 import pandas as pd
 
 
-def test(n_episodes=50, name='LunarLander_THREE.pth'):
+def test(n_episodes=50, model='TWO'):
     env = gym.make('LunarLander-v2')
     policy = ActorCritic()
+
+    name = 'LunarLander_' + model + '.pth'
     
     policy.load_state_dict(torch.load('./preTrained/{}'.format(name)))
 
@@ -19,11 +21,11 @@ def test(n_episodes=50, name='LunarLander_THREE.pth'):
         w = policy.affine.weight[i].detach().numpy()
         b = policy.affine.bias[i].detach().numpy()
 
-        programs.append(ReLU(w, b))
-    pickle.dump(programs, file=open("ReLU_programs_THREE.pickle", "wb"))
+        programs.append([w, b])
+    pickle.dump(programs, file=open("./ReLU_programs/ReLUs_" + model + ".pkl", "wb"))
 
     render = False
-    save_gif = False
+    save_gif = True
 
     obs = []
     actions = []
@@ -51,9 +53,11 @@ def test(n_episodes=50, name='LunarLander_THREE.pth'):
 
     df = pd.DataFrame(obs, columns=['o[0]', 'o[1]', 'o[2]', 'o[3]', 'o[4]', 'o[5]', 'o[6]', 'o[7]'])
     df['a'] = actions
-    df.to_csv(path_or_buf="trajectory.csv", index=False)
-
+    df.to_csv(path_or_buf="./Trajectories/trajectory_" + model + ".csv", index=False)
     env.close()
             
 if __name__ == '__main__':
-    test()
+    test(50, "ONE")
+    test(50, "TWO")
+    test(50, "THREE")
+    test(50, "FOUR")

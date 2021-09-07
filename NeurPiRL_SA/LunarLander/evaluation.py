@@ -7,11 +7,10 @@ from DSL import *
 
 class Evaluate():
 
-    def __init__(self, nb_evaluations):
+    def __init__(self, nb_evaluations, seed):
         self.nb_evaluations = nb_evaluations
-        # For Neural Policy
-        self.inputs = None
-        self.actions = None
+        self.seed = seed
+        self.worst_score = None
 
     def add_trajectory(self, inputs, actions):
         self.inputs = inputs
@@ -115,27 +114,25 @@ class Evaluate():
 
 class Environment(Evaluate):
 
-    def __init__(self, nb_evaluations):
+    def __init__(self, nb_evaluations, seed, env_name='LunarLander-v2'):
         self.nb_evaluations = nb_evaluations
-        # For Neural Policy
-        self.inputs = None
-        self.actions = None
+        self.worst_score = -500.0
+        import gym
+        self.env = gym.make(env_name)
+        self.env.seed(seed)
 
     def evaluate(self, p):
         steps = 0
         averaged = 0.0
 
-        import gym
-        env = gym.make('LunarLander-v2')
-
         for _ in range(self.nb_evaluations):
-            ob = env.reset()
+            ob = self.env.reset()
             reward = 0.0
             while True:
                 namespace = {'obs': ob, 'act': 0}
                 p.interpret(namespace)
                 action = [namespace['act']]
-                ob, r_t, done, _ = env.step(action[0])
+                ob, r_t, done, _ = self.env.step(action[0])
                 steps += 1
                 reward += r_t
 
@@ -149,23 +146,20 @@ class Environment(Evaluate):
         steps = 0
         averaged = 0.0
 
-        import gym
-        env = gym.make('LunarLander-v2')
-
         for _ in range(self.nb_evaluations):
-            ob = env.reset()
+            ob = self.env.reset()
             reward = 0.0
             while True:
-                env.render()
+                self.env.render()
                 namespace = {'obs': ob, 'act': 0}
                 p.interpret(namespace)
                 action = [namespace['act']]
-                ob, r_t, done, _ = env.step(action[0])
+                ob, r_t, done, _ = self.env.step(action[0])
                 steps += 1
                 reward += r_t
 
                 if done:
-                    env.close()
+                    self.env.close()
                     print(reward)
                     break
             averaged += reward
@@ -176,17 +170,14 @@ class Environment(Evaluate):
         steps = 0
         averaged = 0
 
-        import gym
-        env = gym.make('LunarLander-v2')
-
         for _ in range(self.nb_evaluations):
-            ob = env.reset()
+            ob = self.env.reset()
             reward = 0
             while True:
                 namespace = {'obs': ob, 'act': 0}
                 p.interpret(namespace)
                 action = [namespace['act']]
-                ob, r_t, done, _ = env.step(action[0])
+                ob, r_t, done, _ = self.env.step(action[0])
                 steps += 1
                 reward += r_t
 
@@ -198,8 +189,9 @@ class Environment(Evaluate):
 
 class Imitation(Evaluate):
 
-    def __init__(self, nb_evaluations):
+    def __init__(self, nb_evaluations, seed):
         self.nb_evaluations = nb_evaluations
+        self.worst_score = 0.0
         # For Neural Policy
         self.inputs = None
         self.actions = None
