@@ -3,7 +3,7 @@ from evaluation import *
 import pandas as pd
 
 
-if True:
+if False:
     trajs = pd.read_csv("../LunarLander/trajectory.csv")
     observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]', 'o[4]', 'o[5]', 'o[6]', 'o[7]']].to_numpy()
     actions = trajs['a'].to_numpy()
@@ -22,7 +22,7 @@ if True:
     #exit()
 
 
-if True:
+if False:
     p1 = pickle.load(open("../LunarLander/binary_programs/sa-1-cpus-program_test_InitialProgram.pkl", "rb"))
     print("Avg. Reward 1: ",  Environment(25).evaluate(p1)[0])
 
@@ -36,7 +36,7 @@ if True:
 
 
 
-policy = pickle.load(open("../LunarLander/binary_programs/sa-1-cpus-program_test_Imitation.pkl", "rb"))
+policy = pickle.load(open("../LunarLander/binary_programs/Eval-Environment_BayesOpt-False_ReLU-False_InitProg-False/sa_cpus-1_run-0.pkl", "rb"))
 print(policy.to_string())
-avg_reward = Environment(25).eval_render(policy)[0]
+avg_reward = Environment("", 25, 0).eval_render(policy)[0]
 print("\nAverage reward", avg_reward)

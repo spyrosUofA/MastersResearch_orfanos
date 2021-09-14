@@ -1,8 +1,7 @@
-from evaluation import *
 import argparse
-import pandas as pd
 import pickle
 from SimulatedAnnealing import SimulatedAnnealing
+from evaluation import Environment, Imitation, DAgger
 
 def main():
     parser = argparse.ArgumentParser()
@@ -19,7 +18,7 @@ def main():
     
     parser.add_argument('-e', action='store', dest='eval_function',
                         default='Environment',
-                        help='Environment, Imitation')
+                        help='Environment, Imitation, DAgger')
 
     parser.add_argument('--bo', action='store_true', dest='bayes_opt', default=False,
                         help='Bayesian Optimization toggle (default=False)')
@@ -27,10 +26,13 @@ def main():
     parser.add_argument('-ip', action='store', dest='init_program', default=None,
                         help='Initial Program (default=None)')
 
+    parser.add_argument('-ocl', action='store', dest='oracle', default=None,
+                        help='Oracle directory containing: Policy.pth, ReLUs.pkl, Actions.npy, Observations.npy')
+
     parser.add_argument('--relu', action='store', dest='relu_augment', default=None,
                         help='Path to .pkl file of ReLU_programs to augment the DSL (default=None)')
      
-    parser.add_argument('-n', action='store', dest='number_games', default=50,
+    parser.add_argument('-n', action='store', dest='number_games', default=25,
                         help='Number of games played in each evaluation')
     
     parser.add_argument('-time', action='store', dest='time_limit', default=1200,
@@ -82,8 +84,8 @@ def main():
     parameters = parser.parse_args()
 
     # Specify folder
-    folder_name = "BayesOpt-" + str(parameters.bayes_opt) + "_Eval-" + str(parameters.eval_function) + \
-                  "_ReLU-" + str(parameters.relu_augment is not None)
+    folder_name = "Eval-" + str(parameters.eval_function) + "_BayesOpt-" + str(parameters.bayes_opt) +  \
+                  "_ReLU-" + str(parameters.relu_augment is not None) + "_InitProg-" + str(parameters.init_program is not None)
 
     # Casting to integers
     number_games = int(parameters.number_games)
@@ -91,15 +93,8 @@ def main():
     time_limit = int(parameters.time_limit)
 
     # Constructors
-    eval_function = globals()[parameters.eval_function](number_games, seed)
+    eval_function = globals()[parameters.eval_function](parameters.oracle, number_games, seed)
     algorithm = globals()[parameters.search_algorithm](folder_name, parameters.file_name, seed)
-
-    # LOAD TRAJECTORY GIVEN BY NEURAL POLICY
-    if parameters.eval_function == "Imitation":
-        trajs = pd.read_csv("../LunarLander/trajectory.csv")
-        observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]', 'o[4]', 'o[5]', 'o[6]', 'o[7]']].to_numpy()
-        actions = trajs['a'].to_numpy()
-        eval_function.add_trajectory(observations, actions)
 
     # LOAD INITIAL POLICY
     if parameters.init_program is not None:

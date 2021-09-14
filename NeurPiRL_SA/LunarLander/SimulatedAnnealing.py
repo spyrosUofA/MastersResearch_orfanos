@@ -49,9 +49,6 @@ class SimulatedAnnealing():
                 # Generate instance of a random accepted rule
                 if isinstance(p, AssignAction) or isinstance(p, Observation) or isinstance(p, Num) or isinstance(p, ReLU):
                     child = list(types)[random.randrange(len(types))]
-                #elif isinstance(p, ReLU):
-                #    #types = ReLU.accepted_types
-                #    child = list(types)[random.randrange(len(types))]
                 else:
                     child = Node.factory(list(types)[random.randrange(len(types))])
 
@@ -236,11 +233,11 @@ class SimulatedAnnealing():
             current_program = self.random_program()
 
         while True:
-            # is this the right spot?
+            self.current_temperature = self.initial_temperature
+
+            # BayesOpt for current program
             if bayes_opt:
                 self.eval_function.optimize(current_program)
-
-            self.current_temperature = self.initial_temperature
 
             if use_triage:
                 current_score, number_matches_played = self.eval_function.eval_triage(current_program, best_score)
@@ -293,8 +290,7 @@ class SimulatedAnnealing():
                 #print('Mutated: ')
                 #print(mutation.to_string(), '\n')
 
-
-                # is this the right spot?
+                # BayesOpt for mutated program
                 if bayes_opt:
                     self.eval_function.optimize(current_program)
 
