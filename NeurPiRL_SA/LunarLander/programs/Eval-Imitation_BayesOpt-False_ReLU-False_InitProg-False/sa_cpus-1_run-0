@@ -1,0 +1,14 @@
+1 
+act = 3
+2 
+act = 2
+3 
+(if ((obs[5] + ((5.0 + -0.5) * ((0.5 + 0.0) + (-0.5 + ((1.0 + 0.0) * obs[2]))))) < ((0.5 * ((((obs[2] * 0.5) + (0.5 + 2.0)) + -0.5) + 2.0)) + 1.0)) then: act = 2 else: (if ((1.0 * 1.0) < (obs[3] * -0.5)) then: act = 0 else: (if (((2.0 + (0.0 + (((((0.0 + (0.0 + -0.5)) * (obs[7] + (5.0 * obs[6]))) + 1.0) * obs[5]) * obs[5]))) + obs[6]) < ((1.0 * (-0.5 * obs[2])) + obs[5])) then: (if (obs[3] < (obs[6] + 1.0)) then: (if ((0.0 * 0.5) < 0.5) then: (if (obs[6] < obs[5]) then: act = 2 else: act = 3) else: act = 2) else: act = 3) else: (if ((1.0 * (obs[2] * obs[5])) < 0.5) then: (if (-0.5 < (obs[0] + 0.0)) then: act = 3 else: act = 2) else: act = 2))))
+4 
+(if (obs[1] < (obs[4] * ((obs[5] + (obs[0] * 0.0)) * obs[2]))) then: act = 0 else: (if (obs[2] < 2.0) then: act = 2 else: act = 2))
+5 
+(if (obs[1] < ((obs[2] * 2.0) * obs[2])) then: act = 0 else: act = 2)
+6 
+(if (obs[1] < ((obs[2] * obs[6]) * obs[2])) then: act = 0 else: act = 2)
+7 
+(if (obs[1] < (obs[7] * (1.0 + (obs[4] + 1.0)))) then: act = 0 else: act = 2)
