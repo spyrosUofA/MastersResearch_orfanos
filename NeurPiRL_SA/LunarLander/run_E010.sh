@@ -9,4 +9,4 @@ source $SLURM_TMPDIR/env/bin/activate
 pip install --no-index --upgrade pip
 pip install --no-index -r requirements.txt
 
-python main.py -e ${eval_fn} --relu ${relu} -seed ${seed} -time 7200
+python main.py -e ${eval_fn} -oracle ${oracle} -seed ${seed} -time 7200 --aug_dsl -n 25
