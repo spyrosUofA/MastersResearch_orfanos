@@ -1,15 +1,81 @@
-import itertools
 import numpy as np
+import copy
+
+
+def create_interval(value, delta):
+    interval = (value - delta, value + delta)
+    return interval
+
 
 class Node:
     def __init__(self):
-        self.size = 1 # changed from 0
-
-        # NEW >>
+        self.size = 1  # changed from 0
         self.number_children = 0
         self.current_child = 0
-
         self.children = []
+
+    def get_Num_range(self):
+        dict_ranges = {}
+        originals = []
+        i = 1
+        # BFS
+        q = []
+        q.append(self)
+        while len(q) > 0:
+            node = q.pop(0)
+            #print(node)
+            if type(node) is Num:
+                name = "Num" + str(i)
+                i += 1
+                originals.append(node.children[0])
+                interval = create_interval(node.children[0], 0.1)
+                dict_ranges[name] = copy.deepcopy(interval)
+                # print(type(interval))
+            elif type(node) is Ite:
+                q.append(node.children[0])
+                q.append(node.children[1])
+                q.append(node.children[2])
+            elif type(node) is Lt:
+                q.append(node.children[0])
+                q.append(node.children[1])
+            # elif type(node) is AssignAction:
+            #    q.append(node.value)
+            elif type(node) is Addition:
+                q.append(node.children[0])
+                q.append(node.children[1])
+            elif type(node) is StartSymbol:
+                q.append(node.children[0])
+        return dict_ranges, originals
+
+    def set_Num_value(self, values):
+        # BFS to traverse tree, whenever we find Num node we set the value of the node according to [name].
+        q = []
+        i = 1
+        q.append(self)
+        while len(q) > 0:
+            node = q.pop(0)
+            if type(node) is Num:
+                name = "Num" + str(i)
+                i += 1
+                if type(values) is not list:
+                    node.children[0] = values[name]
+                else:
+                    node.children[0] = values.pop(0)
+            elif type(node) is Ite:
+                q.append(node.children[0])
+                q.append(node.children[1])
+                q.append(node.children[2])
+            elif type(node) is Lt:
+                q.append(node.children[0])
+                q.append(node.children[1])
+            # elif type(node) is AssignAction:
+            #    q.append(node.value)
+            elif type(node) is Addition:
+                q.append(node.children[0])
+                q.append(node.children[1])
+            elif type(node) is StartSymbol:
+                q.append(node.children[0])
+        return
 
     def getSize(self):
         return self.size
@@ -23,7 +89,6 @@ class Node:
     def grow(self, plist, new_plist):
         pass
 
-    # NEW >>>
     def add_child(self, child):
         if len(self.children) + 1 > self.number_children:
             raise Exception('Unsupported number of children')

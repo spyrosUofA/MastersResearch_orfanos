@@ -1,8 +1,8 @@
 import argparse
 import pickle
 from SimulatedAnnealing import SimulatedAnnealing
-from evaluation import Environment, Imitation, DAgger
-
+from evaluation import Evaluate, Environment, Imitation, DAgger
+import copy
 def main():
     parser = argparse.ArgumentParser()
 
@@ -18,7 +18,7 @@ def main():
     
     parser.add_argument('-e', action='store', dest='eval_function',
                         default='Environment',
-                        help='Environment, Imitation, DAgger')
+                        help='Environment, Imitation, DAgger, DAggerQ')
 
     parser.add_argument('--bo', action='store_true', dest='bayes_opt', default=False,
                         help='Bayesian Optimization toggle (default=False)')
@@ -26,12 +26,15 @@ def main():
     parser.add_argument('-ip', action='store', dest='init_program', default=None,
                         help='Initial Program (default=None)')
 
-    parser.add_argument('-ocl', action='store', dest='oracle', default=None,
+    parser.add_argument('-oracle', action='store', dest='oracle', default=None,
                         help='Oracle directory containing: Policy.pth, ReLUs.pkl, Actions.npy, Observations.npy')
 
-    parser.add_argument('--relu', action='store', dest='relu_augment', default=None,
-                        help='Path to .pkl file of ReLU_programs to augment the DSL (default=None)')
-     
+    parser.add_argument('-c', action='store', dest='capacity', default=None,
+                        help='Buffer capacity for imitation style learning (default=None)')
+
+    parser.add_argument('--aug_dsl', action='store_true', dest='augment_dsl', default=False,
+                        help='Augment DSL using ReLU units provided by oracle?')
+
     parser.add_argument('-n', action='store', dest='number_games', default=25,
                         help='Number of games played in each evaluation')
     
@@ -61,15 +64,8 @@ def main():
     parser.add_argument('--triage', action='store_true', default=False,
                         dest='use_triage',
                         help='Use a 3-layer triage for evaluating programs.')
-    
-    parser.add_argument('--bidirectional', action='store_true', default=False,
-                        dest='use_bidirectional',
-                        help='UCT simulations will use a library of programs generated with BUS.')
-    
-    parser.add_argument('-bidirectional_depth', action='store', dest='bidirectional_depth', default=1,
-                        help='Maximum search depth for BUS when using UCT with bidirectional search')
 
-    parser.add_argument('--double-programs', action='store_true', default=True,
+    parser.add_argument('--double-programs', action='store_false', default=True,
                         dest='use_double_programs',
                         help='The program will have two instructions, one for yes-no decisions and another for column decisions')
     
@@ -83,18 +79,42 @@ def main():
 
     parameters = parser.parse_args()
 
-    # Specify folder
-    folder_name = "Eval-" + str(parameters.eval_function) + "_BayesOpt-" + str(parameters.bayes_opt) +  \
-                  "_ReLU-" + str(parameters.relu_augment is not None) + "_InitProg-" + str(parameters.init_program is not None)
+    # Load from Oracle path
+    if parameters.oracle is not None:
+        import torch
+        import numpy as np
+        from ActorCritic.model import ActorCritic
+
+        # Load neural Policy
+        oracle = ActorCritic()
+        oracle.load_state_dict(torch.load("../LunarLander/ActorCritic/Oracle/" + parameters.oracle + "/Policy.pth"))
+        # Load Trajectory
+        inputs = np.load("../LunarLander/ActorCritic/Oracle/" + parameters.oracle + "/Observations.npy").tolist()
+        actions = np.load("../LunarLander/ActorCritic/Oracle/" + parameters.oracle + "/Actions.npy").tolist()
+        # Load ReLUs
+        accepted_relus = pickle.load(open("../LunarLander/ActorCritic/Oracle/" + parameters.oracle + "/ReLUs.pkl", "rb"))
+        # Arguments for evaluation function
+        parameters.oracle = {"oracle": oracle,
+                             "inputs": inputs,
+                             "actions": actions,
+                             "ReLUs": accepted_relus,
+                             "capacity": parameters.capacity}
 
     # Casting to integers
     number_games = int(parameters.number_games)
     seed = int(parameters.seed)
     time_limit = int(parameters.time_limit)
+    capacity = None if parameters.capacity is None else int(parameters.capacity)
+
+    # Specify folder and file names
+    folder_name = "Eval-" + str(parameters.eval_function) + "_BayesOpt-" + str(parameters.bayes_opt) + \
+                  "_ReLU-" + str(parameters.augment_dsl) + "_InitProg-" + str(parameters.init_program is not None)
+
+    file_name = '_n-' + str(number_games) + '_c-' + str(parameters.capacity) + '_run-' + str(seed) + parameters.file_name
 
     # Constructors
-    eval_function = globals()[parameters.eval_function](parameters.oracle, number_games, seed)
-    algorithm = globals()[parameters.search_algorithm](folder_name, parameters.file_name, seed)
+    eval_function = globals()[parameters.eval_function](copy.deepcopy(parameters.oracle), number_games, seed)
+    algorithm = globals()[parameters.search_algorithm](folder_name, file_name, seed)
 
     # LOAD INITIAL POLICY
     if parameters.init_program is not None:
@@ -121,15 +141,16 @@ def main():
                           Multiplication]
 
         # Add ReLU node to DSL and load ReLU programs
-        if parameters.relu_augment is not None:
+        if parameters.augment_dsl:
             OPERATIONS.append(ReLU)
-            parameters.relu_augment = pickle.load(open(parameters.relu_augment, "rb"))
+        else:
+            accepted_relus = None
 
         algorithm.search(OPERATIONS,
                          [-0.5, 0.0, 0.5, 1.0, 2.0, 5.0],
                          [0, 1, 2, 3, 4, 5, 6, 7],
                          [0, 1, 2, 3],
-                         parameters.relu_augment,
+                         accepted_relus,
                          eval_function,
                          parameters.use_triage,
                          parameters.use_double_programs,

@@ -78,6 +78,7 @@ class ParameterFinderDiscrete():
         #from BottomUpSearch_so import get_action
         numNodes = np.fromiter(kwargs.values(), dtype=float)
         self.set_Num_value(numNodes.tolist())
+        print("numNodes", numNodes)
 
         # self.actions --> given by the oracle in the trajectory.
         # actions --> produced/learned by AST.
@@ -93,6 +94,7 @@ class ParameterFinderDiscrete():
         #gp_params = {"alpha": 1e-5, "n_restarts_optimizer": 10}  # Optimizer configuration
         # list of Nums in the AST to optimize over
         list_Nums_range, originals = self.get_Num_range()
+        print("list_Nums_range", list_Nums_range)
         bayesOpt = BayesianOptimization(self.find_distance, pbounds=list_Nums_range, verbose=0)
 
         try:

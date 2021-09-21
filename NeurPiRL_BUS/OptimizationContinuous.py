@@ -1,7 +1,7 @@
 from bayes_opt import BayesianOptimization, UtilityFunction
 from scipy import spatial
 import numpy as np
-from NeurPiRL_SA.DSL import Num, Ite, Lt, AssignAction, Addition, ReLU
+from NeurPiRL_BUS.DSL import Num, Ite, Lt, AssignAction, Addition, ReLU
 #from BottomUpSearch import get_action
 import copy
 

@@ -1,9 +1,9 @@
 import gym
-from NeurPiRL_SA.DSL import Ite, Lt, Observation, Num, AssignAction, Addition, Multiplication, ReLU
+from NeurPiRL_BUS.DSL import Ite, Lt, Observation, Num, AssignAction, Addition, Multiplication, ReLU
 import numpy as np
 import copy
-from NeurPiRL_SA.OptimizationDiscrete import ParameterFinderDiscrete
-from NeurPiRL_SA.OptimizationContinuous import ParameterFinderContinuous
+from NeurPiRL_BUS.OptimizationDiscrete import ParameterFinderDiscrete
+from NeurPiRL_BUS.OptimizationContinuous import ParameterFinderContinuous
 
 import pandas as pd
 import pickle
@@ -16,6 +16,8 @@ import pathlib
 import warnings
 
 warnings.filterwarnings('error')
+
+import os
 
 
 def get_action(obs, p):
@@ -130,7 +132,7 @@ class BottomUpSearch():
         plist = ProgramList()
         plist.init_plist(constant_values, observation_values, action_values, boolean_programs)
 
-        best_reward = -400
+        best_reward = -5000
         best_rewards = [-400]
         best_policy = None
         number_evaluations = 0
@@ -154,14 +156,17 @@ class BottomUpSearch():
             # Programs
             text_file.write("\nBest programs:\n")
 
+        print("jo")
         parameter_finder = ParameterFinderDiscrete(observations, actions)
         for current_size in range(2, bound + 1):
+            print("current_size")
             for p in self.grow(plist, closed_list, operations, current_size):
-                # print(p.name)
+                #print(p.name)
                 if p.name() == Ite.name():
+                    print("ITE")
                     p_copy = copy.deepcopy(p)
                     if PiRL:
-                        # print(p_copy.toString())
+                        print(p_copy.toString())
                         dist = parameter_finder.optimize(p_copy)
                         # print(p_copy.toString())
                     number_evaluations += 1
@@ -335,6 +340,9 @@ class BottomUpSearch():
 if __name__ == '__main__':
     synthesizer = BottomUpSearch()
 
+    path = os.getcwd()
+    print(path)
+
     # LunarLander
     if True:
         # Load Trajectory
@@ -343,16 +351,16 @@ if __name__ == '__main__':
         actions = trajs['a'].to_numpy()
 
         # Load ReLU programs
-        with open("ReLU_programs_THREE.pickle", "rb") as fp:
-            programs = pickle.load(fp)
+        #with open("./ReLU_programs_THREE.pickle", "rb") as fp:
+        #    programs = pickle.load(fp)
 
-        print(programs[0].toString())
-        print(programs[127].toString())
+        #print(programs[0].toString())
+        #print(programs[127].toString())
 
     OPERATIONS = [Ite, Lt, Addition, Multiplication]
     NUM_CONSTANTS = [1.0, 0.5, 0.25, 0.0, -0.25]
     OBSERVATION_VALUES = [0, 1, 2, 3, 4, 5, 6, 7]
     ACTION_VALUES = [0, 1, 2, 3]
 
-    p, num = synthesizer.synthesize(11, [Ite, Lt], NUM_CONSTANTS, OBSERVATION_VALUES, ACTION_VALUES, observations,
-                                    actions, programs, "_THREEo", PiRL=True)
+    p, num = synthesizer.synthesize(11, OPERATIONS, NUM_CONSTANTS, OBSERVATION_VALUES, ACTION_VALUES, observations,
+                                    actions, [], "_sept", PiRL=True)

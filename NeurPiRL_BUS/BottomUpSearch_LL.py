@@ -346,7 +346,7 @@ if __name__ == '__main__':
     NEURONS = 2
 
     p, num = synthesizer.synthesize(11, [Ite, Lt], NUM_CONSTANTS, OBSERVATION_VALUES, ACTION_VALUES, observations, actions,
-                                    [], "_LL_test", PiRL=True)
+                                    [], "_LL_test_sept", PiRL=True)
     # Testing ReLU_programs on Cartpole
     if False:
         prog_relus = []

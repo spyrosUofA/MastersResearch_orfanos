@@ -2,8 +2,8 @@ import gym
 from DSL import Ite, Lt, Observation, Num, AssignAction, Addition, Multiplication, ReLU
 import numpy as np
 import copy
-from Optimization import ParameterFinderContinuous, ParameterFinderDiscrete
-
+from OptimizationDiscrete import ParameterFinderDiscrete
+from OptimizationContinuous import ParameterFinderContinuous
 
 import pandas as pd
 import pickle
@@ -147,7 +147,7 @@ class BottomUpSearch():
                     p_copy = copy.deepcopy(p)
                     if PiRL:
                         #print("test")
-                        #print(p_copy.toString())
+                        print(p_copy.toString())
                         reward = parameter_finder.optimize(p_copy)
                         #print(reward)
                         #print(p_copy.toString())
@@ -342,18 +342,18 @@ if __name__ == '__main__':
     #print(prog_relus[1].interpret(obs0).toString())
 
     namespace = {'obs': obs0, 'act': 0}
-    print(namespace['obs'])
-    print(type(namespace['obs']))
-    print(prog_relus[0].interpret(namespace))
+    ##print(namespace['obs'])
+    #print(type(namespace['obs']))
+    #print(prog_relus[0].interpret(namespace))
 
     actions = trajs['a'].to_numpy()
     p, num = synthesizer.synthesize(11, [Ite, Lt], NUM_CONSTANTS, [0, 1, 2, 3], [0, 1], observations, actions,
-                                    prog_relus, "_relu_test2a", PiRL=True)
+                                    [], "_test_sept", PiRL=True)
     #Found array with 0 feature(s) (shape=(1, 0)) while a minimum of 1 is required.
     exit()
 
     #neuron_values = [trajs["N" + str(x)].to_numpy() for x in lala]
-    neuron1_tree, num = synthesizer.synthesize_neurons(10, [Ite, Lt, AssignAction, Addition], NEURON_CONSTANTS,
+    neuron1_tree, num = synthesizer.synthesize_neurons(10, [Ite, Lt], NEURON_CONSTANTS,
                                                       [0, 1, 2, 3], observations, NEURONS, PiRL=True)
     exit()
 
@@ -413,5 +413,5 @@ if __name__ == '__main__':
     #                                [], "_direct_15", PiRL=True)
 
     p, num = synthesizer.synthesize(15, [Ite, Lt], [-0.0462, -0.0068], [0, 1, 2, 3], [0, 1], observations, actions,
-                                    [], "_direct_test", PiRL=False)
+                                    [], "sept_test", PiRL=True)
 

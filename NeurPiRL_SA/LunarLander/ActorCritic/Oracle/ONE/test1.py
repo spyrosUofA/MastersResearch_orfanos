@@ -11,7 +11,10 @@ states = np.load("Observations.npy").tolist()
 print(len(states))
 
 
-q = deque(maxlen=5)
-q.append(1, 2, 3, 4, 5, 6, 7)
+q = deque(states, maxlen=5)
+print(q)
 
+print()
+
+q.append(states[-1])
 print(q)
