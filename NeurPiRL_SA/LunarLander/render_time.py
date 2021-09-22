@@ -24,20 +24,25 @@ parameters_oracle = {"oracle": oracle,
                      "inputs": inputs,
                      "actions": actions,
                      "ReLUs": accepted_relus,
-                     "capacity": 100}
+                     "capacity": None}
 
+"""
 eval_fn = Environment(copy.deepcopy(parameters_oracle), 100, 0)
 t0 = time.time()
 score = eval_fn.eval_render(policy, False)
 print(score, time.time() - t0)
+"""
 
 eval_fn = Environment(copy.deepcopy(parameters_oracle), 100, 0)
 t0 = time.time()
-score = eval_fn.collect_reward(policy)
+score = eval_fn.collect_reward(policy, 10)
 print(score, time.time() - t0)
 
 
 eval_fn = Imitation(copy.deepcopy(parameters_oracle), 100, 0)
 t0 = time.time()
-score = eval_fn.collect_reward(policy)
+score = eval_fn.evaluate(policy)
 print(score, time.time() - t0)
+
+print(len(eval_fn.inputs))
+
