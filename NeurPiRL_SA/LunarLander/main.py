@@ -110,6 +110,9 @@ def main():
     folder_name = "Eval-" + str(parameters.eval_function) + "_BayesOpt-" + str(parameters.bayes_opt) + \
                   "_ReLU-" + str(parameters.augment_dsl) + "_InitProg-" + str(parameters.init_program is not None)
 
+    folder_name = str(parameters.eval_function)[0] + str(int(parameters.bayes_opt)) + str(int(parameters.augment_dsl))\
+        + str(int(parameters.init_program is not None))
+
     file_name = '_n-' + str(number_games) + '_c-' + str(parameters.capacity) + '_run-' + str(seed) + parameters.file_name
 
     # Constructors

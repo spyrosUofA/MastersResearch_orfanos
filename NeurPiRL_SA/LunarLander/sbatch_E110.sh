@@ -12,6 +12,6 @@ for iter in {1..15}; do
    oracle="FOUR"
  fi
 
- sbatch --export=scheme="${scheme}",seed=${iter},oracle=${oracle} run_E010.sh
+ sbatch --export=scheme="${scheme}",seed=${iter},oracle=${oracle} run_E110.sh
 
 done
