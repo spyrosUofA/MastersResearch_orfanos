@@ -1,0 +1,77 @@
+created virtual environment CPython3.6.10.final.0-64 in 15531ms
+  creator CPython3Posix(dest=/localscratch/orfanos.25130014.0/env, clear=False, global=False)
+  seeder FromAppData(download=False, pip=latest, setuptools=latest, wheel=latest, via=copy, app_data_dir=/home/orfanos/.local/share/virtualenv/seed-app-data/v1.0.1)
+  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
+Ignoring pip: markers 'python_version < "3"' don't match your environment
+Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx512, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx2, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pip-21.2.3+computecanada-py3-none-any.whl
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 20.0.2
+    Uninstalling pip-20.0.2:
+      Successfully uninstalled pip-20.0.2
+Successfully installed pip-21.2.3+computecanada
+Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx512, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx2, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/torch-1.6.0+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/bayesian_optimization-1.2.0-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/cloudpickle-1.6.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/future-0.18.2+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/gym-0.18.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/box2d_py-2.3.5+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/joblib-1.0.1+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pandas-1.0.3+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/Pillow-7.2.0+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pyglet-1.5.0+computecanada-py2.py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/scikit_learn-0.24.1+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/scipy-1.4.1+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/threadpoolctl-2.1.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/numpy-1.19.5+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pytz-2021.1+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/python_dateutil-2.8.2+computecanada-py2.py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/six-1.16.0+computecanada-py2.py3-none-any.whl
+Installing collected packages: numpy, threadpoolctl, six, scipy, joblib, future, scikit-learn, pytz, python-dateutil, pyglet, Pillow, cloudpickle, torch, pandas, gym, Box2d-py, bayesian-optimization
+Successfully installed Box2d-py-2.3.5+computecanada Pillow-7.2.0+computecanada bayesian-optimization-1.2.0 cloudpickle-1.6.0+computecanada future-0.18.2+computecanada gym-0.18.0+computecanada joblib-1.0.1+computecanada numpy-1.19.5+computecanada pandas-1.0.3+computecanada pyglet-1.5.0+computecanada python-dateutil-2.8.2+computecanada pytz-2021.1+computecanada scikit-learn-0.24.1+computecanada scipy-1.4.1+computecanada six-1.16.0+computecanada threadpoolctl-2.1.0+computecanada torch-1.6.0+computecanada
+RUN
+Environment
+
+Current best:  -130.54798287401977
+(if (2.0 < ((max(0, [-0.32  -0.725  1.033  0.324 -1.926 -0.173 -0.525 -0.536] *dot* obs[:] + 0.086) + obs[0]) * (5.0 + obs[6]))) then: act = 1 else: act = 0)
+
+Current best:  -121.64566431323178
+(if (2.0 < ((max(0, [-0.11  -0.059 -0.105  0.405 -0.051 -0.057 -0.053  0.247] *dot* obs[:] + -0.498) + obs[0]) * (5.0 + obs[6]))) then: act = 1 else: act = 0)
+
+Current best:  -115.32698452994174
+(if ((2.0 + obs[6]) < ((max(0, [-0.11  -0.059 -0.105  0.405 -0.051 -0.057 -0.053  0.247] *dot* obs[:] + -0.498) + obs[0]) * (5.0 + obs[6]))) then: act = 1 else: act = 0)
+
+Current best:  -114.89346057217048
+act = 0
+
+Current best:  -112.97275195795486
+act = 0
+
+Current best:  -104.93257015417103
+(if (((((obs[5] * 5.0) + max(0, [-0.101 -0.376  0.108 -0.001  0.134  0.257 -0.036 -0.57 ] *dot* obs[:] + -0.597)) * obs[1]) + (max(0, [ 0.392 -0.69  -0.845  0.782  0.466  0.258 -0.819  0.012] *dot* obs[:] + -0.925) * 2.0)) < obs[5]) then: (if ((((obs[0] * (max(0, [ 0.392 -0.69  -0.845  0.782  0.466  0.258 -0.819  0.012] *dot* obs[:] + -0.925) + obs[1])) + max(0, [-0.407 -0.399 -0.067  0.701  0.26   0.228 -0.881  0.132] *dot* obs[:] + -0.577)) * (obs[7] * max(0, [ 0.101 -0.354 -0.014  0.308  0.067 -0.052 -0.121  0.044] *dot* obs[:] + -0.385))) < max(0, [-0.289 -1.022 -0.523 -0.591 -0.038 -1.384 -0.024  0.029] *dot* obs[:] + -0.623)) then: act = 2 else: (if (2.089944714262477 < max(0, [ 0.039 -0.147  0.043  0.289  0.083  0.05   0.076 -0.044] *dot* obs[:] + -0.435)) then: act = 0 else: act = 1)) else: act = 0)
+
+Current best:  -101.02858155861466
+(if (((((obs[5] * 5.0) + max(0, [-0.101 -0.376  0.108 -0.001  0.134  0.257 -0.036 -0.57 ] *dot* obs[:] + -0.597)) * obs[1]) + (max(0, [ 0.392 -0.69  -0.845  0.782  0.466  0.258 -0.819  0.012] *dot* obs[:] + -0.925) * 2.0)) < obs[5]) then: (if ((((obs[0] * (max(0, [ 0.392 -0.69  -0.845  0.782  0.466  0.258 -0.819  0.012] *dot* obs[:] + -0.925) + max(0, [-0.079  0.249  0.605 -1.737  0.138 -0.324 -0.829 -0.923] *dot* obs[:] + -0.762))) + max(0, [-0.407 -0.399 -0.067  0.701  0.26   0.228 -0.881  0.132] *dot* obs[:] + -0.577)) * (obs[7] * max(0, [ 0.101 -0.354 -0.014  0.308  0.067 -0.052 -0.121  0.044] *dot* obs[:] + -0.385))) < max(0, [-0.289 -1.022 -0.523 -0.591 -0.038 -1.384 -0.024  0.029] *dot* obs[:] + -0.623)) then: act = 2 else: (if (1.761973336180177 < max(0, [ 0.039 -0.147  0.043  0.289  0.083  0.05   0.076 -0.044] *dot* obs[:] + -0.435)) then: act = 0 else: act = 1)) else: act = 0)
+
+Current best:  -100.27979544768864
+(if (((((obs[5] * 5.0) + max(0, [-0.101 -0.376  0.108 -0.001  0.134  0.257 -0.036 -0.57 ] *dot* obs[:] + -0.597)) * obs[1]) + (max(0, [ 0.392 -0.69  -0.845  0.782  0.466  0.258 -0.819  0.012] *dot* obs[:] + -0.925) * 2.0)) < obs[5]) then: (if ((((obs[0] * (obs[3] + max(0, [-0.079  0.249  0.605 -1.737  0.138 -0.324 -0.829 -0.923] *dot* obs[:] + -0.762))) + max(0, [-0.407 -0.399 -0.067  0.701  0.26   0.228 -0.881  0.132] *dot* obs[:] + -0.577)) * (obs[7] * max(0, [ 0.101 -0.354 -0.014  0.308  0.067 -0.052 -0.121  0.044] *dot* obs[:] + -0.385))) < max(0, [-0.289 -1.022 -0.523 -0.591 -0.038 -1.384 -0.024  0.029] *dot* obs[:] + -0.623)) then: act = 2 else: (if (1.6492312554450295 < max(0, [ 0.039 -0.147  0.043  0.289  0.083  0.05   0.076 -0.044] *dot* obs[:] + -0.435)) then: act = 0 else: act = 1)) else: act = 0)
+
+Current best:  -99.96299111418733
+(if (((((obs[5] * 5.0) + max(0, [-0.101 -0.376  0.108 -0.001  0.134  0.257 -0.036 -0.57 ] *dot* obs[:] + -0.597)) * obs[1]) + (max(0, [ 0.392 -0.69  -0.845  0.782  0.466  0.258 -0.819  0.012] *dot* obs[:] + -0.925) * 2.0)) < obs[5]) then: (if ((((obs[0] * (obs[3] + max(0, [-0.079  0.249  0.605 -1.737  0.138 -0.324 -0.829 -0.923] *dot* obs[:] + -0.762))) + obs[1]) * (obs[7] * max(0, [ 0.101 -0.354 -0.014  0.308  0.067 -0.052 -0.121  0.044] *dot* obs[:] + -0.385))) < max(0, [-0.289 -1.022 -0.523 -0.591 -0.038 -1.384 -0.024  0.029] *dot* obs[:] + -0.623)) then: act = 2 else: (if (2.195514068240173 < max(0, [ 0.039 -0.147  0.043  0.289  0.083  0.05   0.076 -0.044] *dot* obs[:] + -0.435)) then: act = 0 else: act = 1)) else: act = 0)
+
+Current best:  -92.65643865514953
+(if (((((obs[5] * 5.0) + max(0, [-0.101 -0.376  0.108 -0.001  0.134  0.257 -0.036 -0.57 ] *dot* obs[:] + -0.597)) * obs[1]) + (max(0, [-0.381  0.463  1.556  0.587 -1.327 -1.08  -0.041 -0.107] *dot* obs[:] + -0.598) * 2.0)) < obs[5]) then: (if ((((obs[0] * (obs[3] + max(0, [-0.079  0.249  0.605 -1.737  0.138 -0.324 -0.829 -0.923] *dot* obs[:] + -0.762))) + obs[1]) * (obs[7] * max(0, [ 0.101 -0.354 -0.014  0.308  0.067 -0.052 -0.121  0.044] *dot* obs[:] + -0.385))) < max(0, [-0.289 -1.022 -0.523 -0.591 -0.038 -1.384 -0.024  0.029] *dot* obs[:] + -0.623)) then: act = 2 else: (if (2.025620826766241 < max(0, [ 0.039 -0.147  0.043  0.289  0.083  0.05   0.076 -0.044] *dot* obs[:] + -0.435)) then: act = 0 else: act = 1)) else: act = 0)
+
+Current best:  -85.08024659506127
+(if ((max(0, [ 0.218 -0.345 -0.173  0.53   0.162 -0.109 -0.323  0.139] *dot* obs[:] + -0.49) + max(0, [ 0.053 -2.617  0.393 -1.893  0.749  1.546 -0.512 -0.526] *dot* obs[:] + -0.192)) < 1.8448735987575158) then: (if (5.189186678871477 < max(0, [-0.191  0.224 -0.675 -0.69   3.349  0.31  -0.716 -0.042] *dot* obs[:] + -0.505)) then: act = 0 else: (if (obs[1] < max(0, [-0.11  -0.059 -0.105  0.405 -0.051 -0.057 -0.053  0.247] *dot* obs[:] + -0.498)) then: (if (max(0, [ 0.13  -0.271 -0.016 -0.076 -0.196  0.228 -0.21   0.054] *dot* obs[:] + -0.41) < max(0, [ 0.053 -2.617  0.393 -1.893  0.749  1.546 -0.512 -0.526] *dot* obs[:] + -0.192)) then: act = 3 else: act = 3) else: (if (max(0, [ 0.008 -0.199  0.319  0.137 -0.039 -0.297 -0.563 -0.503] *dot* obs[:] + -0.837) < 5.272194601919097) then: act = 0 else: act = 0))) else: act = 2)
+
+Current best:  -84.66238396994666
+(if ((max(0, [-0.431 -3.246 -0.38  -1.011  0.083  0.115 -0.779 -0.858] *dot* obs[:] + 0.171) + max(0, [ 0.053 -2.617  0.393 -1.893  0.749  1.546 -0.512 -0.526] *dot* obs[:] + -0.192)) < 1.8056337586019602) then: (if (5.104935188338918 < max(0, [-0.191  0.224 -0.675 -0.69   3.349  0.31  -0.716 -0.042] *dot* obs[:] + -0.505)) then: act = 0 else: (if (obs[1] < max(0, [-0.11  -0.059 -0.105  0.405 -0.051 -0.057 -0.053  0.247] *dot* obs[:] + -0.498)) then: (if (max(0, [ 0.13  -0.271 -0.016 -0.076 -0.196  0.228 -0.21   0.054] *dot* obs[:] + -0.41) < max(0, [ 0.053 -2.617  0.393 -1.893  0.749  1.546 -0.512 -0.526] *dot* obs[:] + -0.192)) then: act = 3 else: act = 3) else: (if (max(0, [ 0.008 -0.199  0.319  0.137 -0.039 -0.297 -0.563 -0.503] *dot* obs[:] + -0.837) < 5.212891211188583) then: act = 0 else: act = 0))) else: act = 2)
+
+Current best:  -83.39696576580576
+(if ((max(0, [-0.431 -3.246 -0.38  -1.011  0.083  0.115 -0.779 -0.858] *dot* obs[:] + 0.171) + max(0, [ 0.053 -2.617  0.393 -1.893  0.749  1.546 -0.512 -0.526] *dot* obs[:] + -0.192)) < 1.6909195089478302) then: (if (5.349020317886448 < max(0, [-0.191  0.224 -0.675 -0.69   3.349  0.31  -0.716 -0.042] *dot* obs[:] + -0.505)) then: act = 0 else: (if (obs[1] < max(0, [-0.11  -0.059 -0.105  0.405 -0.051 -0.057 -0.053  0.247] *dot* obs[:] + -0.498)) then: (if (max(0, [-0.079  0.249  0.605 -1.737  0.138 -0.324 -0.829 -0.923] *dot* obs[:] + -0.762) < max(0, [ 0.053 -2.617  0.393 -1.893  0.749  1.546 -0.512 -0.526] *dot* obs[:] + -0.192)) then: act = 3 else: act = 3) else: (if (max(0, [ 0.008 -0.199  0.319  0.137 -0.039 -0.297 -0.563 -0.503] *dot* obs[:] + -0.837) < 5.374932698359881) then: act = 0 else: act = 0))) else: act = 2)
+
+Current best:  -76.69043423428761
+(if ((max(0, [-0.431 -3.246 -0.38  -1.011  0.083  0.115 -0.779 -0.858] *dot* obs[:] + 0.171) + max(0, [ 0.053 -2.617  0.393 -1.893  0.749  1.546 -0.512 -0.526] *dot* obs[:] + -0.192)) < 1.7345448596869781) then: (if (5.291377077012444 < max(0, [-0.191  0.224 -0.675 -0.69   3.349  0.31  -0.716 -0.042] *dot* obs[:] + -0.505)) then: act = 0 else: (if (((1.0 + ((5.0 + max(0, [ 0.261 -0.436  0.012  0.478  0.065 -0.196  0.049 -0.257] *dot* obs[:] + -0.779)) * (max(0, [-0.175  0.201 -0.131  1.064  0.431  2.269 -0.554 -0.048] *dot* obs[:] + -0.925) + (obs[1] * 5.0)))) * 1.0) < max(0, [-0.11  -0.059 -0.105  0.405 -0.051 -0.057 -0.053  0.247] *dot* obs[:] + -0.498)) then: (if (max(0, [-0.079  0.249  0.605 -1.737  0.138 -0.324 -0.829 -0.923] *dot* obs[:] + -0.762) < max(0, [ 0.053 -2.617  0.393 -1.893  0.749  1.546 -0.512 -0.526] *dot* obs[:] + -0.192)) then: act = 3 else: act = 3) else: (if (max(0, [ 0.008 -0.199  0.319  0.137 -0.039 -0.297 -0.563 -0.503] *dot* obs[:] + -0.837) < 5.1524539252466095) then: act = 0 else: act = 0))) else: act = 2)

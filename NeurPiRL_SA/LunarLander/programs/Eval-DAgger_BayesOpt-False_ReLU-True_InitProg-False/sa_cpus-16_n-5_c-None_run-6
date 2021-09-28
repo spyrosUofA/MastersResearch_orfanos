@@ -1,0 +1,4 @@
+1 
+act = 2
+2 
+(if (obs[5] < obs[4]) then: (if (obs[5] < obs[1]) then: act = 2 else: (if (0.0 < obs[2]) then: (if (obs[0] < max(0, [-0.052  0.21  -0.01  -1.058 -0.581 -0.197 -0.056 -1.008] *dot* obs[:] + -0.792)) then: act = 2 else: act = 0) else: (if (obs[2] < -0.5) then: act = 1 else: act = 3))) else: act = 2)
