@@ -9,4 +9,4 @@ source $SLURM_TMPDIR/env/bin/activate
 pip install --no-index --upgrade pip
 pip install --no-index -r requirements.txt
 
-python main.py  -time 7200 -seed ${seed} -oracle ${oracle} -e "DAgger" --aug_dsl
+python main.py -time 7200 -seed ${seed} -oracle ${oracle} -e "DAgger" --aug_dsl
