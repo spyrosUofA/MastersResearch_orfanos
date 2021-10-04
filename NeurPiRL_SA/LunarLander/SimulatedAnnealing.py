@@ -514,7 +514,7 @@ class SimulatedAnnealing():
 
         return best_score, best_program
 
-    def search_old(self,
+    def search_old2(self,
                operations,
                numeric_constant_values,
                observation_values,
@@ -697,3 +697,189 @@ class SimulatedAnnealing():
                     current_program = copy.deepcopy(best_program)
 
         return best_score, best_program
+
+
+    def search_old(self,
+               operations,
+               numeric_constant_values,
+               observation_values,
+               action_values,
+               relu_values,
+               eval_function,
+               use_triage,
+               use_double_program,
+               initial_temperature,
+               alpha,
+               beta,
+               time_limit,
+               winrate_target=None,
+               initial_program=None,
+               bayes_opt=False):
+
+        time_start = time.time()
+
+        self.winrate_target = winrate_target
+        self.use_double_program = use_double_program
+
+        Node.filter_production_rules(operations,
+                                     numeric_constant_values,
+                                     observation_values,
+                                     action_values)
+
+        self.max_mutation_depth = 4
+        self.initial_depth_ast = 0
+        self.initial_temperature = initial_temperature
+        self.alpha = alpha
+        self.beta = beta
+        self.slack_time = 600
+
+        Num.accepted_types = [set(numeric_constant_values)]
+        AssignAction.accepted_types = [set(action_values)]
+        Observation.accepted_types = [set(observation_values)]
+        ReLU.accepted_types = [relu_values]
+
+        self.operations = operations
+        self.numeric_constant_values = numeric_constant_values
+        self.eval_function = eval_function
+
+        best_score = self.eval_function.worst_score
+        best_program = None
+
+        id_log = 1
+        number_games_played = 0
+
+        if initial_program is not None:
+            current_program = copy.deepcopy(initial_program)
+        else:
+            current_program = self.random_program()
+
+        while True:
+            self.current_temperature = self.initial_temperature
+
+            # BayesOpt for current program
+            if bayes_opt:
+                self.eval_function.optimize(current_program)
+
+            if use_triage:
+                current_score, number_matches_played = self.eval_function.eval_triage(current_program, best_score)
+            else:
+                current_score = self.eval_function.evaluate(current_program)
+
+            iteration_number = 1
+
+            if best_program is None or current_score > best_score:
+                best_score = current_score
+                best_program = current_program
+
+                with open(self.binary_program_file, 'wb') as file_program:
+                    pickle.dump(current_program, file_program)
+
+                if self.winrate_target is None:
+                    with open(join(self.log_folder + self.log_file), 'a') as results_file:
+                        results_file.write(("{:d}, {:f}, {:f}, {:d}, {:f} \n".format(id_log,
+                                                                               best_score,
+                                                                               self.eval_function.collect_reward(best_program, 25),
+                                                                               self.eval_function.get_games_played(),
+                                                                               time.time() - time_start)))
+
+                    with open(join(self.program_folder + self.program_file), 'a') as results_file:
+                        results_file.write(("{:d} \n".format(id_log)))
+                        results_file.write(best_program.to_string())
+                        results_file.write('\n')
+
+                    id_log += 1
+
+            while self.current_temperature > 1:
+
+                time_end = time.time()
+
+                if time_end - time_start > time_limit - self.slack_time:
+                    if self.winrate_target is None:
+                        with open(join(self.log_folder + self.log_file), 'a') as results_file:
+                            results_file.write(("{:d}, {:f}, {:f}, {:d}, {:f} \n".format(id_log,
+                                                                                   best_score,
+                                                                                   self.eval_function.collect_reward(best_program, 25),
+                                                                                   self.eval_function.get_games_played(),
+                                                                                   time_end - time_start)))
+                    return best_score, best_program
+
+                copy_program = copy.deepcopy(current_program)
+
+                #print('\nCurrent: ')
+                #print(current_program.to_string())
+                mutation = self.mutate(copy_program)
+                #print('Mutated: ')
+                #print(mutation.to_string(), '\n')
+
+                # BayesOpt for mutated program
+                if bayes_opt:
+                    self.eval_function.optimize(current_program)
+
+                if use_triage:
+                    next_score, number_matches_played = self.eval_function.eval_triage(mutation, best_score)
+                else:
+                    next_score = self.eval_function.evaluate(mutation)
+
+                if self.winrate_target is not None and next_score >= self.winrate_target:
+                    return next_score, mutation
+
+                if best_program is None or next_score > best_score:
+
+                    best_score = next_score
+                    best_program = mutation
+
+                    print('\nCurrent best: ', best_score)
+                    print(best_program.to_string())
+
+                    with open(self.binary_program_file, 'wb') as file_program:
+                        pickle.dump(current_program, file_program)
+
+                    if self.winrate_target is None:
+                        with open(join(self.log_folder + self.log_file), 'a') as results_file:
+                            results_file.write(("{:d}, {:f}, {:f}, {:d}, {:f} \n".format(id_log,
+                                                                                   best_score,
+                                                                                   self.eval_function.collect_reward(best_program, 25),
+                                                                                   self.eval_function.get_games_played(),
+                                                                                   time_end - time_start)))
+
+                        with open(join(self.program_folder + self.program_file), 'a') as results_file:
+                            results_file.write(("{:d} \n".format(id_log)))
+                            results_file.write(best_program.to_string())
+                            results_file.write('\n')
+
+                        id_log += 1
+
+#                print('\nCurrent best: ', best_score)
+#                print(best_program.to_string())
+
+                prob_accept = min(1, self.accept_function(current_score, next_score))
+
+                prob = random.uniform(0, 1)
+                if prob < prob_accept:
+                    #                     print('Probability of accepting: ', prob_accept, next_score, current_score, self.current_temperature)
+
+                    #                     print(mutation.to_string())
+                    #                     print('Score: ', next_score)
+                    #                     print()
+
+                    current_program = mutation
+                    current_score = next_score
+
+                #                     print('Current score: ', current_score)
+
+                iteration_number += 1
+
+                self.decrease_temperature(iteration_number)
+            #                 print('Current Temp: ', self.current_temperature)
+
+            if initial_program is not None:
+                current_program = copy.deepcopy(initial_program)
+            else:
+                if best_score == self.eval_function.worst_score:
+                    current_program = self.random_program()
+                else:
+                    current_program = copy.deepcopy(best_program)
+
+        return best_score, best_program
+
+        
