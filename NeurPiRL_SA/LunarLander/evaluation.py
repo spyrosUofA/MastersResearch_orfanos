@@ -40,8 +40,11 @@ class Evaluate():
     def eval_triage(self, p):
         pass
 
-    def update_trajectory(self, p):
+    def update_trajectory0(self, p):
         pass
+
+    def update_trajectory1(self, p, current_score):
+        return current_score
 
     def collect_reward(self, p, nb_episodes, render=False):
         steps = 0
@@ -90,7 +93,7 @@ class Evaluate():
 
         try:
             # Bayesian Optimization
-            bayesOpt.maximize(init_points=1000, n_iter=10, kappa=2.5)
+            bayesOpt.maximize(init_points=40, n_iter=10, kappa=2.5)
             # Update tree with optimized Nums
             p.set_Num_value(bayesOpt.max['params'])
             return bayesOpt.max['target']
@@ -130,20 +133,51 @@ class DAgger(Evaluate):
         super(DAgger, self).__init__(oracle, nb_evaluations, seed, env_name)
         self.worst_score = 0.0
 
-    def update_trajectory(self, p):
-        for _ in range(self.nb_evaluations):
+    def update_trajectory0(self, p):
+        for _ in range(5):  #range(self.nb_evaluations):
             ob = self.env.reset()
             while True:
+                # Oracle's action recorded
+                action_oracle = self.oracle(ob)
+                self.inputs.append(ob)
+                self.actions.append(action_oracle)
+                # PiRL's action executed in environemnt
                 namespace = {'obs': ob, 'act': 0}
                 p.interpret(namespace)
                 action = namespace['act']
-                self.inputs.append(ob)
-                self.actions.append(action)
+                # Interact with environment
                 ob, _, done, _ = self.env.step(action)
 
                 if done:
                     break
-        #self.games_played += self.nb_evaluations
+
+        self.games_played += 5 #self.nb_evaluations
+
+    def update_trajectory1(self, p, current_score):
+
+        start_len = len(self.actions)
+        correct = 0.0
+        for _ in range(self.nb_evaluations):
+            ob = self.env.reset()
+            while True:
+                # Oracle's action recorded
+                action_oracle = self.oracle(ob)
+                self.inputs.append(ob)
+                self.actions.append(action_oracle)
+                # PiRL's action to be executed in environment
+                namespace = {'obs': ob, 'act': 0}
+                p.interpret(namespace)
+                action = namespace['act']
+                # Compare actions, interact with environment
+                correct += int(action_oracle == action)
+                ob, _, done, _ = self.env.step(action)
+
+                if done:
+                    break
+
+        self.games_played += self.nb_evaluations
+        end_len = len(self.actions)
+        return current_score * (start_len / end_len) + (correct / end_len)
 
     def evaluate(self, p):
         #self.update_trajectory(p)

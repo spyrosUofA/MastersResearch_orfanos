@@ -13,6 +13,9 @@ def main():
                         default='SimulatedAnnealing', 
                         help='Search Algorithm (SimulatedAnnealing, BottomUpSearch, UCT)')
     
+    parser.add_argument('-approach', action='store', dest='approach', default='0',
+                        help='0: Reward. 1: Score ')
+
     parser.add_argument('-bound', action='store', dest='bound',
                         help='Bound for Bottom-Up Search')
     
@@ -111,7 +114,7 @@ def main():
                   "_ReLU-" + str(parameters.augment_dsl) + "_InitProg-" + str(parameters.init_program is not None)
 
     folder_name = str(parameters.eval_function)[0] + str(int(parameters.bayes_opt)) + str(int(parameters.augment_dsl))\
-        + str(int(parameters.init_program is not None))
+                  + parameters.approach + ("" if parameters.init_program is None else ("_" + parameters.init_program[0:4]))
 
     file_name = '_n-' + str(number_games) + '_c-' + str(parameters.capacity) + '_run-' + str(seed) + parameters.file_name
 
@@ -149,7 +152,8 @@ def main():
         else:
             accepted_relus = None
 
-        algorithm.search(OPERATIONS,
+        algorithm.search(parameters.approach,
+                         OPERATIONS,
                          [-0.5, 0.0, 0.5, 1.0, 2.0, 5.0],
                          [0, 1, 2, 3, 4, 5, 6, 7],
                          [0, 1, 2, 3],
