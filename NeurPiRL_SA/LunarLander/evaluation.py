@@ -5,7 +5,6 @@ from DSL import *
 from collections import deque
 import gym
 
-from ActorCritic.model import ActorCritic
 import copy
 import torch
 
@@ -134,11 +133,11 @@ class DAgger(Evaluate):
         self.worst_score = 0.0
 
     def update_trajectory0(self, p):
-        for _ in range(5):  #range(self.nb_evaluations):
+        for _ in range(1):  #range(self.nb_evaluations):
             ob = self.env.reset()
             while True:
                 # Oracle's action recorded
-                action_oracle = self.oracle(ob)
+                action_oracle = self.oracle.act(ob)[0]
                 self.inputs.append(ob)
                 self.actions.append(action_oracle)
                 # PiRL's action executed in environemnt
@@ -151,17 +150,17 @@ class DAgger(Evaluate):
                 if done:
                     break
 
-        self.games_played += 5 #self.nb_evaluations
+        self.games_played += 1 #self.nb_evaluations
 
     def update_trajectory1(self, p, current_score):
 
         start_len = len(self.actions)
         correct = 0.0
-        for _ in range(self.nb_evaluations):
+        for _ in range(1):
             ob = self.env.reset()
             while True:
                 # Oracle's action recorded
-                action_oracle = self.oracle(ob)
+                action_oracle = self.oracle.act(ob)[0]
                 self.inputs.append(ob)
                 self.actions.append(action_oracle)
                 # PiRL's action to be executed in environment
@@ -175,7 +174,7 @@ class DAgger(Evaluate):
                 if done:
                     break
 
-        self.games_played += self.nb_evaluations
+        self.games_played += 1 # self.nb_evaluations
         end_len = len(self.actions)
         return current_score * (start_len / end_len) + (correct / end_len)
 

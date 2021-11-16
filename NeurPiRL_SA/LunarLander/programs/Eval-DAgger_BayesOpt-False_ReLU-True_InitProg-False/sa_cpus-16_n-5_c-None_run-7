@@ -1,4 +1,0 @@
-1 
-(if (obs[3] < (obs[7] * obs[4])) then: act = 2 else: act = 0)
-2 
-(if (obs[3] < (obs[7] * obs[4])) then: act = 2 else: act = 0)

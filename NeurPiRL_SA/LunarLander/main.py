@@ -3,6 +3,7 @@ import pickle
 from SimulatedAnnealing import SimulatedAnnealing
 from evaluation import Evaluate, Environment, Imitation, DAgger
 import copy
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -82,49 +83,48 @@ def main():
 
     parameters = parser.parse_args()
 
+
+    # Casting to integers
+    number_games = int(parameters.number_games)
+    seed = int(parameters.seed)
+    time_limit = int(parameters.time_limit)
+    parameters.capacity = None if parameters.capacity is None else int(parameters.capacity)
+
+    # Specify folder and file names
+    folder_name = str(parameters.eval_function)[0] + str(int(parameters.bayes_opt)) + str(int(parameters.augment_dsl))\
+                   + parameters.approach + "b" + ("" if parameters.init_program is None else ("_" + parameters.init_program[0:4]))\
+                    + '/Oracle-' + parameters.oracle
+
+    file_name = '_n-' + str(number_games) + '_c-' + str(parameters.capacity) + '_run-' + str(seed) + parameters.file_name
+
     # Load from Oracle path
     if parameters.oracle is not None:
         import torch
         import numpy as np
-        from ActorCritic.model import ActorCritic
-
+        from DQN.dqn_agent import Agent
         # Load neural Policy
-        oracle = ActorCritic()
-        oracle.load_state_dict(torch.load("../LunarLander/ActorCritic/Oracle/" + parameters.oracle + "/Policy.pth"))
+        oracle = Agent(state_size=8, action_size=4, seed=seed)
+        oracle.qnetwork_local.load_state_dict(torch.load("../LunarLander/DQN/Oracle/32x64/" + parameters.oracle + '/Policy.pth'))
         # Load Trajectory
-        inputs = np.load("../LunarLander/ActorCritic/Oracle/" + parameters.oracle + "/Observations.npy").tolist()
-        actions = np.load("../LunarLander/ActorCritic/Oracle/" + parameters.oracle + "/Actions.npy").tolist()
+        inputs = np.load("../LunarLander/DQN/Oracle/32x64/" + parameters.oracle + "/Observations.npy").tolist()
+        actions = np.load("../LunarLander/DQN/Oracle/32x64/" + parameters.oracle + "/Actions.npy").tolist()
         # Load ReLUs
-        accepted_relus = pickle.load(open("../LunarLander/ActorCritic/Oracle/" + parameters.oracle + "/ReLUs.pkl", "rb"))
+        accepted_relus = pickle.load(open("../LunarLander/DQN/Oracle/32x64/" + parameters.oracle + "/ReLUs.pkl", "rb"))
         # Arguments for evaluation function
         parameters.oracle = {"oracle": oracle,
                              "inputs": inputs,
                              "actions": actions,
                              "ReLUs": accepted_relus,
                              "capacity": parameters.capacity}
-
-    # Casting to integers
-    number_games = int(parameters.number_games)
-    seed = int(parameters.seed)
-    time_limit = int(parameters.time_limit)
-    capacity = None if parameters.capacity is None else int(parameters.capacity)
-
-    # Specify folder and file names
-    folder_name = "Eval-" + str(parameters.eval_function) + "_BayesOpt-" + str(parameters.bayes_opt) + \
-                  "_ReLU-" + str(parameters.augment_dsl) + "_InitProg-" + str(parameters.init_program is not None)
-
-    folder_name = str(parameters.eval_function)[0] + str(int(parameters.bayes_opt)) + str(int(parameters.augment_dsl))\
-                  + parameters.approach + ("" if parameters.init_program is None else ("_" + parameters.init_program[0:4]))
-
-    file_name = '_n-' + str(number_games) + '_c-' + str(parameters.capacity) + '_run-' + str(seed) + parameters.file_name
-
+        
     # Constructors
-    eval_function = globals()[parameters.eval_function](copy.deepcopy(parameters.oracle), number_games, seed)
+    eval_function = globals()[parameters.eval_function]((parameters.oracle), number_games, seed)
     algorithm = globals()[parameters.search_algorithm](folder_name, file_name, seed)
 
     # LOAD INITIAL POLICY
     if parameters.init_program is not None:
         parameters.init_program = pickle.load(open("../LunarLander/binary_programs/" + parameters.init_program, "rb"))
+        print("Initial Policy: ", parameters.init_program.to_string())
 
     if isinstance(algorithm, SimulatedAnnealing):
         
@@ -154,7 +154,7 @@ def main():
 
         algorithm.search(parameters.approach,
                          OPERATIONS,
-                         [-0.5, 0.0, 0.5, 1.0, 2.0, 5.0],
+                         [-4.0, -2.0, 0.0, 2.0, 4.0],
                          [0, 1, 2, 3, 4, 5, 6, 7],
                          [0, 1, 2, 3],
                          accepted_relus,

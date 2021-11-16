@@ -13,8 +13,6 @@ Character 3: Augmented DSL Y/N
 0 ==> False
 1 ==> True
 
-Character 4: Initial Program Y/N
-0 ==> False
-1 ==> True
-
-e.g.: run_D110.sh will run SA with: {eval=DAgger, bo=True, aug_dsl=True, InitProg=None}
+Character 4: Approach 0/1 
+0 ==> objective=score (imitation or reward), evaluation=reward 
+1 ==> objective=evaluation=reward (i.e. either RL or Imitation Learning)

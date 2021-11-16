@@ -11,16 +11,15 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-
 from DQN.model import QNetwork
 from DQN.replay_buffer import ReplayBuffer
 
 BUFFER_SIZE = int(1e5)  # replay buffer size
 BATCH_SIZE = 64  # minibatch size
-GAMMA = 0.99  # discount factor
+GAMMA = 1.0 # discount factor
 TAU = 1e-3  # for soft update of target parameters
 LR = 5e-4  # learning rate
-UPDATE_EVERY = 1  # UPDATE FREQUENCY: how often to update the network
+UPDATE_EVERY = 4  # UPDATE FREQUENCY: how often to update the network
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -98,8 +97,6 @@ class Agent():
             action_values = self.qnetwork_local(state)
 
         return action_values.numpy()[0]
-    
-
 
     def learn(self, experiences, gamma):
         """Update value parameters using given batch of experience tuples.
@@ -146,3 +143,4 @@ class Agent():
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau * local_param.data + (1.0 - tau) * target_param.data)
+

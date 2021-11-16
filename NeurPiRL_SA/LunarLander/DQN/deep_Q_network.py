@@ -6,29 +6,13 @@ import numpy as np
 from collections import deque
 import matplotlib.pyplot as plt
 import pickle
-import pandas as pd
+from DQN.dqn_agent import Agent
+from DQN.run_oracle import test
+import os
+import sys
 
-env = gym.make('LunarLander-v2')
-env.seed(0)
-print('State shape: ', env.observation_space.shape)
-print('Number of actions: ', env.action_space.n)
 
-from dqn_agent import Agent
-
-agent = Agent(state_size=8, action_size=4, seed=None)
-
-# # watch an untrained agent
-# state = env.reset()
-# for j in range(1000):
-#     action = agent.act(state)
-#     env.render()
-#     state, reward, done, _ = env.step(action)
-#     if done:
-#         break
-#
-# env.close()
-
-def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.995):
+def dqn(seed=0, n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.005, eps_decay=0.995):
     """Deep Q-Learning.
     
     Params
@@ -39,12 +23,22 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
         eps_end (float): minimum value of epsilon
         eps_decay (float): multiplicative factor (per episode) for decreasing epsilon
     """
+    seed = 0 if len(sys.argv) == 1 else int(sys.argv[1])
+    print(seed)
+
+    env = gym.make('LunarLander-v2')
+    env.seed(seed)
+    print('State shape: ', env.observation_space.shape)
+    print('Number of actions: ', env.action_space.n)
+
+    agent = Agent(state_size=8, action_size=4, seed=seed)
+
     scores = []                        # list containing scores from each episode
-    scores_window = deque(maxlen=150)  # last 100 scores
+    scores_window = deque(maxlen=100)  # last 100 scores
     eps = eps_start                    # initialize epsilon
     steps = 0
     times = [time.time()]
-    torch.save(agent.qnetwork_local.state_dict(), 'checkpoints/' + str(0) + '.pth')
+    # torch.save(agent.qnetwork_local.state_dict(), 'checkpoints/' + str(0) + '.pth')
     for i_episode in range(1, n_episodes+1):
         state = env.reset()
         score = 0
@@ -61,64 +55,51 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
         scores.append(score)              # save most recent score
         eps = max(eps_end, eps_decay*eps) # decrease epsilon
         print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)), '\tsteps: {:.2f}'.format(steps), end="")
+
         if i_episode % 100 == 0:
             times.append(time.time())
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)), '\tsteps: {:.2f}'.format(steps))
-            torch.save(agent.qnetwork_local.state_dict(), 'checkpoints/'+ str(i_episode) +'_220.pth')
-        if np.min(scores_window)>=220.0:
+            #torch.save(agent.qnetwork_local.state_dict(), 'checkpoints/'+ str(i_episode) +'_220.pth')
+
+        if np.mean(scores_window) >= 250.0:
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, np.mean(scores_window)), '\tsteps: {:.2f}'.format(steps))
-            torch.save(agent.qnetwork_local.state_dict(), 'checkpoint_complete_min220.pth')
 
-            n_episodes = 25
-            max_t = 1000
-            eps = 0.01
+            # Save results
+            save_to = './Oracle/' + str(seed)
+            if not os.path.exists(save_to):
+                os.makedirs(save_to)
 
-            obs = []
-            actions = []
-            scores = []
+            # Save Learning Curve #1
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            plt.plot(np.arange(len(scores)), scores)
+            plt.ylabel('Score')
+            plt.xlabel('Episode #')
+            plt.savefig(save_to + '/learning_curve_1.png')
+            plt.clf()
 
-            for i_episode in range(1, n_episodes + 1):
-                state = env.reset()
-                score = 0
-                for t in range(max_t):
+            # Save Learning Curve #2
+            #fig = plt.figure()
+            #ax = fig.add_subplot(111)
+            #plt.plot(times, scores)
+            #plt.ylabel('Score')
+            #plt.xlabel('Episode #')
+            #plt.savefig(save_to + '/learning_curve_2.png')
 
-                    action, _ = agent.act(state, eps)
-                    obs.append(state)
-                    actions.append(action)
+            # Save Network
+            if not os.path.exists(save_to):
+                os.makedirs(save_to)
+            torch.save(agent.qnetwork_local.state_dict(), save_to + '/Policy.pth')
 
-                    next_state, reward, done, _ = env.step(action)
-                    agent.step(state, action, reward, next_state, done)
-                    state = next_state
-                    score += reward
-
-                    if done:
-                        print("Score:" + str(score))
-                        scores.append(score)
-                        break
-
-            print(np.mean(scores))
-
-            df = pd.DataFrame(obs, columns=['o[0]', 'o[1]', 'o[2]', 'o[3]', 'o[4]', 'o[5]', 'o[6]', 'o[7]'])
-            df['a'] = actions
-            df.to_csv(path_or_buf="trajectory_fixed.csv", index=False)
-            print(df)
-
+            # Save trajectories
+            test(seed, 1)
+            env.close()
             break
+
     return scores, times
 
-#from eval import *
-scores, times = dqn()
-np.save("times_models.npy", times)
-#perf = evaluate()
-#np.save("performances_models.npy", perf)
-#plotting_time(times, perf, "neural")
-# plot the scores
-fig = plt.figure()
-ax = fig.add_subplot(111)
-plt.plot(np.arange(len(scores)), scores)
-plt.ylabel('Score')
-plt.xlabel('Episode #')
-plt.savefig('learning_curve_2000_min220.png')
-plt.show()
-env.close()
+if __name__ == '__main__':
+   dqn()
 
+   #for i in range(15):
+   #     dqn(i)

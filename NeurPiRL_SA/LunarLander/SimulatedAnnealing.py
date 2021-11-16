@@ -1,4 +1,5 @@
 from DSL import *
+
 import numpy as np
 import random
 import time
@@ -32,6 +33,24 @@ class SimulatedAnnealing():
         # Set seed
         np.random.seed(seed)
         random.seed(seed)
+
+    def update_log_file(self, id_log, best_reward, best_score, time_start):
+        with open(join(self.log_folder + self.log_file), 'a') as results_file:
+            results_file.write(("{:d}, {:f}, {:f}, {:d}, {:f} \n".format(id_log,
+                                                                         best_reward,
+                                                                         best_score,
+                                                                         self.eval_function.get_games_played(),
+                                                                         time.time() - time_start)))
+
+    def update_program_file(self, id_log, best_reward_program):
+        with open(join(self.program_folder + self.program_file), 'a') as results_file:
+            results_file.write(("{:d} \n".format(id_log)))
+            results_file.write(best_reward_program.to_string())
+            results_file.write('\n')
+
+    def update_binary_file(self, best_reward_program):
+        with open(self.binary_program_file, 'wb') as file_program:
+            pickle.dump(best_reward_program, file_program)
 
     def mutate_inner_nodes_ast(self, p, index):
         self.processed += 1
@@ -283,44 +302,59 @@ class SimulatedAnnealing():
 
         id_log = 1
 
+        # Initialize Program
         if initial_program is not None:
             current_program = copy.deepcopy(initial_program)
         else:
             current_program = self.random_program()
+        if bayes_opt:
+            self.eval_function.optimize(current_program)
 
+        # Evaluate initial program
         best_reward_program = copy.deepcopy(current_program)
         best_reward = self.eval_function.collect_reward(best_reward_program, nb_evaluations)
 
-        iteration_number = 1
+        # Save
+        self.update_log_file(id_log, best_reward, 0.0, time_start)
+        self.update_program_file(id_log, best_reward_program)
+        self.update_binary_file(best_reward_program)
 
         while time.time() - time_start < time_limit - self.slack_time:
 
             # RESET SA
+            iteration_number = 1
             self.current_temperature = self.initial_temperature
+
             current_program = best_reward_program
-            best_program = current_program
+            best_score_program = current_program
+
             best_score = self.eval_function.evaluate(current_program)
             current_score = best_score
 
             # START SA
             while self.current_temperature > 1:
 
-                time_end = time.time()
-
-                if time_end - time_start > time_limit - self.slack_time:
+                # If time is up, save best program and exit
+                if time.time() - time_start > time_limit - self.slack_time:
+                    self.update_log_file(id_log, best_reward, best_score, time_start)
+                    self.update_program_file(id_log, best_reward_program)
+                    self.update_binary_file(best_reward_program)
                     return best_reward, best_reward_program
 
+                # Mutate and (optionally) optimize current program
                 mutation = self.mutate(copy.deepcopy(current_program))
-
                 if bayes_opt:
                     self.eval_function.optimize(mutation)
 
+                # Evaluate mutation
                 next_score = self.eval_function.evaluate(mutation)
 
-                if best_program is None or next_score > best_score:
+                # Improved score?
+                if next_score > best_score:
                     best_score = next_score
-                    best_program = mutation
+                    best_score_program = mutation
 
+                # Accept a new program? Note: if next_score > current_score, we accept.
                 prob_accept = min(1, self.accept_function(current_score, next_score))
                 prob = random.uniform(0, 1)
                 if prob < prob_accept:
@@ -328,39 +362,24 @@ class SimulatedAnnealing():
                     current_score = next_score
 
                 iteration_number += 1
-
                 self.decrease_temperature(iteration_number)
             # END SA
 
             # update history
-            self.eval_function.update_trajectory0(best_program)
+            self.eval_function.update_trajectory0(best_score_program)
 
-            # evaluate in environment
-            current_reward = self.eval_function.collect_reward(best_program, nb_evaluations)
+            # evaluate best mutation in environment
+            current_reward = self.eval_function.collect_reward(best_score_program, nb_evaluations)
 
-            iteration_number = 1
-
-            if best_reward_program is None or current_reward > best_reward:
+            if current_reward > best_reward:
                 best_reward = current_reward
-                best_reward_program = best_program
+                best_reward_program = best_score_program
 
-                with open(self.binary_program_file, 'wb') as file_program:
-                    pickle.dump(current_program, file_program)
-
-                if self.winrate_target is None:
-                    with open(join(self.log_folder + self.log_file), 'a') as results_file:
-                        results_file.write(("{:d}, {:f}, {:f}, {:d}, {:f} \n".format(id_log,
-                                                                                     best_reward,
-                                                                                     best_score,
-                                                                                     self.eval_function.get_games_played(),
-                                                                                     time.time() - time_start)))
-
-                    with open(join(self.program_folder + self.program_file), 'a') as results_file:
-                        results_file.write(("{:d} \n".format(id_log)))
-                        results_file.write(best_reward_program.to_string())
-                        results_file.write('\n')
-
-                    id_log += 1
+                # Update Files
+                self.update_log_file(id_log, best_reward, best_score, time_start)
+                self.update_program_file(id_log, best_reward_program)
+                self.update_binary_file(best_reward_program) 
+                id_log += 1
 
         return best_reward, best_reward_program
 
@@ -414,10 +433,14 @@ class SimulatedAnnealing():
 
         id_log = 1
 
+        # Initialize current program
         if initial_program is not None:
             current_program = copy.deepcopy(initial_program)
         else:
             current_program = self.random_program()
+        # BayesOpt for current program
+        if bayes_opt:
+            self.eval_function.optimize(current_program)
 
         while True:
             self.current_temperature = self.initial_temperature
@@ -437,36 +460,19 @@ class SimulatedAnnealing():
                 best_score = current_score
                 best_program = current_program
 
-                with open(self.binary_program_file, 'wb') as file_program:
-                    pickle.dump(current_program, file_program)
-
-                if self.winrate_target is None:
-                    with open(join(self.log_folder + self.log_file), 'a') as results_file:
-                        results_file.write(("{:d}, {:f}, {:f}, {:d}, {:f} \n".format(id_log,
-                                                                               best_score,
-                                                                               self.eval_function.collect_reward(best_program, 25),
-                                                                               self.eval_function.get_games_played(),
-                                                                               time.time() - time_start)))
-
-                    with open(join(self.program_folder + self.program_file), 'a') as results_file:
-                        results_file.write(("{:d} \n".format(id_log)))
-                        results_file.write(best_program.to_string())
-                        results_file.write('\n')
-
-                    id_log += 1
+                self.update_log_file(id_log, 0.0, best_score, time_start)
+                self.update_program_file(id_log, best_program)
+                self.update_binary_file(best_program)
+                id_log += 1
 
             while self.current_temperature > 1:
 
                 time_end = time.time()
 
                 if time_end - time_start > time_limit - self.slack_time:
-                    if self.winrate_target is None:
-                        with open(join(self.log_folder + self.log_file), 'a') as results_file:
-                            results_file.write(("{:d}, {:f}, {:f}, {:d}, {:f} \n".format(id_log,
-                                                                                   best_score,
-                                                                                   self.eval_function.collect_reward(best_program, 25),
-                                                                                   self.eval_function.get_games_played(),
-                                                                                   time_end - time_start)))
+                    self.update_log_file(id_log, best_score, best_score, time_start)
+                    self.update_program_file(id_log, best_program)
+                    self.update_binary_file(best_program)
                     return best_score, best_program
 
                 copy_program = copy.deepcopy(current_program)
@@ -479,7 +485,7 @@ class SimulatedAnnealing():
 
                 # BayesOpt for mutated program
                 if bayes_opt:
-                    self.eval_function.optimize(current_program)
+                    self.eval_function.optimize(mutation)
 
                 if use_triage:
                     next_score, number_matches_played = self.eval_function.eval_triage(mutation, best_score)
@@ -489,54 +495,26 @@ class SimulatedAnnealing():
                 if self.winrate_target is not None and next_score >= self.winrate_target:
                     return next_score, mutation
 
+                # Better program?
                 if best_program is None or next_score > best_score:
 
                     best_score = next_score
                     best_program = mutation
 
-                    #print('\nCurrent best: ', best_score)
-                    #print(best_program.to_string())
+                    self.update_log_file(id_log, best_score, best_score, time_start)
+                    self.update_program_file(id_log, best_program)
+                    self.update_binary_file(best_program)  # changed from current program
+                    id_log += 1
 
-                    with open(self.binary_program_file, 'wb') as file_program:
-                        pickle.dump(current_program, file_program)
-
-                    if self.winrate_target is None:
-                        with open(join(self.log_folder + self.log_file), 'a') as results_file:
-                            results_file.write(("{:d}, {:f}, {:f}, {:d}, {:f} \n".format(id_log,
-                                                                                   best_score,
-                                                                                   self.eval_function.collect_reward(best_program, 25),
-                                                                                   self.eval_function.get_games_played(),
-                                                                                   time_end - time_start)))
-
-                        with open(join(self.program_folder + self.program_file), 'a') as results_file:
-                            results_file.write(("{:d} \n".format(id_log)))
-                            results_file.write(best_program.to_string())
-                            results_file.write('\n')
-
-                        id_log += 1
-
-#                print('\nCurrent best: ', best_score)
-#                print(best_program.to_string())
-
+                # Accept new program?
                 prob_accept = min(1, self.accept_function(current_score, next_score))
-
                 prob = random.uniform(0, 1)
                 if prob < prob_accept:
-                    #                     print('Probability of accepting: ', prob_accept, next_score, current_score, self.current_temperature)
-
-                    #                     print(mutation.to_string())
-                    #                     print('Score: ', next_score)
-                    #                     print()
-
                     current_program = mutation
                     current_score = next_score
 
-                #                     print('Current score: ', current_score)
-
                 iteration_number += 1
-
                 self.decrease_temperature(iteration_number)
-            #                 print('Current Temp: ', self.current_temperature)
 
             if initial_program is not None:
                 current_program = copy.deepcopy(initial_program)
@@ -550,3 +528,5 @@ class SimulatedAnnealing():
             best_score = self.eval_function.update_trajectory1(current_program, best_score)
 
         return best_score, best_program
+
+

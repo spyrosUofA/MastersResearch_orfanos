@@ -28,7 +28,7 @@ class Node:
                 name = "Num" + str(i)
                 i += 1
                 originals.append(node.children[0])
-                interval = create_interval(node.children[0], 0.1)
+                interval = create_interval(node.children[0], 1.0)
                 dict_ranges[name] = copy.deepcopy(interval)
                 # print(type(interval))
             elif type(node) is Ite:
