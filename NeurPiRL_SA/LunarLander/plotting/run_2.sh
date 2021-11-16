@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=rrg-lelis
-#SBATCH --mem=16000M   
+#SBATCH --mem=4000M   
 #SBATCH --cpus-per-task=16
 #SBATCH --time=0:10:00
 

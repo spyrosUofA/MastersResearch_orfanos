@@ -1,0 +1,33 @@
+created virtual environment CPython3.6.10.final.0-64 in 17828ms
+  creator CPython3Posix(dest=/localscratch/orfanos.27708088.0/env, clear=False, global=False)
+  seeder FromAppData(download=False, pip=latest, setuptools=latest, wheel=latest, via=copy, app_data_dir=/home/orfanos/.local/share/virtualenv/seed-app-data/v1.0.1)
+  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
+Ignoring pip: markers 'python_version < "3"' don't match your environment
+Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx512, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx2, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pip-21.2.3+computecanada-py3-none-any.whl
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 20.0.2
+    Uninstalling pip-20.0.2:
+      Successfully uninstalled pip-20.0.2
+Successfully installed pip-21.2.3+computecanada
+Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx512, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx2, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/torch-1.6.0+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/bayesian_optimization-1.2.0-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/cloudpickle-1.6.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/future-0.18.2+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/gym-0.18.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/box2d_py-2.3.5+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/joblib-1.0.1+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pandas-1.0.3+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/Pillow-7.2.0+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pyglet-1.5.0+computecanada-py2.py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/scikit_learn-0.24.1+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/scipy-1.4.1+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/threadpoolctl-2.1.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/numpy-1.19.5+computecanada-cp36-cp36m-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/python_dateutil-2.8.2+computecanada-py2.py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pytz-2021.3+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/six-1.16.0+computecanada-py2.py3-none-any.whl
+Installing collected packages: numpy, threadpoolctl, six, scipy, joblib, future, scikit-learn, pytz, python-dateutil, pyglet, Pillow, cloudpickle, torch, pandas, gym, Box2d-py, bayesian-optimization
+Successfully installed Box2d-py-2.3.5+computecanada Pillow-7.2.0+computecanada bayesian-optimization-1.2.0 cloudpickle-1.6.0+computecanada future-0.18.2+computecanada gym-0.18.0+computecanada joblib-1.0.1+computecanada numpy-1.19.5+computecanada pandas-1.0.3+computecanada pyglet-1.5.0+computecanada python-dateutil-2.8.2+computecanada pytz-2021.3+computecanada scikit-learn-0.24.1+computecanada scipy-1.4.1+computecanada six-1.16.0+computecanada threadpoolctl-2.1.0+computecanada torch-1.6.0+computecanada

@@ -10,6 +10,3 @@ pip install --no-index --upgrade pip
 pip install --no-index -r requirements.txt
 
 python main.py -time 7800 -seed ${seed} -oracle ${oracle} -e "DAgger" --aug_dsl -approach "0"
-
-
-python3 main.py -time 7800 -seed 500 -oracle 1 -e "DAgger" --aug_dsl -approach "0"

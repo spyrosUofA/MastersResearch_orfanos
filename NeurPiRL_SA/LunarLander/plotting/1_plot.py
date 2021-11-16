@@ -42,17 +42,18 @@ def plot_one(oracle_nb):
 
         # Read  games, times, rewards, and scores
         episodes_X.extend(output[:, 3])
-        times_X.extend(output[:, 4])
+        # times_X.extend(output[:, 4])
 
         rewards_Y.extend(output[:, 1])
         scores_Y.extend(output[:, 2])
         
         # Add previous run times
-        #times = output[:, 4] + (r-1) * RUN_TIME
-    
+        times = output[:, 4] + (r-1) * RUN_TIME
+        times_X.extend(times) 
+
     # Accumulate episodes and times 
     episodes_X = np.cumsum(episodes_X)
-    times_X = np.cumsum(times_X)
+    # times_X = np.cumsum(times_X)
 
     # Accumulate maximum reward and score
     rewards_Y = np.maximum.accumulate(rewards_Y)
