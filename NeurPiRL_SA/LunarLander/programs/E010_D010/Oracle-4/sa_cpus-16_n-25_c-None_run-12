@@ -1,0 +1,10 @@
+1 
+(if (-2.0 < obs[1]) then: (if (obs[4] < ((4.0 + (max(0, [-0.183  0.032 -0.666 -0.27   0.615  0.585  0.195 -0.483] *dot* obs[:] + -0.601) * (obs[6] * obs[5]))) * obs[7])) then: (if (((max(0, [ 0.218 -1.37  -0.155 -0.54  -0.704 -0.184 -0.162 -0.219] *dot* obs[:] + -0.426) + 0.0) * (obs[4] + obs[3])) < (obs[4] + max(0, [-0.142 -0.645 -0.367 -1.225  0.024  0.128 -0.325 -0.648] *dot* obs[:] + -0.185))) then: (if ((max(0, [-0.056 -0.838  1.528  0.804 -0.567 -0.103  0.428 -0.141] *dot* obs[:] + -0.294) * obs[0]) < (-2.0 + 2.0)) then: act = 0 else: act = 2) else: act = 1) else: act = 3) else: (if (0.0 < 2.0) then: act = 3 else: act = 0))
+2 
+(if (-2.0 < obs[1]) then: (if (obs[4] < obs[7]) then: (if ((obs[7] * (obs[3] + obs[3])) < (obs[4] + max(0, [-0.142 -0.645 -0.367 -1.225  0.024  0.128 -0.325 -0.648] *dot* obs[:] + -0.185))) then: (if ((max(0, [-0.056 -0.838  1.528  0.804 -0.567 -0.103  0.428 -0.141] *dot* obs[:] + -0.294) * obs[0]) < (-2.0 + 2.0)) then: act = 0 else: act = 2) else: act = 1) else: act = 3) else: (if (0.0 < 2.0) then: act = 3 else: act = 0))
+3 
+(if (-2.0 < obs[2]) then: (if (obs[4] < obs[7]) then: (if ((obs[7] * (obs[3] + obs[3])) < (obs[4] + max(0, [-0.142 -0.645 -0.367 -1.225  0.024  0.128 -0.325 -0.648] *dot* obs[:] + -0.185))) then: (if (0.0 < (-2.0 + 2.0)) then: act = 0 else: act = 2) else: act = 1) else: act = 3) else: (if (0.0 < 2.0) then: act = 3 else: act = 0))
+4 
+(if (-2.0 < obs[2]) then: (if (obs[4] < obs[7]) then: (if ((obs[7] * (obs[3] + obs[3])) < (obs[4] + max(0, [-0.142 -0.645 -0.367 -1.225  0.024  0.128 -0.325 -0.648] *dot* obs[:] + -0.185))) then: (if (0.0 < (((obs[3] * (obs[7] * (obs[1] * obs[3]))) + -2.0) + 0.0)) then: act = 0 else: act = 2) else: act = 1) else: act = 3) else: (if (0.0 < 2.0) then: act = 3 else: act = 0))
+5 
+(if (-2.0 < obs[2]) then: (if (obs[4] < obs[7]) then: (if ((obs[7] * (obs[3] + obs[3])) < (obs[4] + max(0, [-0.142 -0.645 -0.367 -1.225  0.024  0.128 -0.325 -0.648] *dot* obs[:] + -0.185))) then: (if (0.0 < (((obs[3] * (obs[7] * (obs[1] * obs[3]))) + -2.0) + 0.0)) then: act = 0 else: act = 2) else: act = 1) else: act = 3) else: (if (0.0 < 2.0) then: act = 3 else: act = 0))

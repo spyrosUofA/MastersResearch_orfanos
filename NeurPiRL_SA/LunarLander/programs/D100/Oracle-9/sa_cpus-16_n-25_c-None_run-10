@@ -1,0 +1,10 @@
+1 
+(if (0.09379263877849953 < obs[4]) then: act = 3 else: (if ((obs[2] * obs[2]) < 0.3152242433124899) then: act = 1 else: act = 1))
+2 
+(if (0.09379263877849953 < obs[4]) then: act = 3 else: (if ((obs[2] * obs[2]) < 0.3152242433124899) then: act = 1 else: act = 1))
+3 
+(if (0.09379263877849953 < obs[4]) then: act = 3 else: (if ((obs[2] * obs[2]) < 0.3152242433124899) then: act = 1 else: act = 1))
+4 
+(if (0.02892520815041455 < obs[4]) then: act = 3 else: (if ((obs[0] * obs[2]) < -0.30307486649477644) then: act = 1 else: act = 1))
+5 
+(if (0.02892520815041455 < obs[4]) then: act = 3 else: (if ((obs[0] * obs[2]) < -0.30307486649477644) then: act = 1 else: act = 1))

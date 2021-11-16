@@ -1,0 +1,4 @@
+1 
+(if (obs[2] < (obs[3] + obs[4])) then: act = 3 else: (if ((obs[0] + -4.0) < 2.0) then: (if ((obs[2] + obs[3]) < obs[7]) then: act = 2 else: (if (max(0, [ 0.32   0.131  0.422 -0.536  0.208 -0.032 -0.925  0.405] *dot* obs[:] + 0.098) < (-2.0 + obs[6])) then: act = 0 else: act = 1)) else: (if (max(0, [-0.344 -0.112  0.671 -0.987 -0.168  0.273 -0.118 -0.083] *dot* obs[:] + 0.727) < obs[3]) then: act = 1 else: act = 2)))
+2 
+(if (obs[2] < (obs[3] + obs[4])) then: act = 3 else: (if ((obs[0] + -4.0) < 2.0) then: (if ((obs[2] + obs[3]) < obs[7]) then: act = 2 else: (if (max(0, [ 0.32   0.131  0.422 -0.536  0.208 -0.032 -0.925  0.405] *dot* obs[:] + 0.098) < (-2.0 + obs[6])) then: act = 0 else: act = 1)) else: (if (max(0, [-0.344 -0.112  0.671 -0.987 -0.168  0.273 -0.118 -0.083] *dot* obs[:] + 0.727) < obs[3]) then: act = 1 else: act = 2)))

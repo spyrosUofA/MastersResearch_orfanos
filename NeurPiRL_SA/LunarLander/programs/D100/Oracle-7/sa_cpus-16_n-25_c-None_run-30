@@ -1,0 +1,6 @@
+1 
+(if (-4.063520198383762 < (((0.0 * 0.0) + 2.0) * (-2.0 + (obs[3] * obs[7])))) then: (if (obs[4] < (obs[7] * -2.0)) then: act = 1 else: act = 0) else: act = 2)
+2 
+(if (-4.063520198383762 < (((0.0 * 0.0) + 2.0) * (-2.0 + (obs[3] * obs[7])))) then: (if (obs[4] < (obs[7] * -2.0)) then: act = 1 else: act = 0) else: act = 2)
+3 
+(if (-4.063520198383762 < (((0.0 * 0.0) + 2.0) * (-2.0 + (obs[3] * obs[7])))) then: (if (obs[4] < (obs[7] * -2.0)) then: act = 1 else: act = 0) else: act = 2)

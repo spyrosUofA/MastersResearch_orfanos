@@ -1,0 +1,8 @@
+1 
+(if ((((-4.0 * 0.0) + (-4.0 * obs[1])) * (obs[5] + 4.0)) < (obs[7] + ((obs[5] * (-4.0 * ((((((obs[4] * obs[7]) + 4.0) + ((-2.0 + ((-4.0 + obs[2]) * -2.0)) + 4.0)) + 2.0) + (obs[3] + (obs[7] * obs[6]))) + (((4.0 + obs[1]) + (obs[2] + obs[7])) + ((2.0 * obs[5]) + (-2.0 * 0.0)))))) + -1.3328482038686085))) then: (if (((obs[0] * (0.0 + (obs[6] + (obs[3] + (((obs[0] + (obs[4] * ((obs[2] * obs[7]) * obs[5]))) + obs[4]) + obs[1]))))) * ((2.0 + (obs[0] + obs[0])) + (obs[2] + -4.0))) < (-2.0 * 0.0)) then: (if ((0.0 * 4.0) < obs[3]) then: act = 1 else: act = 2) else: act = 3) else: (if ((obs[6] * obs[7]) < obs[7]) then: (if (obs[1] < 24.115204802979584) then: act = 0 else: (if (obs[1] < -23.54894970037475) then: act = 2 else: act = 2)) else: (if (20.636306736363956 < obs[4]) then: act = 0 else: act = 0)))
+2 
+(if (((4.0 + 0.0) * obs[7]) < obs[4]) then: act = 3 else: (if (0.33372128284157254 < obs[7]) then: act = 0 else: act = 1))
+3 
+(if (((4.0 + 0.0) * obs[7]) < obs[4]) then: act = 3 else: (if (0.33372128284157254 < obs[7]) then: act = 0 else: act = 1))
+4 
+(if (((4.0 + 0.0) * obs[7]) < obs[4]) then: act = 3 else: (if (0.33372128284157254 < obs[7]) then: act = 0 else: act = 1))

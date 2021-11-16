@@ -1,0 +1,4 @@
+1 
+(if ((-3.9650794952816772 + obs[3]) < (-4.0 * ((-4.0 * 0.0) + (0.0 + obs[6])))) then: (if (obs[0] < obs[4]) then: act = 3 else: act = 1) else: act = 0)
+2 
+(if ((-3.9650794952816772 + obs[3]) < (-4.0 * ((-4.0 * 0.0) + (0.0 + obs[6])))) then: (if (obs[0] < obs[4]) then: act = 3 else: act = 1) else: act = 0)

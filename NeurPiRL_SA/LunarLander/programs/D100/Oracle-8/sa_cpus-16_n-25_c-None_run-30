@@ -1,0 +1,4 @@
+1 
+(if (obs[6] < obs[4]) then: act = 3 else: act = 0)
+2 
+(if (obs[6] < obs[4]) then: act = 3 else: act = 0)

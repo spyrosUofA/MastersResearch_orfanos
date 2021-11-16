@@ -1,0 +1,16 @@
+1 
+(if (((obs[0] * obs[5]) * (-4.0 * -4.0)) < obs[3]) then: (if ((obs[0] * obs[1]) < (0.0 * 2.0)) then: (if (obs[7] < -4.0) then: (if (-4.0 < obs[1]) then: act = 0 else: act = 1) else: act = 2) else: (if (4.0 < 0.0) then: act = 0 else: (if (-4.0 < 4.0) then: act = 1 else: act = 1))) else: act = 0)
+2 
+(if ((obs[4] * (4.0 + ((((-2.0 + -4.0) * ((obs[7] * -2.0) + 0.0)) + (((0.0 * obs[6]) * (-4.0 * obs[3])) + 0.0)) * -2.0))) < (-2.0 + (2.0 + obs[2]))) then: act = 1 else: act = 3)
+3 
+(if ((obs[4] * (4.0 + ((-2.0 + (((0.0 * obs[6]) * (-4.0 * obs[3])) + 0.0)) * -2.0))) < (-2.0 + (2.0 + obs[2]))) then: act = 1 else: act = 3)
+4 
+(if ((obs[4] * (4.0 + ((-2.0 + (((0.0 * obs[6]) * (-4.0 * obs[3])) + 0.0)) * -2.0))) < (-2.0 + (2.0 + obs[2]))) then: act = 1 else: act = 3)
+5 
+(if (obs[3] < 4.0) then: (if (obs[2] < obs[4]) then: (if (4.0 < ((obs[3] + 4.0) + (obs[1] + ((obs[4] * 4.0) + obs[2])))) then: act = 3 else: act = 2) else: act = 1) else: act = 0)
+6 
+(if (obs[3] < 4.0) then: (if (obs[2] < obs[4]) then: (if (4.0 < ((obs[3] + 4.0) + (obs[1] + ((obs[4] * 4.0) + obs[2])))) then: act = 3 else: act = 2) else: act = 1) else: act = 0)
+7 
+(if (obs[3] < 4.0) then: (if (obs[2] < obs[4]) then: (if (4.0 < ((obs[3] + 4.0) + (obs[1] + ((obs[4] * 4.0) + obs[2])))) then: act = 3 else: act = 2) else: act = 1) else: act = 0)
+8 
+(if (obs[3] < 4.0) then: (if (obs[2] < obs[4]) then: (if (4.0 < ((obs[3] + 4.0) + (obs[1] + ((obs[4] * 4.0) + obs[2])))) then: act = 3 else: act = 2) else: act = 1) else: act = 0)

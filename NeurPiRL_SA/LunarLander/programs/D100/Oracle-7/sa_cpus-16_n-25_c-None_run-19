@@ -1,0 +1,8 @@
+1 
+(if (obs[0] < (4.0 * (-2.0 * (((obs[0] + 0.0) + 0.0) * obs[6])))) then: (if (0.05007771028602592 < obs[4]) then: act = 3 else: act = 1) else: act = 0)
+2 
+(if (obs[0] < (4.0 * (-2.0 * (((obs[0] + 0.0) + 0.0) * obs[6])))) then: (if (0.05007771028602592 < obs[4]) then: act = 3 else: act = 1) else: act = 0)
+3 
+(if (obs[0] < (4.0 * (-2.0 * (((obs[0] + 0.0) + 0.0) * obs[6])))) then: (if (0.05007771028602592 < obs[4]) then: act = 3 else: act = 1) else: act = 0)
+4 
+(if (obs[0] < (4.0 * (-2.0 * (((obs[0] + 0.0) + 0.0) * obs[6])))) then: (if (0.05007771028602592 < obs[4]) then: act = 3 else: act = 1) else: act = 0)

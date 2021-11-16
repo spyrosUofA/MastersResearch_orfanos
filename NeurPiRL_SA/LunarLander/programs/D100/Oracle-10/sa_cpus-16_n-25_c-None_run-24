@@ -1,0 +1,2 @@
+1 
+(if (obs[1] < obs[4]) then: act = 3 else: (if (-2.0 < obs[7]) then: (if (obs[1] < obs[2]) then: (if (-2.0 < obs[0]) then: act = 2 else: act = 0) else: (if (-2.0 < -4.0) then: act = 2 else: act = 1)) else: act = 3))
