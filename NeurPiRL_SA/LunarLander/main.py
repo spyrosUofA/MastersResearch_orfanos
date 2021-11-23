@@ -92,8 +92,8 @@ def main():
 
     # Specify folder and file names
     folder_name = str(parameters.eval_function)[0] + str(int(parameters.bayes_opt)) + str(int(parameters.augment_dsl))\
-                   + parameters.approach + "b" + ("" if parameters.init_program is None else ("_" + parameters.init_program[0:4]))\
-                    + '/Oracle-' + parameters.oracle
+                   + str(parameters.approach) + ("" if parameters.init_program is None else ("_" + parameters.init_program[0:4]))\
+                    + '/Oracle-' + str(parameters.oracle)
 
     file_name = '_n-' + str(number_games) + '_c-' + str(parameters.capacity) + '_run-' + str(seed) + parameters.file_name
 
@@ -116,6 +116,9 @@ def main():
                              "actions": actions,
                              "ReLUs": accepted_relus,
                              "capacity": parameters.capacity}
+        print(accepted_relus)
+    else:
+        parameters.oracle = {}
         
     # Constructors
     eval_function = globals()[parameters.eval_function]((parameters.oracle), number_games, seed)

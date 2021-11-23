@@ -13,8 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import pathlib
 
-import warnings
-warnings.filterwarnings('error')
+
 
 def get_action(obs, p):
     actions = []
@@ -137,28 +136,26 @@ class BottomUpSearch():
             filename+=".txt"
             graph_name += ".png"
 
-        with open(filename, "w") as text_file:
-            text_file.write("Best programs:\n")
+        #with open(filename, "w") as text_file:
+        #    text_file.write("Best programs:\n")
+
         parameter_finder = ParameterFinderDiscrete(observations, actions)
         for current_size in range(2, bound + 1):
             for p in self.grow(plist, closed_list, operations, current_size):
-                #print(p.name)
                 if p.name() == Ite.name():
                     p_copy = copy.deepcopy(p)
                     if PiRL:
-                        #print("test")
-                        print(p_copy.toString())
-                        reward = parameter_finder.optimize(p_copy)
-                        #print(reward)
-                        #print(p_copy.toString())
+                        t000 = time.time()
+                        score = parameter_finder.optimize(p_copy)
+                        #print(time.time() - t000)
                     number_evaluations += 1
                     reward = self.evaluate(p_copy, 10)
                     if reward > best_reward:
                         reward = self.evaluate(p_copy, 100)
                         if reward > best_reward:
                             print(p_copy.toString(), reward)
-                            with open(filename, "a") as text_file:
-                                text_file.write(p_copy.toString()+str(reward)+"\n")
+                            #with open(filename, "a") as text_file:
+                            #    text_file.write(p_copy.toString()+str(reward)+"\n")
                             best_reward = reward
                             best_policy = p_copy
 
@@ -182,8 +179,8 @@ class BottomUpSearch():
         if best_policy is not None:
             reward = self.evaluate(best_policy, 1000)
             print(best_policy.toString(), reward)
-            with open(filename, "a") as text_file:
-                text_file.write("best: "+best_policy.toString() + str(reward) + "\n")
+           # with open(filename, "a") as text_file:
+           #     text_file.write("best: " +best_policy.toString() + str(reward) + "\n")
 
         best_rewards.append(best_reward)
         elapsed_times.append(time.time() - start)
@@ -326,91 +323,19 @@ if __name__ == '__main__':
     #actions = np.load("actions_con.npy")[:100]
 
     ## CartPole-v1
-    trajs = pd.read_csv("../Setup/trajectory.csv", nrows=5000)
+    #trajs = pd.read_csv("../Setup/trajectory.csv", nrows=5000)
+    trajs = pd.read_csv("../Setup/trajectory.csv")
     observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']].to_numpy()
-
-    NEURON_CONSTANTS = [-0.25, 0.0, 0.25, 0.5, 0.8, 2]
-    NUM_CONSTANTS = [0.25, 0.0, -0.25]
-    NEURONS = 2
+    actions = trajs['a'].to_numpy()
 
     prog_relus = []
     prog_relus.append(ReLU([1.1228,  0.0633, -3.4613, -2.2452], 0.1867))
     prog_relus.append(ReLU([-0.5183, -0.7270, -6.0250, -2.2768], 0.1656))
 
-    obs0 = [-0.04456399, 0.04653909, 0.01326909, -0.02099827]
-    #print(prog_relus[0].interpret(obs0).toString())
-    #print(prog_relus[1].interpret(obs0).toString())
+    p, num = synthesizer.synthesize(15, [Ite, Lt], [0.0], [0, 1, 2, 3], [0, 1], observations, actions,
+                                    prog_relus, "_test_Nov", PiRL=False)
 
-    namespace = {'obs': obs0, 'act': 0}
-    ##print(namespace['obs'])
-    #print(type(namespace['obs']))
-    #print(prog_relus[0].interpret(namespace))
-
-    actions = trajs['a'].to_numpy()
-    p, num = synthesizer.synthesize(11, [Ite, Lt], NUM_CONSTANTS, [0, 1, 2, 3], [0, 1], observations, actions,
-                                    [], "_test_sept", PiRL=True)
-    #Found array with 0 feature(s) (shape=(1, 0)) while a minimum of 1 is required.
     exit()
-
-    #neuron_values = [trajs["N" + str(x)].to_numpy() for x in lala]
-    neuron1_tree, num = synthesizer.synthesize_neurons(10, [Ite, Lt], NEURON_CONSTANTS,
-                                                      [0, 1, 2, 3], observations, NEURONS, PiRL=True)
-    exit()
-
-    # Imitate Neurons
-    if False:
-        starting_time = time.time()
-
-        print("Neuron 1")
-        neuron1 = trajs['N1'].to_numpy()
-        neuron1_tree, num = synthesizer.synthesize_neuron(10, [Ite, Lt, AssignAction, Addition], NEURON_CONSTANTS, [0, 1, 2, 3], observations, neuron1, 1, PiRL=True)
-        pickle.dump(neuron1_tree, file=open("neuron1_tree_test.pickle", "wb"))
-        #(if(obs[3] < 0.1068607496172635) then act = 0.4 else act = 2.0) -0.019605807716307922
-        #neuron1_tree = Ite(Lt(Observation(1), Num(-0.33849702456845226)), AssignAction(Num(1.985333726874753)),
-        #                   Ite(Lt(Observation(1), Num(0.0030069121715175368)), AssignAction(Num(0.8942757185406707)),
-        #                       AssignAction(Num(0.0030069121715175368))))
-        print("N1 time:")
-        print(time.time() - starting_time)
-
-        print("Neuron 2")
-        neuron2 = trajs['N2'].to_numpy()
-        neuron2_tree, num = synthesizer.synthesize_neuron(10, [Ite, Lt, AssignAction, Addition], NEURON_CONSTANTS, [0, 1, 2, 3],  observations, neuron2, 2, PiRL=True)
-        pickle.dump(neuron2_tree, file=open("neuron2_tree.pickle", "wb"))
-        end_time = time.time() - starting_time
-
-        print("total time:")
-        print(time.time() - starting_time)
-
-
-    if False:
-        neuron1_tree = pickle.load(open("neuron1_tree.pickle", "rb")).getBooleans()
-        neuron2_tree = pickle.load(open("neuron2_tree.pickle", "rb")).getBooleans()
-        bool_programs = copy.deepcopy(neuron1_tree + neuron2_tree)
-        #boolean_rules = re.findall(r'.if\((.*?)\)', p.toString())
-
-        for i in range(len(bool_programs)):
-            print(bool_programs[i].toString())
-            bool_programs[i].size = 1
-
-    if False:
-        bool_programs = []
-        bool_programs.append(Lt(Num(0.02), Observation(1)))
-        bool_programs.append(Lt(Observation(1), Num(0.02)))
-        bool_programs.append(Lt(Num(-0.34), Observation(1)))
-        bool_programs.append(Lt(Num(0.03), Observation(2)))
-        bool_programs.append(Lt(Observation(1), Num(-0.17)))
-        bool_programs.append(Lt(Observation(2), Num(0.0)))
-        bool_programs.append(Lt(Num(-0.17), Observation(1)))
-        bool_programs.append(Lt(Observation(3), Num(-0.01)))
-        bool_programs.append(Lt(Num(-0.01), Observation(3)))
-
-        for i in range(len(bool_programs)):
-            print(bool_programs[i].toString())
-            bool_programs[i].size = 1
-
-    actions = trajs['a'].to_numpy()
-    #p, num = synthesizer.synthesize(15, [Ite, Lt], [0.25, 0.0, -0.25], [0, 1, 2, 3], [0, 1], observations, actions,
-    #                                [], "_direct_15", PiRL=True)
 
     p, num = synthesizer.synthesize(15, [Ite, Lt], [-0.0462, -0.0068], [0, 1, 2, 3], [0, 1], observations, actions,
                                     [], "sept_test", PiRL=True)

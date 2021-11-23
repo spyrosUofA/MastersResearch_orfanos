@@ -1,13 +1,14 @@
 import torch
 import gym
-from DSL import Ite, Lt, Observation, Num, AssignAction, Addition, Multiplication
+from DSL import Ite, Lt, Observation, Num, AssignAction, Addition, Multiplication, ReLU
 import numpy as np
 import copy
-from Optimization_so import ParameterFinder
+from evaluation import DAgger
 import pandas as pd
 import pickle
 import time
 
+from stable_baselines3 import PPO
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
@@ -36,7 +37,7 @@ class ProgramList():
 
         self.plist[program.getSize()][program.name()].append(program)
 
-    def init_plist(self, constant_values, observation_values, action_values, boolean_programs):
+    def init_plist(self, constant_values, observation_values, action_values, relu_programs):
         for i in observation_values:
             p = Observation(i)
             self.insert(p)
@@ -49,8 +50,9 @@ class ProgramList():
             p = AssignAction(Num(i))
             self.insert(p)
 
-        for i in range(len(boolean_programs)):
-            self.insert(boolean_programs[i])
+        for i in range(len(relu_programs)):
+            p = ReLU(relu_programs[i][0], relu_programs[i][1])
+            self.insert(p)
 
     def get_programs(self, size):
 
@@ -143,128 +145,89 @@ class BottomUpSearch():
         for p in new_programs:
             plist.insert(p)
 
-    def synthesize(self, bound, operations, constant_values, observation_values, action_values, observations, actions,
-                   boolean_programs, PiRL=False):
 
-        start = time.time()
-        elapsed_times = []
-        current_evaluation = []
+    def imitate_oracle(self, bound, eval_fn, operations, constant_values, observation_values, action_values,
+                   boolean_programs, PiRL=False):
 
         closed_list = []
         plist = ProgramList()
         plist.init_plist(constant_values, observation_values, action_values, boolean_programs)
 
-        best_reward = 0
-        best_rewards = []
+        best_score = 0.0
         best_policy = None
         number_evaluations = 0
 
-        self.outputs = set()
-        filename = "programs_NPDS"
-        if PiRL:
-            filename += "_PiRL.txt"
-        else:
-            filename += ".txt"
-        with open(filename, "w") as text_file:
-            text_file.write("Best programs:\n")
-        parameter_finder = ParameterFinder(observations, actions)
         for current_size in range(2, bound + 1):
             for p in self.grow(plist, closed_list, operations, current_size):
-                # print(p.name)
                 if p.name() == Ite.name():
                     p_copy = copy.deepcopy(p)
+                    # Evaluate policy
                     if PiRL:
-                        # print("test")
-                        #print(p_copy.toString())
-                        reward = parameter_finder.optimize(p_copy)
-                        # print(reward)
-                        #print(p_copy.toString())
+                        score = eval_fn.optimize(p_copy)
+                    else:
+                        score = eval_fn.evaluate(p_copy)
                     number_evaluations += 1
-                    reward = self.evaluate(p_copy, 10)
-                    if reward > best_reward:
-                        reward = self.evaluate(p_copy, 100)
-                        if reward > best_reward:
-                            print(p_copy.toString(), reward)
-                            with open(filename, "a") as text_file:
-                                text_file.write(p_copy.toString() + str(reward) + "\n")
-                            best_reward = reward
-                            best_policy = p_copy
 
-                            # Recording results
-                            best_rewards.append(best_reward)
-                            elapsed_times.append(time.time() - start)
-                            current_evaluation.append(number_evaluations)
+                    if score > best_score:
+                        best_policy = p_copy
+                        best_score = score
+                        print("Score: ", best_score)
+                        print(best_policy.toString())
 
-                            plt.clf()
-                            plt.step(elapsed_times, best_rewards, where='post')
-                            plt.ylim(0, 500)
-                            plt.title("CartPole-v1")
-                            plt.ylabel("Average Return")
-                            plt.xlabel("Elapsed Time (s)")
-                            plt.pause(0.01)
-
-                    # """
-                    if number_evaluations % 1000 == 0:
-                        print('AST Size: ', current_size, ' Evaluations: ', number_evaluations)
-
-        if best_policy is not None:
-            reward = self.evaluate(best_policy, 1000)
-            print(best_policy.toString(), reward)
-            with open(filename, "a") as text_file:
-                text_file.write("best: " + best_policy.toString() + str(reward) + "\n")
+                    #if number_evaluations % 1000 == 0:
+                    #    print('AST Size: ', current_size, ' Evaluations: ', number_evaluations)
 
         return best_policy, number_evaluations
 
-def algo_NDPS(pi_oracle, sketch, pomd, seed=1):
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    np.random.seed(seed)
+
+def algo_NDPS(oracle_path, roll_outs, seed=1, pomd='CartPole-v1'):
 
     # Task setup
     env = gym.make(pomd)
+    np.random.seed(seed)
     env.seed(seed)
-    obs_space = np.arange(env.observation_space.shape[0])
-    action_space = np.arange(env.action_space.n)
 
-    # load Oracle policy
-    policy = torch.load(pi_oracle)
+    operations = [Ite, Lt]
+    constant_values = [0.0]
+    observation_values = np.arange(env.observation_space.shape[0])
+    action_values = np.arange(env.action_space.n)
 
-    # initial trajectory from oracle
-    trajs = pd.read_csv("../Setup/trajectory.csv", nrows=500)
-    observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']].to_numpy().tolist()
-    actions = trajs['a'].to_numpy().tolist()
+    # load oracle model, histories, and relus
+    model = PPO.load("./Oracle/" + oracle_path + '/model.zip')
+    inputs = np.load("./Oracle/" + oracle_path + "/Observations.npy").tolist()
+    actions = np.load("./Oracle/" + oracle_path + "/Actions.npy").tolist()
+    relu_programs = pickle.load(open("./Oracle/" + oracle_path + "/ReLUs.pkl", "rb"))
 
-    # initial irl policy
+    # Arguments for evaluation function
+    oracle = {"oracle": model, "inputs": inputs, "actions": actions}
     synthesizer = BottomUpSearch()
-    p, num = synthesizer.synthesize(10, sketch, [0.25, 0.0, -0.25], obs_space, action_space, observations,
-                                    actions, [], PiRL=True)
+    eval_fn = DAgger(oracle, nb_evaluations=25, seed=seed, env_name=pomd)
 
-    M = 5
+    # NDPS
+    best_reward = 0
+    for i in range(roll_outs):
+        # Imitation Step
+        next_program, nb_evals = synthesizer.imitate_oracle(11, eval_fn, operations, constant_values, observation_values, action_values,
+                    relu_programs, True)
 
-    for i in range(M):
-        print("k=", str(i))
+        # Evalaute program
+        reward = eval_fn.collect_reward(next_program, 100)
 
-        # roll out IRL policy, collect imitation data
-        obs, act_irl, act_oracle = synthesizer.get_histories(p, policy, 500)
+        # Update program
+        if reward > best_reward:
+            best_reward = reward
+            best_program = next_program
 
-        # DAgger style imitation learning (update histories)
-        observations.extend(obs)
-        actions.extend(act_oracle)
+        # Update histories
+        eval_fn.update_trajectory0(best_program)
 
-        # derive IRL policy from program synthesis
-        p, num = synthesizer.synthesize(10, sketch, [0.25, 0.0, -0.25], obs_space, action_space, observations,
-                                    actions, [], PiRL=True)
+        print("\nReward: ", best_reward, reward)
+        print(best_program.toString())
+        print("~~~~")
 
-    return p
+    return best_program
 
 if __name__ == '__main__':
-    algo_NDPS(pi_oracle='../Setup/ppo_2x4_policy.pth', pomd='CartPole-v1', sketch=[Ite, Lt], seed=1)
-
-    ## MountainCarContinuous-v0
-    # observations = np.load("observations_con.npy")[:100]
-    # actions = np.load("actions_con.npy")[:100]
-
-    ## CartPole-v1
-    trajs = pd.read_csv("../Setup/trajectory.csv")
-    observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']].to_numpy()
+    algo_NDPS(oracle_path="2x4/1", roll_outs=5)
 
