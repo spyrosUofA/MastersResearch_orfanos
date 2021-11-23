@@ -104,12 +104,12 @@ def main():
         from DQN.dqn_agent import Agent
         # Load neural Policy
         oracle = Agent(state_size=8, action_size=4, seed=seed)
-        oracle.qnetwork_local.load_state_dict(torch.load("../LunarLander/DQN/Oracle/32x64/" + parameters.oracle + '/Policy.pth'))
+        oracle.qnetwork_local.load_state_dict(torch.load("../LunarLander/DQN/Oracle" + parameters.oracle + '/Policy.pth'))
         # Load Trajectory
-        inputs = np.load("../LunarLander/DQN/Oracle/32x64/" + parameters.oracle + "/Observations.npy").tolist()
-        actions = np.load("../LunarLander/DQN/Oracle/32x64/" + parameters.oracle + "/Actions.npy").tolist()
+        inputs = np.load("../LunarLander/DQN/Oracle/" + parameters.oracle + "/Observations.npy").tolist()
+        actions = np.load("../LunarLander/DQN/Oracle/" + parameters.oracle + "/Actions.npy").tolist()
         # Load ReLUs
-        accepted_relus = pickle.load(open("../LunarLander/DQN/Oracle/32x64/" + parameters.oracle + "/ReLUs.pkl", "rb"))
+        accepted_relus = pickle.load(open("../LunarLander/DQN/Oracle/" + parameters.oracle + "/ReLUs.pkl", "rb"))
         # Arguments for evaluation function
         parameters.oracle = {"oracle": oracle,
                              "inputs": inputs,

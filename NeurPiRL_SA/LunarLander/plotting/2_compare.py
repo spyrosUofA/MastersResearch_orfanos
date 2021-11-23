@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#configs = ['D000', 'D010', 'D100', 'D110', 'E010_D010']
+#configs = ['D000', 'D010', 'D100', 'D110', 'E010_D010_old']
 configs = ['D010b', 'D010', 'D000']
 
 for count, config in enumerate(configs):

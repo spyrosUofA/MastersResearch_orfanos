@@ -117,18 +117,18 @@ import time
 
 #policy = pickle.load(open("../binary_programs/D000/Oracle-15/sa_cpus-16_n-25_c-None_run-8.pkl", "rb"))
 #policy = pickle.load(open("../binary_programs/D010/Oracle-13/sa_cpus-16_n-25_c-None_run-3.pkl", "rb"))
-#policy = pickle.load(open("../binary_programs/E010_D010/Oracle-12/sa_cpus-16_n-25_c-None_run-3.pkl", "rb"))
+#policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-12/sa_cpus-16_n-25_c-None_run-3.pkl", "rb"))
 #policy = pickle.load(open("../binary_programs/D010/Oracle-4/sa_cpus-16_n-25_c-None_run-25.pkl", "rb"))
 #policy = pickle.load(open("../binary_programs/D010/Oracle-9/sa_cpus-16_n-25_c-None_run-9.pkl", "rb"))
 
-#policy = pickle.load(open("../binary_programs/E010_D010/Oracle-8/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
-policy = pickle.load(open("../binary_programs/E010_D010/Oracle-13/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
+#policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-8/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
+policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-13/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
 print(policy.to_string() + '\n')
 p_new = simplify_program1(policy)
 print(p_new.to_string() + '\n')
 print("------------------")
 
-policy = pickle.load(open("../binary_programs/E010_D010/Oracle-13/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
+policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-13/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
 
 print(policy.to_string() + '\n')
 policy = simplify_program(policy)
@@ -145,7 +145,7 @@ exit()
 
 rew = 0
 for i in range(1, 16, 1):
-    policy = pickle.load(open("../binary_programs/E010_D010/Oracle-" + str(i) + "/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
+    policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-" + str(i) + "/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
 
     print(policy.to_string() + '\n')
     policy = simplify_program(policy)
@@ -157,5 +157,5 @@ for i in range(1, 16, 1):
     rew += Environment({}, 200, 1).evaluate(policy)
 
 print(rew / 15.0)
-# E010_D010: 163.48063343676603
+# E010_D010_old: 163.48063343676603
 

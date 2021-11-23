@@ -27,7 +27,7 @@ parameters_oracle = {"oracle": oracle,
 
 # Load PiRL Policy
 #policy = pickle.load(open("./good_SA_program.pkl", "rb"))
-#policy = pickle.load(open("../LunarLander/binary_programs/E010_D010/sa_cpus-16_n-25_c-None_run-5.pkl", "rb"))
+#policy = pickle.load(open("../LunarLander/binary_programs/E010_D010_old/sa_cpus-16_n-25_c-None_run-5.pkl", "rb"))
 #policy = StartSymbol().new(Ite().new(Lt.new(Num.new(0.668), Num.new(0.666)), AssignAction.new(0), AssignAction.new(1)))
 #policy = StartSymbol().new(Ite().new(Lt.new(Num.new(0.0), Observation.new(0)), AssignAction.new(0), AssignAction.new(1)))
 policy = pickle.load(open("o5r11.pkl", "rb"))
