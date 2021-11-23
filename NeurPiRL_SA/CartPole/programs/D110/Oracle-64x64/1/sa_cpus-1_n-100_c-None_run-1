@@ -1,0 +1,10 @@
+0 
+(if (obs[3] > 1.0) then: (if (max(0, [ 0.028 -0.213  0.254  0.521] *dot* obs[:] + 0.087) > 0.0) then: act = 1 else: act = 0) else: act = 0)
+1 
+(if (obs[3] > 0.01729113659706183) then: act = 1 else: act = 0)
+2 
+(if (max(0, [-0.062  0.112  0.417  0.257] *dot* obs[:] + 0.13) > 0.1358761093636309) then: act = 1 else: act = 0)
+0 
+(if (obs[3] > 1.0) then: (if (max(0, [ 0.028 -0.213  0.254  0.521] *dot* obs[:] + 0.087) > 0.0) then: act = 1 else: act = 0) else: act = 0)
+1 
+(if (obs[3] > 0.01729113659706183) then: act = 1 else: act = 0)

@@ -1,0 +1,20 @@
+FOLDER NAME for logs, programs, binary_programs, etc:
+
+Character 1: Evaluation
+"E" ==> Environment
+"I" ==> Imitation
+"D" ==> DAgger
+
+Character 2: Bayesian Optimization Y/N
+0 ==> False
+1 ==> True
+
+Character 3: Augmented DSL Y/N
+0 ==> False
+1 ==> True
+
+Character 4: Initial Program Y/N
+0 ==> False
+1 ==> True
+
+e.g.: run_D110.sh will run SA with: {eval=DAgger, bo=True, aug_dsl=True, InitProg=None}

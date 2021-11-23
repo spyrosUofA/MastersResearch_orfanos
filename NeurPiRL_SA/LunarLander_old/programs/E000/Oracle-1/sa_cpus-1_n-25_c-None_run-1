@@ -1,0 +1,2 @@
+1 
+(if ((2.0 + (obs[6] * 4.0)) < (2.0 * 2.0)) then: act = 0 else: (if (0.0 < 2.0) then: act = 3 else: act = 1))

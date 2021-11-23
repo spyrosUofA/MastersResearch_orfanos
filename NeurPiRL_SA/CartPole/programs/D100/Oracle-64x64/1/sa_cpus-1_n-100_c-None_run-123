@@ -1,0 +1,4 @@
+0 
+(if (obs[3] > 0.0) then: act = 1 else: (if (obs[1] > 2.0) then: (if (obs[0] < 0.0) then: act = 0 else: act = 1) else: (if (obs[3] > 2.0) then: act = 1 else: act = 0)))
+0 
+(if (obs[3] > 0.0) then: act = 1 else: (if (obs[1] > 2.0) then: (if (obs[0] < 0.0) then: act = 0 else: act = 1) else: (if (obs[3] > 2.0) then: act = 1 else: act = 0)))
