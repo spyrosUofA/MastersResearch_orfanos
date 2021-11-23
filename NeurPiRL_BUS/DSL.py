@@ -1,5 +1,12 @@
 import itertools
 import numpy as np
+import copy
+
+
+def create_interval(value, delta):
+    interval = (value - delta, value + delta)
+    return interval
+
 
 class Node:
     def __init__(self):
@@ -31,6 +38,64 @@ class Node:
     def name(cls):
         return cls.__name__
 
+    def get_Num_range(self):
+        dict_ranges = {}
+        originals = []
+        i = 1
+        # BFS
+        q = []
+        q.append(self)
+        while len(q) > 0:
+            node = q.pop(0)
+            if type(node) is Num:
+                name = "Num"+str(i)
+                i+=1
+                originals.append(node.value)
+                interval = create_interval(node.value, 0.25)
+                dict_ranges[name] = copy.deepcopy(interval)
+                #print(type(interval))
+            elif type(node) is Ite:
+                q.append(node.condition)
+                q.append(node.true_case)
+                q.append(node.false_case)
+            elif type(node) is Lt:
+                q.append(node.left)
+                q.append(node.right)
+            #elif type(node) is AssignAction:
+            #    q.append(node.value)
+            elif type(node) is Addition:
+                q.append(node.left)
+                q.append(node.right)
+        return dict_ranges, originals
+
+    def set_Num_value(self, values):
+        # BFS to traverse tree, whenever we find Num node we set the value of the node according to [name].
+        q = []
+        i = 1
+        q.append(self)
+        while len(q) > 0:
+            node = q.pop(0)
+            if type(node) is Num:
+                name = "Num"+str(i)
+                if type(values) is not list:
+                    node.value = values[name]
+                    i += 1
+                else:
+                    node.value = values.pop(0)
+            elif type(node) is Ite:
+                q.append(node.condition)
+                q.append(node.true_case)
+                q.append(node.false_case)
+            elif type(node) is Lt:
+                q.append(node.left)
+                q.append(node.right)
+            #elif type(node) is AssignAction:
+            #    q.append(node.value)
+            elif type(node) is Addition:
+                q.append(node.left)
+                q.append(node.right)
+        return
+
 
 class Lt(Node):
     def __init__(self, left, right):
@@ -58,7 +123,7 @@ class Lt(Node):
     def grow(plist, size):
         new_programs = []
         # defines which nodes are accepted in the AST
-        accepted_nodes = set([Num.name(), ReLU.name()]) # Observation.name(), Addition.name(),
+        accepted_nodes = set([Num.name(), ReLU.name(), Observation.name()]) # Observation.name(), Addition.name(),
         
         # generates all combinations of cost of size 2 varying from 1 to size - 1
         combinations = list(itertools.product(range(1, size - 1), repeat=2))
@@ -69,8 +134,8 @@ class Lt(Node):
                 continue
             
             # retrive bank of programs with costs c[0] and c[1]
-            program_set1 = plist.get_programs(c[0])
-            program_set2 = plist.get_programs(c[1])
+            program_set1 = copy.deepcopy(plist.get_programs(c[0]))
+            program_set2 = copy.deepcopy(plist.get_programs(c[1])) #plist.get_programs(c[1])
             
             for t1, programs1 in program_set1.items():                
                 # skip if t1 isn't a node accepted by Lt
@@ -86,6 +151,7 @@ class Lt(Node):
                         # Boolean conditions have to have at least one observation
                         #if not (t1 == Observation.name() or t2 == Observation.name()):
                         #    continue
+
                         # Boolean conditions should not be Num1 < Num2
                         if t1 == Num.name() and t2 == Num.name():
                             continue
@@ -187,7 +253,7 @@ class Ite(Node):
         # defines the set of nodes accepted as conditions for an Ite
         accepted_condition_nodes = set([Lt.name()])
         # defines the set of nodes accepted as cases for an Ite
-        accepted_case_nodes = set([AssignAction.name(), Ite.name()])
+        accepted_case_nodes = set([AssignAction.name(), AssignAction.name(), Ite.name()])
 
         combinations = list(itertools.product(range(1, size - 1), repeat=3))
         
@@ -197,9 +263,9 @@ class Ite(Node):
                 continue
             
             # retrive bank of programs with costs c[0] and c[1]
-            program_set1 = plist.get_programs(c[0])
-            program_set2 = plist.get_programs(c[1])
-            program_set3 = plist.get_programs(c[2])
+            program_set1 = copy.deepcopy(plist.get_programs(c[0])) #plist.get_programs(c[0])
+            program_set2 = copy.deepcopy(plist.get_programs(c[1])) #plist.get_programs(c[1])
+            program_set3 = copy.deepcopy(plist.get_programs(c[2])) #plist.get_programs(c[2])
             
             for t1, programs1 in program_set1.items():                
                 # skip if t1 isn't a node accepted as a condition node for Ite
@@ -248,7 +314,7 @@ class Num(Node):
         return False
 
 
-class AssignActionOld(Node):
+class AssignActionDiscrete(Node):
     def __init__(self, value):
         self.value = value
         self.size = 1
@@ -260,7 +326,7 @@ class AssignActionOld(Node):
         env['act'] = self.value
 
     def __eq__(self, other):
-        if type(other) != AssignAction:
+        if type(other) != AssignActionDiscrete:
             return False
         if self.value == other.value:
             return True
@@ -301,7 +367,7 @@ class AssignAction(Node):
                 continue
 
             # retrive bank of programs with costs c[0] and c[1]
-            program_set1 = plist.get_programs(c)
+            program_set1 = copy.deepcopy(plist.get_programs(c[c])) #plist.get_programs(c)
 
             #print("p1", program_set1)
 
@@ -357,7 +423,7 @@ class ReLU(Node):
     def __eq__(self, other):
         if type(other) != ReLU:
             return False
-        if (self.weight == other.weight).all() and (self.bias == other.bias).all():
+        if (self.weight == other.weight).all() and (self.bias == other.bias):
             return True
         return False
 
@@ -398,8 +464,8 @@ class Addition(Node):
                 continue
 
             # retrive bank of programs with costs c[0] and c[1]
-            program_set1 = plist.get_programs(c[0])
-            program_set2 = plist.get_programs(c[1])
+            program_set1 = copy.deepcopy(plist.get_programs(c[0])) #plist.get_programs(c[0])
+            program_set2 = copy.deepcopy(plist.get_programs(c[1])) #plist.get_programs(c[1])
 
             for t1, programs1 in program_set1.items():
                 # skip if t1 isn't a node accepted by Lt
@@ -460,8 +526,8 @@ class Multiplication(Node):
                 continue
 
             # retrive bank of programs with costs c[0] and c[1]
-            program_set1 = plist.get_programs(c[0])
-            program_set2 = plist.get_programs(c[1])
+            program_set1 = copy.deepcopy(plist.get_programs(c[0])) #plist.get_programs(c[0])
+            program_set2 = copy.deepcopy(plist.get_programs(c[1])) #plist.get_programs(c[1])
 
             for t1, programs1 in program_set1.items():
                 # skip if t1 isn't a node accepted by Lt

@@ -1,9 +1,10 @@
 import gym
-from DSL import Ite, Lt, Observation, Num, AssignAction
+from DSL import Ite, Lt, Observation, Num, AssignAction, ReLU
 import numpy as np
 import copy
-from Optimization import ParameterFinder
+from OptimizationDiscrete import ParameterFinderDiscrete
 import pandas as pd
+import pickle
 
 
 def get_action(obs, p):
@@ -30,7 +31,7 @@ class ProgramList():
 
         self.plist[program.getSize()][program.name()].append(program)
 
-    def init_plist(self, constant_values, observation_values, action_values):
+    def init_plist(self, constant_values, observation_values, action_values, relu_programs):
         for i in observation_values:
             p = Observation(i)
             self.insert(p)
@@ -40,7 +41,11 @@ class ProgramList():
             self.insert(p)
 
         for i in action_values:
-            p = AssignAction(i)
+            p = AssignAction(Num(i))
+            self.insert(p)
+
+        for i in range(len(relu_programs)):
+            p = ReLU(relu_programs[i][0], relu_programs[i][1])
             self.insert(p)
 
     def get_programs(self, size):
@@ -103,16 +108,17 @@ class BottomUpSearch():
         for p in new_programs:
             plist.insert(p)
 
-    def synthesize(self, bound, operations, constant_values, observation_values, action_values, observations, actions,
+    def synthesize(self, bound, operations, constant_values, observation_values, action_values, observations, actions, relu_programs,
                    PiRL=False):
 
         closed_list = []
         plist = ProgramList()
-        plist.init_plist(constant_values, observation_values, action_values)  # extra agrument here with set o fprograms
+        plist.init_plist(constant_values, observation_values, action_values, relu_programs)  # extra agrument here with set o fprograms
 
         best_reward = 0
         best_policy = None
         number_evaluations = 0
+        score = None
 
         self.outputs = set()
         filename = "programs"
@@ -122,26 +128,28 @@ class BottomUpSearch():
             filename += ".txt"
         with open(filename, "w") as text_file:
             text_file.write("Best programs:\n")
-        parameter_finder = ParameterFinder(observations, actions)
+        parameter_finder = ParameterFinderDiscrete(observations, actions)
         for current_size in range(2, bound + 1):
             for p in self.grow(plist, closed_list, operations, current_size):
-                print(p.name)
                 if p.name() == Ite.name():
                     p_copy = copy.deepcopy(p)
                     if PiRL:
-                        parameter_finder.optimize(p_copy)
+                        score = parameter_finder.optimize(p_copy)
+
                     number_evaluations += 1
-                    # print(p_copy.toString())
-                    # """
                     reward = self.evaluate(p_copy, 10)
                     if reward > best_reward:
                         reward = self.evaluate(p_copy, 100)
                         if reward > best_reward:
+                            print(score)
                             print(p_copy.toString(), reward)
                             with open(filename, "a") as text_file:
                                 text_file.write(p_copy.toString() + str(reward) + "\n")
                             best_reward = reward
                             best_policy = p_copy
+
+                            if reward == 500:
+                                break
                     # """
                     if number_evaluations % 1000 == 0:
                         print('AST Size: ', current_size, ' Evaluations: ', number_evaluations)
@@ -166,25 +174,32 @@ if __name__ == '__main__':
     trajs = pd.read_csv("../Setup/trajectory.csv")
     observations = trajs[['o[0]', 'o[1]', 'o[2]', 'o[3]']].to_numpy()
     actions = trajs['a'].to_numpy()
-    # actions = trajs['N1'].to_numpy()
-    # actions = trajs['N2'].to_numpy()
 
-    a_min = min(actions)
-    a_max = max(actions)
-    print(a_min, a_max)
 
-    some_values = np.unique(
-        [0.03, -0.34, -0.15, 0.10, -0.04, -0.15, 0.03, 0.22, -0.34, 0.04, 0.00, 0.04, 0.22, 0.00, -0.04, 0.05, 0.05,
-         0.10])
+    prog_relus = []
+    prog_relus.append([[1.1228,  0.0633, -3.4613, -2.2452], 0.1867])
+    prog_relus.append([[-0.5183, -0.7270, -6.0250, -2.2768], 0.1656])
+
+    # Passed:
+    #prog_relus = pickle.load(open("./Oracle/2x4/2/ReLUs.pkl", "rb"))
+    #prog_relus = pickle.load(open("./Oracle/2x4/3/ReLUs.pkl", "rb"))
+
+    # Current
+    prog_relus = pickle.load(open("./Oracle/64x64/3/ReLUs.pkl", "rb"))
+
+#    some_values = np.unique(
+#        [0.03, -0.34, -0.15, 0.10, -0.04, -0.15, 0.03, 0.22, -0.34, 0.04, 0.00, 0.04, 0.22, 0.00, -0.04, 0.05, 0.05,
+#         0.10])
+#    c = [0.01, 0.22] # (if(obs[2] < 0.01) then (if(0.22 < obs[3]) then act = 1 else act = 0) else act = 1) 488.232
+
 
     # synthesize(self, bound, operations, constant_values, observation_values, action_values, observations, actions, PiRL = False):
-    p, num = synthesizer.synthesize(bound=15, operations=[Ite, Lt], constant_values=[0.01, 0.22],
-                                    observation_values=[0, 1, 2, 3], action_values=[0, 1],
-                                    observations=observations, actions=actions, PiRL=True)
+    p, num = synthesizer.synthesize(bound=20, operations=[Ite, Lt], constant_values=[0.0],
+                                    observation_values=[0, 1, 2, 3], action_values=[0, 1], relu_programs=prog_relus,
+                                    observations=observations, actions=actions, PiRL=False)
 
     print(p.toString())
 
-    p.setSize(1)
 
-    print(p.size)
     # p, num = synthesizer.synthesize(15, [Ite, Lt], some_values, [0, 1, 2, 3], [0, 1], observations, actions, PiRL=False)
+    # (if(0.05689054185958309 < max(0, [-0.5183, -0.727, -6.025, -2.2768] * obs + 0.1656)) then act = 0 else act = 1) 500.0

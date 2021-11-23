@@ -1,8 +1,7 @@
 import numpy as np
 import argparse
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-import pandas as pd
+from shutil import copyfile
 
 # 0: ID
 # 1: Reward
@@ -12,7 +11,7 @@ import pandas as pd
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-config', action='store', dest='config', default="E010_D010")
+parser.add_argument('-config', action='store', dest='config', default="D010")
 parser.add_argument('-hparam', action='store', dest='hparam', default="sa_cpus-16_n-25_c-None")
 parser.add_argument('-nb_oracles', action='store', dest='nb_oracles', default=15)
 parser.add_argument('-nb_resets', action='store', dest='nb_resets', default=30)
@@ -31,7 +30,6 @@ def plot_one(oracle_nb):
     rewards_Y = []
     scores_Y = []
     
-    best_policy = 1 
     best_score = WORST_SCORE
     
     for r in range(1, NB_RESETS + 1, 1):
@@ -40,25 +38,31 @@ def plot_one(oracle_nb):
         with open(file) as f:
             output = np.array([line.strip().split(', ') for line in f], dtype=float)
 
-        # Read  games, times, rewards, and scores
-        episodes_X.extend(output[:, 3])
-        # times_X.extend(output[:, 4])
+        current_score = max(output[:, 1])
+        if current_score > best_score:
+            best_score = current_score
+            best_policy = str(r)
 
+        # Read  games, times, rewards, and scores
         rewards_Y.extend(output[:, 1])
         scores_Y.extend(output[:, 2])
-        
+        episodes_X.extend(output[:, 3])
+
         # Add previous run times
         times = output[:, 4] + (r-1) * RUN_TIME
         times_X.extend(times) 
-
-    # Accumulate episodes and times 
-    episodes_X = np.cumsum(episodes_X)
-    # times_X = np.cumsum(times_X)
 
     # Accumulate maximum reward and score
     rewards_Y = np.maximum.accumulate(rewards_Y)
     scores_Y = np.maximum.accumulate(scores_Y)
 
+    # save best policy
+    copy_from = parameters.config + '/Oracle-' + str(oracle_nb) + '/' + parameters.hparam + "_run-" + best_policy
+    save_to = parameters.config + '/Oracle-' + str(oracle_nb) + '/' + parameters.hparam + "_run-BEST"
+
+    copyfile("../logs/" + copy_from, "../logs/" + save_to)
+    copyfile("../programs/" + copy_from, "../programs/" + save_to)
+    copyfile("../binary_programs/" + copy_from + ".pkl", "../binary_programs/" + save_to + ".pkl")
 
     return [times_X, rewards_Y] # ...
 

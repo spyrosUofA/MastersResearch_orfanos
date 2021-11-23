@@ -1,8 +1,7 @@
 from bayes_opt import BayesianOptimization, UtilityFunction
 from scipy import spatial
 import numpy as np
-from NeurPiRL_BUS.DSL import Num, Ite, Lt, AssignAction, Addition, ReLU
-#from BottomUpSearch import get_action
+from DSL import Num, Ite, Lt, AssignAction, Addition, ReLU
 import copy
 
 def create_interval(value, delta):
@@ -32,13 +31,14 @@ class ParameterFinderDiscrete():
         # BFS
         q = []
         q.append(self.tree)
+
         while len(q) > 0:
             node = q.pop(0)
             if type(node) is Num:
                 name = "Num"+str(i)
                 i+=1
                 originals.append(node.value)
-                interval = create_interval(node.value, 0.1)
+                interval = create_interval(node.value, 1.0)
                 dict_ranges[name] = copy.deepcopy(interval)
                 #print(type(interval))
             elif type(node) is Ite:
@@ -65,9 +65,9 @@ class ParameterFinderDiscrete():
             node = q.pop(0)
             if type(node) is Num:
                 name = "Num"+str(i)
-                i+=1
                 if type(values) is not list:
                     node.value = values[name]
+                    i += 1
                 else:
                     node.value = values.pop(0)
             elif type(node) is Ite:
@@ -92,9 +92,9 @@ class ParameterFinderDiscrete():
         # self.actions --> given by the oracle in the trajectory.
         # actions --> produced/learned by AST.
         actions = get_action(self.inputs, self.tree)
-        actions_diff = spatial.distance.euclidean(actions, np.array(self.actions))
+        actions_diff = spatial.distance.hamming(actions, np.array(self.actions))
 
-        diff_total = -(actions_diff)/float(len(self.actions))
+        diff_total = 1 - actions_diff #-(actions_diff)/float(len(self.actions))
 
         return diff_total
 
@@ -104,16 +104,19 @@ class ParameterFinderDiscrete():
         # list of Nums in the AST to optimize over
         list_Nums_range, originals = self.get_Num_range()
         bayesOpt = BayesianOptimization(self.find_distance, pbounds=list_Nums_range, verbose=0)
+        #print(list_Nums_range)
 
         try:
             # Bayesian Optimization
             bayesOpt.maximize(init_points=40, n_iter=10, kappa=2.5)
             # Update tree with optimized Nums
+            #print(bayesOpt.max['params'])
             self.set_Num_value(bayesOpt.max['params'])
+            #print("optimized")
             return bayesOpt.max['target']
 
         except Exception as error:
-            print(error)
+            #print(error)
             self.set_Num_value(originals)
             return originals
         # utility = UtilityFunction(kind="ucb", kappa=2.5, xi=0.0)
