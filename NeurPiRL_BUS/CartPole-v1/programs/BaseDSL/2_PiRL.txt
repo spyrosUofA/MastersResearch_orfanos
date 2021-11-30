@@ -1,0 +1,7 @@
+Best programs:
+(if(obs[0] < 0.0) then act = 0 else act = 1)9.31
+(if(obs[0] < 0.0) then act = 1 else act = 0)30.02
+(if(obs[1] < 0.07905156131365376) then act = 1 else act = 0)38.4
+(if(obs[2] < 0.0) then act = 0 else act = 1)41.6
+(if(obs[3] < 0.008769575159006142) then act = 0 else act = 1)200.24
+(if(0.001891656703187943 < obs[3]) then act = 1 else (if(0.25708388291978596 < obs[2]) then act = 1 else act = 0))204.51
