@@ -74,12 +74,16 @@ class Evaluate():
     def find_distance(self, p):
         actions = get_action(self.inputs, p)
         actions_diff = spatial.distance.hamming(actions, np.array(self.actions))
+        #print(1 - actions_diff)
         return 1 - actions_diff
 
     def find_distance_bo(self, **kwargs):
         # For bayesian optimization, pass dictionary of the Nums
         numNodes = np.fromiter(kwargs.values(), dtype=float)
+        #print("numNods", numNodes)
+        #print(self.tree.to_string())
         self.tree.set_Num_value(numNodes.tolist())
+        #print(self.tree.to_string())
         return self.find_distance(self.tree)
 
     def optimize(self, p):
@@ -88,11 +92,14 @@ class Evaluate():
         self.tree = p
         list_Nums_range, originals = p.get_Num_range()
         bayesOpt = BayesianOptimization(self.find_distance_bo, pbounds=list_Nums_range, verbose=0, random_state=self.seed)
+        #print(list_Nums_range)
+        #print(bayesOpt)
 
         try:
             # Bayesian Optimization
-            bayesOpt.maximize(init_points=40, n_iter=10, kappa=2.5)
+            bayesOpt.maximize(init_points=40, n_iter=5, kappa=2.5)
             # Update tree with optimized Nums
+            #print("HI")
             p.set_Num_value(bayesOpt.max['params'])
             return bayesOpt.max['target']
         except Exception as error:

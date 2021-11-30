@@ -67,6 +67,7 @@ class Node:
                 i += 1
                 if type(values) is not list:
                     node.children[0] = values[name]
+                    #print("broke")
                 else:
                     node.children[0] = values.pop(0)
             elif type(node) is Ite:
@@ -192,9 +193,9 @@ class Node:
         list_all_productions = [Node, #StartSymbol, #changed from node
                                 Ite,
                                 Lt,
-                                Gt,
-                                Lt0,
-                                Gt0,
+                                #Gt,
+                                #Lt0,
+                                #Gt0,
                                 Addition,
                                 Multiplication]
 
@@ -376,7 +377,7 @@ class Observation(Node):
         return False
 
 
-class ReLU(Node):
+class ReLU_official(Node):
     def __init__(self):
         super(ReLU, self).__init__()
         self.number_children = 1
@@ -395,6 +396,34 @@ class ReLU(Node):
 
     def interpret(self, env):
         return max(0.0, np.dot(self.children[0][0], env['obs']) + self.children[0][1])
+
+    def __eq__(self, other):
+        if type(other) != ReLU:
+            return False
+        if (self.weight == other.weight).all() and (self.bias == other.bias).all():
+            return True
+        return False
+
+
+class ReLU(Node):
+    def __init__(self):
+        super(ReLU, self).__init__()
+        self.number_children = 1
+        self.size = 0
+
+    @classmethod
+    def new(cls, weight_bias):
+        inst = cls()
+        inst.add_child(weight_bias)
+        #inst.add_child(bias)
+
+        return inst
+
+    def to_string(self):
+        return '(' + str(np.around(self.children[0][0], 3)) + " *dot* obs[:] + " + str(np.round(self.children[0][1], 3)) + ")"
+
+    def interpret(self, env):
+        return np.dot(self.children[0][0], env['obs']) + self.children[0][1]
 
     def __eq__(self, other):
         if type(other) != ReLU:

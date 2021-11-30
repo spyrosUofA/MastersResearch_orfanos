@@ -48,7 +48,7 @@ def main():
     parser.add_argument('-temperature', action='store', dest='initial_temperature', default=50,
                         help='SA\'s initial temperature')
     
-    parser.add_argument('-alpha', action='store', dest='alpha', default=1.0,
+    parser.add_argument('-alpha', action='store', dest='alpha', default=1.2,
                         help='SA\'s alpha value')
     
     parser.add_argument('-beta', action='store', dest='beta', default=100,
@@ -142,16 +142,16 @@ def main():
         terminals = [AssignAction]
         OPERATIONS = [AssignAction,
                           Ite,
-                      Lt, Gt,
+                      Lt,
                           #Gt0,
                           Num,
-                          Observation,
-                          Addition,
-                          Multiplication]
+                          Observation] #,
+                          #Addition,
+                          #Multiplication]
 
         # Add ReLU node to DSL and load ReLU programs
         if parameters.augment_dsl:
-            OPERATIONS = [AssignAction, ReLU, Ite, Lt, Gt, Observation, Num]
+            OPERATIONS = [AssignAction, ReLU, Ite, Lt, Num, Observation]
             #OPERATIONS.append(ReLU)
         else:
             accepted_relus = None

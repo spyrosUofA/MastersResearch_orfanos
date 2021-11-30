@@ -147,6 +147,12 @@ import time
 #policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-8/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
 policy = pickle.load(open("./binary_programs/D010/Oracle-64x64/1/sa_cpus-1_n-100_c-None_run-100.pkl", "rb"))
 
+
+if
+
+(if (max(0, [-0.014  0.099  0.235  0.273] *dot* obs[:] + 0.1) < 0.10763176744760765) then: act = 0 else: act = 1)
+
+
 print(policy.to_string() + '\n')
 p_new = simplify_program1(policy)
 print(p_new.to_string() + '\n')

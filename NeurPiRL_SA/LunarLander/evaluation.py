@@ -67,8 +67,7 @@ class Evaluate():
                     #print(reward)
                     break
             averaged += reward
-            self.games_played += nb_episodes
-
+        self.games_played += nb_episodes
         return averaged / nb_episodes
 
     def find_distance(self, p):
@@ -149,7 +148,6 @@ class DAgger(Evaluate):
 
                 if done:
                     break
-
         self.games_played += 1 #self.nb_evaluations
 
     def update_trajectory1(self, p, current_score):

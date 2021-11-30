@@ -39,7 +39,7 @@ def main():
     parser.add_argument('--aug_dsl', action='store_true', dest='augment_dsl', default=False,
                         help='Augment DSL using ReLU units provided by oracle?')
 
-    parser.add_argument('-n', action='store', dest='number_games', default=25,
+    parser.add_argument('-n', action='store', dest='number_games', default=50,
                         help='Number of games played in each evaluation')
     
     parser.add_argument('-time', action='store', dest='time_limit', default=1200,
@@ -116,7 +116,6 @@ def main():
                              "actions": actions,
                              "ReLUs": accepted_relus,
                              "capacity": parameters.capacity}
-        print(accepted_relus)
     else:
         parameters.oracle = {}
         

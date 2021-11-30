@@ -2,22 +2,19 @@ import gym
 import pyglet
 import torch as th
 
-from stable_baselines3 import PPO
+from stable_baselines3 import DQN
 
 seed = 0
 env = gym.make("LunarLander-v2")
 env.seed(seed)
 
 # train oracle
-model = PPO('MlpPolicy', env,
-              #policy_kwargs=dict(activation_fn=th.nn.ReLU, net_arch=[64, 64]),
+model = DQN('MlpPolicy', env,
+              policy_kwargs=dict(activation_fn=th.nn.ReLU, net_arch=[64, 64]),
               seed=seed,
               batch_size=64,
-              ent_coef=0.01,
-              gae_lambda=0.98,
+              learning_rate=1e-3,
               gamma=0.999,
-              n_epochs=4,
-              n_steps=1024,
               verbose=1)
 model.learn(2612224)
 

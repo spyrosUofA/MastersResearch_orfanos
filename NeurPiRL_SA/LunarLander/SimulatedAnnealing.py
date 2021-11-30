@@ -8,6 +8,138 @@ import os
 import pickle
 import copy
 
+
+def ite_same_same(p, changes):
+    if isinstance(p, Ite):
+        if isinstance(p.children[1], AssignAction) and isinstance(p.children[2], AssignAction):
+            if p.children[1].children[0] == p.children[2].children[0]:
+                p = p.children[2]
+                changes += 1
+    return p, changes
+
+
+def num_lt_num(p, changes):
+    if isinstance(p, Ite):
+        child = p.children[0]
+        if isinstance(child, Lt):
+            if isinstance(child.children[0], Num) and isinstance(child.children[1], Num):
+                if child.children[0].children[0] < child.children[1].children[0]:
+                    p = p.children[1]
+                    changes += 1
+                    return p, changes
+                else:
+                    p = p.children[2]
+                    changes += 1
+                    return p, changes
+    return p, changes
+
+
+def num_plus_num(p, changes):
+    if isinstance(p, Addition):
+        if isinstance(p.children[0], Num) and isinstance(p.children[1], Num):
+            p = Num.new(p.children[0].children[0] + p.children[1].children[0])
+            changes += 1
+    return p, changes
+
+
+def num_times_num(p, changes):
+    if isinstance(p, Multiplication):
+        if isinstance(p.children[0], Num) and isinstance(p.children[1], Num):
+            p = Num.new(p.children[0].children[0] * p.children[1].children[0])
+            changes += 1
+            return p, changes
+    return p, changes
+
+
+def plus_zero(p, changes):
+    if isinstance(p, Addition):
+        if isinstance(p.children[0], Num):
+            if p.children[0].children[0] == 0:
+                p = p.children[1]
+                changes += 1
+                return p, changes
+        elif isinstance(p.children[1], Num):
+            if p.children[1].children[0] == 0:
+                p = p.children[0]
+                changes += 1
+                return p, changes
+    return p, changes
+
+
+def times_zero(p, changes):
+    if isinstance(p, Multiplication):
+        if isinstance(p.children[0], Num):
+            if p.children[0].children[0] == 0:
+                p = Num.new(0.0)
+                changes += 1
+                return p, changes
+        elif isinstance(p.children[1], Num):
+            if p.children[1].children[0] == 0:
+                p = Num.new(0.0)
+                changes += 1
+                return p, changes
+    return p, changes
+
+
+def relu_lt_0(p, changes):
+    if isinstance(p, Ite):
+        child = p.children[0]
+        if isinstance(child, Lt):
+            if isinstance(child.children[0], ReLU) and isinstance(child.children[1], Num):
+                if child.children[1].children[0] <= 0:
+                    p = p.children[2] # false case
+                    changes += 1
+                    return p, changes
+    return p, changes
+
+
+def negative_lt_relu(p, changes):
+    if isinstance(p, Ite):
+        child = p.children[0]
+        if isinstance(child, Lt):
+            if isinstance(child.children[0], Num) and isinstance(child.children[1], ReLU):
+                if child.children[0].children[0] < 0:
+                    p = p.children[1] # true case
+                    changes += 1
+                    return p, changes
+    return p, changes
+
+
+def simplify_node(p, changes):
+    c0 = changes
+    program = copy.deepcopy(p)
+    program, changes = ite_same_same(program, changes)
+    program, changes = times_zero(program, changes)
+    program, changes = plus_zero(program, changes)
+    program, changes = num_plus_num(program, changes)
+    program, changes = num_times_num(program, changes)
+    program, changes = num_lt_num(program, changes)
+    program, changes = relu_lt_0(program, changes)
+    program, changes = negative_lt_relu(program, changes)
+    return program, changes - c0
+
+
+def simplify_program(p, changes):
+
+    for i in range(p.get_number_children()):
+        simplified, change = simplify_node(p.children[i], changes)
+        changes += change
+        p.replace_child(simplified, i)
+        # simplify children
+        if isinstance(p.children[i], Node):
+            changes = simplify_program(p.children[i], changes)
+            #changes += simplify_program(p.children[i], changes)
+            #changes += simplify_program(p.children[i], 0)
+    return changes
+
+
+def simplify_program1(p):
+    while True:
+        changes = simplify_program(p, 0)
+        if changes == 0:
+            return p
+
+
 class SimulatedAnnealing():
 
     def __init__(self, folder_name, file_name, seed):
@@ -307,6 +439,8 @@ class SimulatedAnnealing():
             current_program = copy.deepcopy(initial_program)
         else:
             current_program = self.random_program()
+
+        current_program = simplify_program1(current_program)
         if bayes_opt:
             self.eval_function.optimize(current_program)
 
@@ -315,8 +449,8 @@ class SimulatedAnnealing():
         best_reward = self.eval_function.collect_reward(best_reward_program, nb_evaluations)
 
         # Save
-        self.update_log_file(id_log, best_reward, 0.0, time_start)
-        self.update_program_file(id_log, best_reward_program)
+        self.update_log_file(0, best_reward, 0.0, time_start)
+        self.update_program_file(0, best_reward_program)
         self.update_binary_file(best_reward_program)
 
         while time.time() - time_start < time_limit - self.slack_time:
@@ -343,6 +477,7 @@ class SimulatedAnnealing():
 
                 # Mutate and (optionally) optimize current program
                 mutation = self.mutate(copy.deepcopy(current_program))
+                mutation = simplify_program1(mutation)
                 if bayes_opt:
                     self.eval_function.optimize(mutation)
 
