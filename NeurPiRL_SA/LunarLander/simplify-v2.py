@@ -157,12 +157,13 @@ p_new = simplify_program1(policy)
 print(p_new.to_string() + '\n')
 print("------------------")
 
-print(Environment({}, 200, 1).evaluate(policy))
+print(Environment({}, 200, 1).evaluate(p_new))
 exit()
 
 
 w = [0.081, -0.375,  0.113, -1.233, -0.265,  0.120, -0.070, -0.091]
 b = -0.085
+
 
 
 

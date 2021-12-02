@@ -1,4 +1,0 @@
-0 
-(if (obs[3] > 1.0) then: (if (max(0, [-0.1    0.098 -0.043  0.474] *dot* obs[:] + 0.136) > 0.0) then: act = 1 else: act = 0) else: act = 0)
-1 
-(if (obs[3] > -2.240855861327904) then: (if (max(0, [-0.1    0.098 -0.043  0.474] *dot* obs[:] + 0.136) > 0.12507215747248374) then: act = 1 else: act = 0) else: act = 0)

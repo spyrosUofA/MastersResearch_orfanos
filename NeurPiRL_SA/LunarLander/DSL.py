@@ -334,7 +334,7 @@ class Observation(Node):
         return False
 
 
-class ReLU_official(Node):
+class ReLU(Node):
     def __init__(self):
         super(ReLU, self).__init__()
         self.number_children = 1
@@ -362,7 +362,7 @@ class ReLU_official(Node):
         return False
 
 
-class ReLU(Node):
+class ReLU_w(Node):
     def __init__(self):
         super(ReLU, self).__init__()
         self.number_children = 1

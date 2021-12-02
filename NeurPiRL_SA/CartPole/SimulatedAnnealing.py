@@ -429,19 +429,19 @@ class SimulatedAnnealing():
         else:
             current_program = self.random_program()
 
-        print(current_program.to_string())
-        #current_program = simplify_program1(current_program)
-        #best_score = self.eval_function.evaluate(current_program)
-        #print(best_score)
-        #print(current_program.to_string())
+        # Gather data
+        self.eval_function.update_trajectory0(current_program, 1)
 
+        # Optimize
+        print(current_program.to_string(), self.eval_function.evaluate(current_program))
         if bayes_opt:
             self.eval_function.optimize(current_program)
+        print(current_program.to_string(), self.eval_function.evaluate(current_program))
+        exit()
 
         # Evaluate initial program
         best_reward_program = copy.deepcopy(current_program)
         best_reward = self.eval_function.collect_reward(best_reward_program, nb_evaluations)
-        #exit()
 
         # Save
         print(best_reward)
@@ -493,7 +493,7 @@ class SimulatedAnnealing():
                 prob = random.uniform(0, 1)
                 if prob < prob_accept:
                     print("Current score: ", current_score, iteration_number, self.current_temperature)
-                    current_program = simplify_program1(mutation)
+                    current_program = mutation #simplify_program1(mutation)
                     current_score = next_score
 
                 iteration_number += 1

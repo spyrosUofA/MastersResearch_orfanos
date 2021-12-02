@@ -1,6 +1,0 @@
-0 
-(if (obs[1] < obs[2]) then: (if (0.0 < obs[2]) then: act = 0 else: (if (obs[1] < 0.0) then: act = 1 else: act = 0)) else: act = 1)
-1 
-(if (obs[3] < 0.0) then: (if (obs[1] < obs[0]) then: act = 0 else: (if (obs[1] < -1.0) then: (if (1.0 < obs[0]) then: act = 0 else: act = 1) else: act = 0)) else: act = 1)
-2 
-(if (0.0 < obs[3]) then: act = 1 else: act = 0)
