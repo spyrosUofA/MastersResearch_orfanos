@@ -1,2 +1,0 @@
-1 
-(if (-4.0 < 2.0) then: act = 0 else: act = 1)
