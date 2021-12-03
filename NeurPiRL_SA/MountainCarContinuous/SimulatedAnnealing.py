@@ -439,7 +439,6 @@ class SimulatedAnnealing():
         # Gather data
 
 
-
         # Optimize
         print(current_program.to_string(), self.eval_function.evaluate(current_program))
         #if bayes_opt:

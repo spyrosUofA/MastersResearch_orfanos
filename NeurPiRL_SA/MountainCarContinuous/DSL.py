@@ -236,14 +236,6 @@ class Node:
         if len(observation_values) > 0:
             rules.add(Observation.class_name())
 
-        # NEW >>>>
-        #AssignAction.accepted_nodes = set(action_values)
-        #AssignAction.accepted_types = [AssignAction.accepted_nodes]
-
-        #Observation.accepted_nodes = set(observation_values)
-        #Observation.accepted_types = [Observation.accepted_nodes]
-        # <<< NEW
-
         rules.add(None)
 
         list_all_productions = [Node, #StartSymbol, #changed from node
@@ -645,6 +637,26 @@ class Addition(Node):
 
     def interpret(self, env):
         return self.children[0].interpret(env) + self.children[1].interpret(env)
+
+
+class Subtraction(Node):
+    def __init__(self):
+        super(Subtraction, self).__init__()
+        self.number_children = 2
+
+    @classmethod
+    def new(cls, left, right):
+        inst = cls()
+        inst.add_child(left)
+        inst.add_child(right)
+
+        return inst
+
+    def to_string(self):
+        return "(" + self.children[0].to_string() + " - " + self.children[1].to_string() + ")"
+
+    def interpret(self, env):
+        return self.children[0].interpret(env) - self.children[1].interpret(env)
 
 
 class Multiplication(Node):
