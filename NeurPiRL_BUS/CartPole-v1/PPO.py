@@ -52,7 +52,7 @@ def main(seed=0, l1_actor=4, l2_actor=8):
     # save 1 episode rollout
     observations = []
     actions = []
-    for episode in range(1):
+    for episode in range(5):
         state = env.reset()
         done = False
         while not done:

@@ -418,7 +418,7 @@ class SimulatedAnnealing():
         AssignAction.accepted_types = [set(action_values)]
         Observation.accepted_types = [set(observation_values)]
         ReLU.accepted_types = [relu_values]
-        Affine.acceoted_types = [0,0,0,0,0]
+        Affine.acceoted_types = [None] #[0,0,0,0,0]
 
         self.operations = operations
         self.numeric_constant_values = numeric_constant_values
@@ -442,7 +442,6 @@ class SimulatedAnnealing():
         if bayes_opt:
             self.eval_function.optimize(current_program)
         print(current_program.to_string(), self.eval_function.evaluate(current_program))
-        exit()
 
         # Evaluate initial program
         best_reward_program = copy.deepcopy(current_program)
@@ -488,21 +487,17 @@ class SimulatedAnnealing():
 
                 # Improved score?
                 if next_score > best_score:
-                    #print("Score: ", best_score)
                     best_score = next_score
                     best_score_program = mutation
-                    print("Score: ", best_score)
 
                 # Accept a new program? Note: if next_score > current_score, we accept.
                 prob_accept = min(1, self.accept_function(current_score, next_score))
                 prob = random.uniform(0, 1)
                 if prob < prob_accept:
-                    print("Current score: ", current_score, iteration_number, self.current_temperature)
-                    current_program = simplify_program1(mutation)
+                    current_program = mutation # simplify_program1(mutation)
                     current_score = next_score
 
                 iteration_number += 1
-                #print(iteration_number, next_score, mutation.to_string())
                 self.decrease_temperature(iteration_number)
             # END SA
 
@@ -511,11 +506,7 @@ class SimulatedAnnealing():
             print("Current:", current_reward, best_score, best_score_program.to_string())
             print("Best:", best_reward, self.eval_function.evaluate(best_reward_program), best_reward_program.to_string())
             # if policy is the same, try again
-            exit()
 
-            if best_reward_program == best_score_program:
-                continue
-            exit()
             # evaluate best mutation in environment
             #current_reward = self.eval_function.collect_reward(best_score_program, nb_evaluations)
 
@@ -524,8 +515,6 @@ class SimulatedAnnealing():
                 best_reward_program = best_score_program
 
                 # Update Files
-                print(best_reward)
-                print(best_reward_program.to_string())
                 self.update_log_file(id_log, best_reward, best_score, time_start)
                 self.update_program_file(id_log, best_reward_program)
                 self.update_binary_file(best_reward_program) 

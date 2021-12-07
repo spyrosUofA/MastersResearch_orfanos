@@ -428,24 +428,18 @@ class SimulatedAnnealing():
             current_program = copy.deepcopy(initial_program)
         else:
             current_program = self.random_program()
+        #current_program = simplify_program1(current_program)
 
-        # Gather data
-        self.eval_function.update_trajectory0(current_program, 1)
-
-        # Optimize
-        print(current_program.to_string(), self.eval_function.evaluate(current_program))
+        # Optimize 
         if bayes_opt:
             self.eval_function.optimize(current_program)
-        print(current_program.to_string(), self.eval_function.evaluate(current_program))
-        exit()
 
         # Evaluate initial program
         best_reward_program = copy.deepcopy(current_program)
         best_reward = self.eval_function.collect_reward(best_reward_program, nb_evaluations)
-
-        # Save
-        print(best_reward)
-        print(best_reward_program.to_string())
+    
+        # Save initial results 
+        print(best_reward_program.to_string(), best_reward)
         self.update_log_file(0, best_reward, 0.0, time_start)
         self.update_program_file(0, best_reward_program)
         self.update_binary_file(best_reward_program)
@@ -477,48 +471,36 @@ class SimulatedAnnealing():
 
                 # optimize and evaluate program
                 if bayes_opt:
-                    next_score = self.eval_function.optimize(mutation)
-                else:
-                    next_score = self.eval_function.evaluate(mutation)
+                    self.eval_function.optimize(mutation)
+                next_score = self.eval_function.evaluate(mutation)
 
                 # Improved score?
                 if next_score > best_score:
-                    #print("Score: ", best_score)
                     best_score = next_score
-                    best_score_program = mutation
-                    print("Score: ", best_score)
+                    best_score_program = mutation     
 
                 # Accept a new program? Note: if next_score > current_score, we accept.
                 prob_accept = min(1, self.accept_function(current_score, next_score))
                 prob = random.uniform(0, 1)
                 if prob < prob_accept:
-                    print("Current score: ", current_score, iteration_number, self.current_temperature)
-                    current_program = mutation #simplify_program1(mutation)
+                    #print("Current score: ", current_score, iteration_number, self.current_temperature)
+                    current_program = simplify_program1(mutation)  # mutattion for reset 1 and 2
                     current_score = next_score
 
                 iteration_number += 1
-                #print(iteration_number, next_score, mutation.to_string())
                 self.decrease_temperature(iteration_number)
             # END SA
 
-            # update history
-            current_reward = self.eval_function.update_trajectory0(best_score_program, nb_evaluations)
-            print("Current:", current_reward, best_score)
-            print("Best:", best_reward, self.eval_function.evaluate(best_reward_program))
-            # if policy is the same, try again
-            if best_reward_program == best_score_program:
-                continue
+            # evaluate policy 
+            current_reward = self.eval_function.collect_reward(best_score_program, nb_evaluations)
 
-            # evaluate best mutation in environment
-            #current_reward = self.eval_function.collect_reward(best_score_program, nb_evaluations)
-
+            # compare to current best 
             if current_reward > best_reward:
                 best_reward = current_reward
                 best_reward_program = best_score_program
 
                 # Update Files
-                print(best_reward)
-                print(best_reward_program.to_string())
+                print(best_reward, best_reward_program.to_string())
                 self.update_log_file(id_log, best_reward, best_score, time_start)
                 self.update_program_file(id_log, best_reward_program)
                 self.update_binary_file(best_reward_program) 
@@ -526,6 +508,9 @@ class SimulatedAnnealing():
 
                 if best_reward > 499.99:
                   return best_reward, best_reward_program
+            
+            # Update history 
+            self.eval_function.update_trajectory0(best_score_program)
 
         return best_reward, best_reward_program
 

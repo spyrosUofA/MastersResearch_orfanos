@@ -1,6 +1,6 @@
 
-for oracle in {1..2}; do
-  for seed in {1..2}; do
+for oracle in {1..1}; do
+  for seed in {1..1}; do
     o1="256x0/$oracle"
     o2="64x64/$oracle"
 

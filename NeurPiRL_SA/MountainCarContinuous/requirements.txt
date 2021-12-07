@@ -21,3 +21,4 @@ stable-baselines3==1.2.0
 threadpoolctl==3.0.0
 torch==1.10.0
 typing-extensions==4.0.0
+

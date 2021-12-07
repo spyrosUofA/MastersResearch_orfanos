@@ -1,0 +1,24 @@
+0 
+(if ((-1.041488997648713 + (obs[3] * -0.24994281259132756)) < (-0.889837753278921 * (-1.0988337136840802 * obs[1]))) then: act = 1 else: act = 0)
+1 
+(if ((obs[1] * (obs[2] * 2.0041347155151077)) < (obs[3] * -1.200826583083475)) then: act = 0 else: (if (obs[1] < -0.9230730427532428) then: act = 1 else: (if (1.454631806986382 < 2.096704909382817) then: (if ((obs[2] * obs[2]) < 1.3343724510710282) then: (if (0.04423540073127624 < ((obs[0] * 2.180878305944684) + 2.1638888914758403)) then: act = 1 else: act = 1) else: act = 0) else: (if (0.2623150565947146 < obs[2]) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+2 
+(if ((obs[1] * 0.345448458758462) < (obs[3] * -1.4396310338258718)) then: act = 0 else: (if (obs[1] < -0.7972438177669381) then: act = 1 else: (if (-0.4971798462086861 < 1.2162977315185817) then: (if ((-0.8157892344798406 + obs[3]) < (obs[2] * 1.3299168040748564)) then: (if (0.08574753042973088 < obs[3]) then: act = 1 else: act = 1) else: act = 0) else: (if (0.909117510091103 < obs[2]) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+3 
+(if ((obs[1] * 0.39720992495054075) < (obs[3] * -1.8326871640513136)) then: act = 0 else: (if (obs[1] < -1.2880424916861697) then: act = 1 else: (if (-0.47094140242028243 < 1.2841062213803855) then: (if ((-1.0824371327588025 + obs[3]) < (obs[2] * 1.3973368318221246)) then: (if (-0.16425572916611314 < obs[3]) then: act = 1 else: act = 1) else: act = 0) else: (if (0.8293696346654216 < obs[2]) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+4 
+(if ((obs[1] * 0.4298335882425339) < (obs[3] * -2.0231314867608865)) then: act = 0 else: (if (obs[1] < -1.906421303429987) then: act = 0 else: (if (-0.8218971343617183 < 1.784377753518095) then: act = 1 else: (if (0.39020951709350515 < (-2.239237597362901 * obs[3])) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+5 
+(if ((obs[1] * 0.33578239705559837) < (obs[3] * -1.6813379758194515)) then: act = 0 else: (if (obs[1] < -2.3193862826810823) then: act = 0 else: (if (-1.1075660883259797 < 1.4252952779500172) then: act = 1 else: (if (2.0028310828384486 < (-2.6353450890369667 * obs[3])) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+6 
+(if ((obs[1] * 0.33578239705559837) < (obs[3] * -1.6813379758194515)) then: act = 0 else: (if (obs[1] < -2.3193862826810823) then: act = 0 else: (if (-1.1075660883259797 < 1.4252952779500172) then: act = 1 else: (if (2.0028310828384486 < (-2.6353450890369667 * obs[3])) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+7 
+(if ((obs[1] * 0.3728411998016049) < (obs[3] * -1.8579736883665465)) then: act = 0 else: (if (obs[1] < -2.2747335142294403) then: act = 0 else: (if (-1.007686908315514 < 1.2264624923639302) then: act = 1 else: (if (1.9598590767482327 < (1.0972000788638725 * obs[3])) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+8 
+(if ((obs[1] * 0.33967937429633405) < (obs[3] * -1.7042934239241259)) then: act = 0 else: (if (obs[1] < -2.3671111126817537) then: act = 1 else: (if (-0.8112425540529383 < 1.265391100006198) then: act = 1 else: (if (1.8018641775619653 < (1.2411646957766247 * obs[3])) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+9 
+(if ((obs[1] * 0.32879229171225316) < (obs[3] * -1.808280006371535)) then: act = 0 else: (if (1.6393972395672924 < obs[1]) then: act = 1 else: (if (-1.1168824752681838 < 0.9261560798642537) then: act = 1 else: (if (1.925672339760467 < (-1.9027999211361275 * obs[3])) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+10 
+(if ((obs[1] * 0.32879229171225316) < (obs[3] * -1.808280006371535)) then: act = 0 else: (if (1.6393972395672924 < obs[1]) then: act = 1 else: (if (-1.1168824752681838 < 0.9261560798642537) then: act = 1 else: (if (1.925672339760467 < (-1.9027999211361275 * obs[3])) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))
+11 
+(if ((obs[1] * 0.32879229171225316) < (obs[3] * -1.808280006371535)) then: act = 0 else: (if (1.6393972395672924 < obs[1]) then: act = 1 else: (if (-1.1168824752681838 < 0.9261560798642537) then: act = 1 else: (if (1.925672339760467 < (-1.9027999211361275 * obs[3])) then: act = 1 else: (if (obs[3] < obs[0]) then: act = 1 else: (if (obs[1] < obs[0]) then: act = 0 else: act = 0))))))

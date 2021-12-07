@@ -60,7 +60,7 @@ class Node:
                     originals.append(node.children[0][k])
                     interval = create_interval(node.children[0][k], 2)
                     dict_ranges[name] = copy.deepcopy(interval)
-                    print(dict_ranges)
+                    #print(dict_ranges)
                     #print(interval)
                 j += 1
 
@@ -112,14 +112,14 @@ class Node:
                         w.append(values.pop(0))
                     node.children[0] = w
                 else:
-                    print("val", values)
+                    #print("val", values)
                     w = []
                     for k in range(5):
                         name = "w" + str(j) + '.' + str(k)
-                        print("w_i", values[name])
+                        #print("w_i", values[name])
                         w.append(values[name])
                     node.children[0] = w
-                    print("w", w)
+                    #print("w", w)
                     j += 1
                 # print("Values", values)
                 # name = "w" + str(j)
@@ -237,9 +237,9 @@ class Node:
         list_all_productions = [Node, #StartSymbol, #changed from node
                                 Ite,
                                 Lt,
-                                #Gt,
-                                #Lt0,
-                                #Gt0,
+                                Gt,
+                                Lt0,
+                                Gt0,
                                 Addition,
                                 Multiplication]
 
@@ -299,12 +299,14 @@ class Node:
 
         Gt0.accepted_nodes = [Observation.class_name(),
                                      ReLU.class_name(),
+                                     Affine.class_name(),
                                      Addition.class_name(),
                                      Multiplication.class_name()]
-        Gt0.accepted_types = [[Affine.class_name()]] #[Gt0.accepted_nodes]
+        Gt0.accepted_types = [Gt0.accepted_nodes]
 
         Lt0.accepted_nodes = [Observation.class_name(),
                                  ReLU.class_name(),
+                                 Affine.class_name(),
                                  Addition.class_name(),
                                  Multiplication.class_name()]
         Lt0.accepted_types = [Lt0.accepted_nodes]

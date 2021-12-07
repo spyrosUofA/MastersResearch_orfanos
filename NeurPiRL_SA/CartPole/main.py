@@ -45,7 +45,7 @@ def main():
     parser.add_argument('-time', action='store', dest='time_limit', default=1200,
                         help='Time limit in seconds')
     
-    parser.add_argument('-temperature', action='store', dest='initial_temperature', default=10,
+    parser.add_argument('-temperature', action='store', dest='initial_temperature', default=50,
                         help='SA\'s initial temperature')
     
     parser.add_argument('-alpha', action='store', dest='alpha', default=1.2,
@@ -72,8 +72,17 @@ def main():
     parser.add_argument('--double-programs', action='store_false', default=True,
                         dest='use_double_programs',
                         help='The program will have two instructions, one for yes-no decisions and another for column decisions')
+    
+    parser.add_argument('--iterated-best-response', action='store_true', default=False,
+                        dest='run_ibr',
+                        help='It will run Iterated Best Response')
+    
+    parser.add_argument('--reuse-tree', action='store_true', default=False,
+                    dest='reuse_tree',
+                    help='UCT reuses its tree and SA starts with previous solution in between iterations of IBR')
 
     parameters = parser.parse_args()
+
 
     # Casting to integers
     number_games = int(parameters.number_games)
@@ -120,21 +129,38 @@ def main():
 
     if isinstance(algorithm, SimulatedAnnealing):
         
-        from DSL import Ite, Lt, AssignAction, Observation, Num, Addition, Multiplication, ReLU, \
+        from DSL import Ite, \
+                                Lt, \
+                                AssignAction, \
+                                Addition, \
+                                Multiplication, \
+                                Observation, \
+                                ReLU, \
+                                Num,\
                                 Gt0, Gt
+        
+        terminals = [AssignAction]
+        OPERATIONS = [AssignAction,
+                          Ite,
+                      Lt,
+                          #Gt0,
+                          Num,
+                          Observation,
+                          Addition,
+                          Multiplication]
 
         OPERATIONS = [AssignAction, Ite, Lt, Num, Observation, Addition, Multiplication]
 
         # Add ReLU node to DSL and load ReLU programs
         if parameters.augment_dsl:
-            OPERATIONS = [AssignAction, Ite, Lt, Observation, Num]
+            #OPERATIONS = [AssignAction, ReLU, Ite, Lt, Num, Observation, Addition, Multiplication]
             OPERATIONS.append(ReLU)
         else:
             accepted_relus = None
 
         algorithm.search(parameters.approach,
                          OPERATIONS,
-                         [0.0], #[-2.0, -1.0, 0.0, 1.0, 2.0],
+                         [-2.0, -1.0, 0.0, 1.0, 2.0],
                          [0, 1, 2, 3],
                          [0, 1],
                          accepted_relus,

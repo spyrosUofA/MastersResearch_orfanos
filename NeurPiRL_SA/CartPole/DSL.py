@@ -28,7 +28,7 @@ class Node:
                 name = "Num" + str(i)
                 i += 1
                 originals.append(node.children[0])
-                interval = create_interval(node.children[0], 2)
+                interval = create_interval(node.children[0], 0.25)
                 dict_ranges[name] = copy.deepcopy(interval)
                 # print(type(interval))
             elif type(node) is Ite:
@@ -217,7 +217,7 @@ class Node:
         StartSymbol.accepted_nodes = [Ite.class_name(), AssignAction.class_name()]
         StartSymbol.accepted_types = [StartSymbol.accepted_nodes]
 
-        Multiplication.accepted_nodesL = [Num.class_name(),
+        Multiplication.accepted_nodes = [Num.class_name(),
                                     Observation.class_name(),
                                     ReLU.class_name(),
                                     Addition.class_name(),
@@ -226,7 +226,7 @@ class Node:
                                           ReLU.class_name(),
                                           Addition.class_name(),
                                           Multiplication.class_name()]
-        Multiplication.accepted_types = [Multiplication.accepted_nodesL,  Multiplication.accepted_nodesR]
+        Multiplication.accepted_types = [Multiplication.accepted_nodes,  Multiplication.accepted_nodes] #[Num.class_name()]]
 
         Addition.accepted_nodes = [Num.class_name(),
                                     Observation.class_name(),
@@ -254,9 +254,9 @@ class Node:
         Gt.accepted_types = [Gt.accepted_nodes, [Num.class_name()]]  # Lt.accepted_nodes]
 
         Gt0.accepted_nodes = [Observation.class_name(),
-                                     ReLU.class_name()]# ,
-                                     #Addition.class_name(),
-                                     #Multiplication.class_name()]
+                                     ReLU.class_name(),
+                                     Addition.class_name(),
+                                     Multiplication.class_name()]
         Gt0.accepted_types = [Gt0.accepted_nodes]
 
         Lt0.accepted_nodes = [Observation.class_name(),
@@ -377,11 +377,11 @@ class Observation(Node):
         return False
 
 
-class ReLU_official(Node):
+class ReLU(Node):
     def __init__(self):
         super(ReLU, self).__init__()
         self.number_children = 1
-        self.size = 1
+        self.size = 0
 
     @classmethod
     def new(cls, weight_bias):
@@ -405,7 +405,7 @@ class ReLU_official(Node):
         return False
 
 
-class ReLU(Node):
+class ReLU_weight(Node):
     def __init__(self):
         super(ReLU, self).__init__()
         self.number_children = 1

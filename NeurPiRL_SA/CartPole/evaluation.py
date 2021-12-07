@@ -39,7 +39,7 @@ class Evaluate():
     def eval_triage(self, p):
         pass
 
-    def update_trajectory0(self, p):
+    def update_trajectory0(self, p, nb_rollouts=1):
         pass
 
     def update_trajectory1(self, p, current_score):

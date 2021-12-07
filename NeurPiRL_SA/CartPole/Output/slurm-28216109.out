@@ -1,0 +1,51 @@
+created virtual environment CPython3.8.10.final.0-64 in 28636ms
+  creator CPython3Posix(dest=/localscratch/orfanos.28216109.0/env, clear=False, global=False)
+  seeder FromAppData(download=False, pip=latest, setuptools=latest, wheel=latest, via=copy, app_data_dir=/home/orfanos/.local/share/virtualenv/seed-app-data/v1.0.1)
+  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
+Ignoring pip: markers 'python_version < "3"' don't match your environment
+Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx512, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx2, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pip-21.2.3+computecanada-py3-none-any.whl
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 20.0.2
+    Uninstalling pip-20.0.2:
+      Successfully uninstalled pip-20.0.2
+Successfully installed pip-21.2.3+computecanada
+Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx512, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx2, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/box2d_py-2.3.5+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/Pillow-7.2.0+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/bayesian_optimization-1.2.0-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/cloudpickle-1.6.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/cycler-0.11.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/future-0.18.2+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/gym-0.18.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/joblib-1.1.0+computecanada-py2.py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/kiwisolver-1.3.1+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/matplotlib-3.4.2+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/numpy-1.21.2+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/pandas-1.3.0+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pyglet-1.5.0+computecanada-py2.py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pyparsing-3.0.6+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/python_dateutil-2.8.2+computecanada-py2.py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pytz-2021.3+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/scikit_learn-1.0.1+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic/scipy-1.7.1+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/six-1.16.0+computecanada-py2.py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/stable_baselines3-1.2.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/threadpoolctl-3.0.0+computecanada-py3-none-any.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx2/torch-1.10.0+computecanada-cp38-cp38-linux_x86_64.whl
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/typing_extensions-4.0.0+computecanada-py3-none-any.whl
+Installing collected packages: six, numpy, future, typing-extensions, threadpoolctl, scipy, pytz, python-dateutil, pyparsing, pyglet, Pillow, kiwisolver, joblib, cycler, cloudpickle, torch, scikit-learn, pandas, matplotlib, gym, stable-baselines3, Box2d-py, bayesian-optimization
+Successfully installed Box2d-py-2.3.5+computecanada Pillow-7.2.0+computecanada bayesian-optimization-1.2.0 cloudpickle-1.6.0+computecanada cycler-0.11.0+computecanada future-0.18.2+computecanada gym-0.18.0+computecanada joblib-1.1.0+computecanada kiwisolver-1.3.1+computecanada matplotlib-3.4.2+computecanada numpy-1.21.2+computecanada pandas-1.3.0+computecanada pyglet-1.5.0+computecanada pyparsing-3.0.6+computecanada python-dateutil-2.8.2+computecanada pytz-2021.3+computecanada scikit-learn-1.0.1+computecanada scipy-1.7.1+computecanada six-1.16.0+computecanada stable-baselines3-1.2.0+computecanada threadpoolctl-3.0.0+computecanada torch-1.10.0+computecanada typing-extensions-4.0.0+computecanada
+500
+(if ((-0.889837753278921 + (obs[3] + -0.09883371368408012)) < -0.041488997648713) then: (if (obs[3] < 0.7500571874086724) then: act = 1 else: act = 0) else: act = 0) 9.35
+456.39 (if (max(0, [0.182 0.628 1.236 1.977] *dot* obs[:] + 0.388) < 0.770043333921808) then: act = 0 else: act = 1)
+487.98 (if (((max(0, [-0.457 -1.223  0.59   1.019] *dot* obs[:] + 0.085) + (-0.03725260505830587 * max(0, [0.182 0.628 1.236 1.977] *dot* obs[:] + 0.388))) + max(0, [0.182 0.628 1.236 1.977] *dot* obs[:] + 0.388)) < 0.7498949786406097) then: act = 0 else: act = 1)
+488.21 (if ((max(0, [-0.457 -1.223  0.59   1.019] *dot* obs[:] + 0.085) + max(0, [0.182 0.628 1.236 1.977] *dot* obs[:] + 0.388)) < 0.7761550515626064) then: act = 0 else: act = 1)
+489.08 (if ((max(0, [-0.457 -1.223  0.59   1.019] *dot* obs[:] + 0.085) + max(0, [0.182 0.628 1.236 1.977] *dot* obs[:] + 0.388)) < 0.7761550515626064) then: act = 0 else: act = 1)
+489.26 (if ((max(0, [-0.457 -1.223  0.59   1.019] *dot* obs[:] + 0.085) + max(0, [0.182 0.628 1.236 1.977] *dot* obs[:] + 0.388)) < 0.7761550515626064) then: act = 0 else: act = 1)
+500
+(if (max(0, [-0.248 -0.035 -0.096 -0.222] *dot* obs[:] + 0.121) < ((obs[3] + -0.041488997648713) + (-0.889837753278921 + obs[0]))) then: (if (obs[0] < max(0, [-0.054 -0.015 -0.099  0.174] *dot* obs[:] + -0.032)) then: act = 0 else: act = 1) else: act = 1) 9.35
+177.92 (if (obs[3] < (max(0, [ 0.095 -0.142  0.088 -0.267] *dot* obs[:] + 0.082) * (((obs[0] + obs[3]) * 0.75) + (max(0, [ 0.131 -0.171  0.059  0.288] *dot* obs[:] + 0.094) * obs[1])))) then: (if (1.2521320282154433 < 0.5304579630042352) then: act = 0 else: (if (1.0000571874086726 < obs[3]) then: act = 0 else: act = 0)) else: (if ((max(0, [ 0.125 -0.206 -0.382 -0.266] *dot* obs[:] + 0.133) * obs[1]) < max(0, [ 0.177 -0.082  0.202 -0.149] *dot* obs[:] + 0.079)) then: act = 1 else: act = 1))
+246.97 (if (obs[3] < (max(0, [ 0.131 -0.171  0.059  0.288] *dot* obs[:] + 0.094) * (-2.4416002921930797 * obs[2]))) then: (if (0.6435714147061735 < (max(0, [ 0.186 -0.082  0.259  0.337] *dot* obs[:] + 0.119) * (obs[0] * ((obs[3] + max(0, [-0.257 -0.038 -0.001 -0.34 ] *dot* obs[:] + 0.115)) * obs[2])))) then: act = 0 else: (if (max(0, [-0.099  0.237  0.194 -0.206] *dot* obs[:] + 0.091) < obs[3]) then: act = 0 else: act = 0)) else: (if ((max(0, [ 0.125 -0.206 -0.382 -0.266] *dot* obs[:] + 0.133) * obs[1]) < max(0, [ 0.177 -0.082  0.202 -0.149] *dot* obs[:] + 0.079)) then: act = 1 else: act = 1))
+500.0 (if (obs[3] < (0.6048243731586911 * (-2.8367909617455496 * obs[2]))) then: (if (2.3010861343948323 < (-1.786067413108354 * (obs[0] * ((obs[3] + max(0, [-0.257 -0.038 -0.001 -0.34 ] *dot* obs[:] + 0.115)) * obs[2])))) then: (if (max(0, [-0.033  0.447 -0.148 -0.257] *dot* obs[:] + 0.074) < obs[2]) then: (if (max(0, [-0.202 -0.056  0.089  0.227] *dot* obs[:] + 0.043) < (obs[1] * (obs[1] + obs[0]))) then: act = 1 else: (if ((2.370084268371635 * max(0, [ 0.017  0.103  0.051 -0.333] *dot* obs[:] + 0.087)) < 1.0887772911248) then: (if (-0.2863108040842483 < (obs[0] + max(0, [ 0.001 -0.237 -0.195  0.263] *dot* obs[:] + -0.002))) then: (if (max(0, [ 0.305 -0.165 -0.014  0.33 ] *dot* obs[:] + 0.09) < obs[0]) then: act = 1 else: act = 0) else: (if (max(0, [ 0.305 -0.165 -0.014  0.33 ] *dot* obs[:] + 0.09) < -2.5805578208040747) then: act = 1 else: act = 1)) else: act = 0)) else: act = 0) else: (if (max(0, [-0.099  0.237  0.194 -0.206] *dot* obs[:] + 0.091) < obs[3]) then: act = 0 else: act = 0)) else: (if ((max(0, [ 0.125 -0.206 -0.382 -0.266] *dot* obs[:] + 0.133) * obs[1]) < max(0, [ 0.177 -0.082  0.202 -0.149] *dot* obs[:] + 0.079)) then: act = 1 else: act = 1))

@@ -45,7 +45,7 @@ def main():
     parser.add_argument('-time', action='store', dest='time_limit', default=1200,
                         help='Time limit in seconds')
     
-    parser.add_argument('-temperature', action='store', dest='initial_temperature', default=10,
+    parser.add_argument('-temperature', action='store', dest='initial_temperature', default=50,
                         help='SA\'s initial temperature')
     
     parser.add_argument('-alpha', action='store', dest='alpha', default=1.2,
@@ -121,14 +121,15 @@ def main():
     if isinstance(algorithm, SimulatedAnnealing):
         
         from DSL import Ite, Lt, AssignAction, Observation, Num, Addition, Multiplication, ReLU, \
-                                Gt0, Gt, Affine
+                                Gt0, Lt0, Gt, Affine
 
-        OPERATIONS = [AssignAction, Ite, Gt0, Num, Observation, Affine] #, Addition, Multiplication]
+        OPERATIONS = [AssignAction, Ite, Gt0, Lt0, Num, Observation] #, Addition, Multiplication]
 
         # Add ReLU node to DSL and load ReLU programs
         if parameters.augment_dsl:
             OPERATIONS.append(ReLU)
         else:
+            OPERATIONS.append(Affine)
             accepted_relus = None
 
         algorithm.search(parameters.approach,

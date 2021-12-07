@@ -183,7 +183,7 @@ if __name__ == '__main__':
         BOUND = 11
         OPERATIONS = [Ite, Lt]
         CONSTANTS = [0.0]
-        OBS_VALUES = []
+        OBS_VALUES = [0, 1, 2, 3]
         ACT_VALUES = [0, 1]
         RELU_PROG = pickle.load(open("./Oracle/" + path_to + "/ReLUs.pkl", "rb"))
         OBSERVATIONS = np.load("./Oracle/" + path_to + "/Observations_50.npy")
@@ -191,8 +191,10 @@ if __name__ == '__main__':
         synthesizer = BottomUpSearch()
 
 
-        #p, num = synthesizer.synthesize(BOUND, OPERATIONS, CONSTANTS, OBS_VALUES, ACT_VALUES, OBSERVATIONS, ACTIONS,
-        #                                RELU_PROG, path_to, PiRL=True)
+        p, num = synthesizer.synthesize(BOUND, OPERATIONS, CONSTANTS, OBS_VALUES, ACT_VALUES, OBSERVATIONS, ACTIONS,
+                                       RELU_PROG, path_to + "111", PiRL=True)
+
+        continue
 
         # WITH BIG AUGMENTED DSL
         path_to = "64x64/" + str(oracle)

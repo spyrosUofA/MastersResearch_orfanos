@@ -73,10 +73,8 @@ class Evaluate():
 
     def find_distance(self, p):
         actions = get_action(self.inputs, p)
-        #actions_diff = spatial.distance.hamming(actions, np.array(self.actions))
-        actions_diff = spatial.distance.euclidean(actions, np.array(self.actions))
-        #print(1 - actions_diff)
-        return  - actions_diff
+        actions_diff = spatial.distance.hamming(actions, np.array(self.actions))
+        return 1.0 - actions_diff
 
     def find_distance_bo(self, **kwargs):
         # For bayesian optimization, pass dictionary of the Nums
@@ -84,7 +82,7 @@ class Evaluate():
         #print("numNods", numNodes)
         #print(self.tree.to_string())
         self.tree.set_Num_value(numNodes) #.tolist())
-        print(self.tree.to_string(), self.find_distance(self.tree), '\n')
+        #print(self.tree.to_string(), self.find_distance(self.tree), '\n')
 
         return self.find_distance(self.tree)
 
@@ -93,7 +91,7 @@ class Evaluate():
         # list of Nums in the AST to optimize over
         self.tree = p
         list_Nums_range, originals = p.get_Num_range()
-        bayesOpt = BayesianOptimization(self.find_distance_bo, pbounds=list_Nums_range, verbose=2, random_state=self.seed)
+        bayesOpt = BayesianOptimization(self.find_distance_bo, pbounds=list_Nums_range, verbose=0, random_state=self.seed)
         #print(list_Nums_range)
         #print(bayesOpt)
 
@@ -102,18 +100,18 @@ class Evaluate():
             # Bayesian Optimization
             bayesOpt.maximize(init_points=20, n_iter=5, kappa=2.5)
             # Update tree with optimized Nums
-            print("OPTIMIZED", self.find_distance(p), bayesOpt.max['target'])
+            #("OPTIMIZED", self.find_distance(p), bayesOpt.max['target'])
 
-            print("Best params:", bayesOpt.max['params'])
+            #print("Best params:", bayesOpt.max['params'])
 
             p.set_Num_value(bayesOpt.max['params'])
 
-            print(bayesOpt.max['target'])
-            print("-----------------\n\n\n")
+            #print(bayesOpt.max['target'])
+            #print("-----------------\n\n\n")
 
             return bayesOpt.max['target']
         except Exception as error:
-            print("No Nums to optimize, i.e., ", error)
+            #print("No Nums to optimize, i.e., ", error)
             p.set_Num_value(originals)
             return self.find_distance(p)
 

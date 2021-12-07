@@ -6,7 +6,7 @@ for oracle in {11..11}; do
 
     #python3 main.py -time 3660 -seed ${seed} -oracle $o1 -e "DAgger" --bo --aug_dsl -approach "0"
     #python3 main.py -time 3660 -seed ${seed} -oracle $o2 -e "DAgger" --bo --aug_dsl -approach "0"
-    python3 main.py -time 3660 -seed ${seed} -oracle $o2 -e "DAgger" --bo -approach "0"
+    python3 main.py -time 3660 -seed ${seed} -oracle $o2 -e "DAgger" --aug_dsl -approach "0"
 
   done
 done

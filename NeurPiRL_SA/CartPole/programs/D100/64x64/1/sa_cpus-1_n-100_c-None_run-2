@@ -1,0 +1,20 @@
+0 
+(if (1.9679974510710019 < obs[2]) then: (if (-2.2370368840860544 < obs[3]) then: (if (obs[2] < 0.024831238939354572) then: (if (obs[3] < obs[1]) then: act = 0 else: act = 0) else: act = 1) else: act = 0) else: (if ((obs[2] * obs[2]) < (-1.0323388036908616 * obs[1])) then: (if (obs[2] < obs[3]) then: (if (obs[1] < obs[1]) then: act = 1 else: act = 1) else: (if (-1.0398160989562555 < obs[0]) then: act = 0 else: act = 0)) else: act = 0))
+1 
+(if (obs[0] < (1.0596354831753318 * obs[2])) then: (if (-2.1235375132707572 < ((obs[2] * (-1.6868874891369097 * obs[0])) * obs[3])) then: (if (obs[3] < obs[2]) then: act = 0 else: (if (obs[3] < (obs[3] + obs[1])) then: (if (obs[1] < obs[0]) then: (if (obs[2] < -2.1266121632753103) then: act = 1 else: act = 0) else: act = 1) else: (if (obs[1] < (1.0724386250437337 * obs[1])) then: act = 0 else: act = 1))) else: (if (obs[1] < ((obs[2] + obs[2]) + 0.770395913337621)) then: act = 0 else: act = 1)) else: (if ((obs[2] * obs[2]) < (-1.384594698077679 * obs[1])) then: (if (obs[2] < obs[3]) then: act = 1 else: act = 0) else: act = 0))
+2 
+(if ((-1.2370368840860544 + obs[3]) < 0.9679974510710019) then: (if (-3.572264019254021 < ((obs[2] * (-1.7120192358127992 * (obs[3] * (obs[2] + -1.4911163710769642)))) * (obs[1] * -0.07215490264711705))) then: (if (obs[3] < obs[2]) then: act = 0 else: (if (0.17259576847482788 < obs[0]) then: (if (obs[1] < obs[3]) then: act = 0 else: act = 1) else: act = 1)) else: (if (obs[1] < ((obs[2] + obs[1]) + -0.26477761621116686)) then: act = 0 else: act = 1)) else: (if ((obs[2] * obs[2]) < (-1.1826729700891474 * obs[1])) then: (if (obs[2] < obs[3]) then: act = 1 else: act = 0) else: act = 0))
+3 
+(if ((-3.1014940996780895 + obs[2]) < -0.5449769323961473) then: (if ((obs[1] * obs[2]) < obs[3]) then: (if (obs[3] < obs[2]) then: act = 0 else: (if (0.37311551735438864 < obs[0]) then: act = 0 else: act = 1)) else: act = 0) else: (if ((obs[2] * obs[2]) < (-1.8557361150519172 * obs[1])) then: (if (obs[2] < obs[3]) then: act = 1 else: act = 0) else: act = 0))
+4 
+(if (-2.217356747806561 < (-0.03593883620130528 + (-2.1864200141493613 + obs[3]))) then: (if ((obs[0] * obs[2]) < obs[3]) then: (if (obs[2] < obs[2]) then: act = 0 else: (if (0.4969767037759929 < obs[0]) then: act = 0 else: act = 1)) else: act = 0) else: (if (-1.4614030842484615 < (0.7040132040316636 + (obs[1] + 0.3408316986905253))) then: act = 0 else: act = 1))
+5 
+(if ((obs[0] * (obs[2] + -0.01610625770884988)) < obs[3]) then: act = 1 else: act = 0)
+6 
+(if ((obs[0] * (obs[2] + -0.01610625770884988)) < obs[3]) then: act = 1 else: act = 0)
+7 
+(if ((((obs[1] * -0.2820025489289981) * obs[1]) * (obs[3] + obs[1])) < obs[3]) then: act = 1 else: act = 0)
+8 
+(if ((((obs[1] * -0.2820025489289981) * obs[1]) * (obs[3] + obs[1])) < obs[3]) then: act = 1 else: act = 0)
+9 
+(if ((-0.22911694608910657 * (obs[2] + obs[1])) < obs[3]) then: act = 1 else: act = 0)
