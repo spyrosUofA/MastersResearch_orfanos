@@ -13,35 +13,21 @@ def main(seed=0, l1_actor=4, l2_actor=8):
     if not os.path.exists(save_to):
         os.makedirs(save_to)
 
+    if l2_actor == 0:
+        net_arch = [l1_actor]
+    else:
+        net_arch = [l1_actor, l2_actor]
+
     # create environment
-    env = gym.make("Pendulum-v0")
+    env = gym.make("BipedalWalker-v3")
     env.seed(seed)
 
-    # Stop training when the model reaches the reward threshold
-    callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=220, verbose=1)
-    eval_callback = EvalCallback(env, callback_on_new_best=callback_on_best, verbose=1)
-
     # train oracle
-    model = SAC('MlpPolicy', env,
-                  #policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=[dict(pi=[l1_actor, l2_actor], vf=[64, 64])]),
-                  seed=seed,
-                  batch_size=512,
-                  buffer_size=50000,
-                  ent_coef=0.1,
-                  gamma=0.09999,
-                  gradient_steps=32,
-                  learning_rate=0.003,
-                  tau=0.01,
-                  train_freq=32,
-                  use_sde=True,
-                  verbose=1)
-
-
-    model = TD3('MlpPolicy', env, verbose=1, policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=[128, 128])) #   dict(actor=[l1_actor, l2_actor], vf=[64, 64])]))
-    #model.learn(int(1e5)) #, callback=eval_callback)
+    model = TD3('MlpPolicy', env, verbose=1, policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=net_arch))
+    model.learn(int(1e5))
 
     # save oracle
-    #model.save(save_to + 'model')
+    model.save(save_to + 'model')
     model = model.load(save_to + 'model')
 
     # save ReLU programs from actor network
@@ -51,10 +37,8 @@ def main(seed=0, l1_actor=4, l2_actor=8):
     for i in range(len(biases)):
         w = weights[i]
         b = biases[i]
-        print(w, b)
         relu_programs.append([w, b])
     pickle.dump(relu_programs, file=open(save_to + 'ReLUs.pkl', "wb"))
-    print(relu_programs)
 
     # save 1 episode rollout
     observations = []
@@ -68,21 +52,68 @@ def main(seed=0, l1_actor=4, l2_actor=8):
             # Record Trajectory
             observations.append(state)
             actions.append(action)
-            print(action)
             # Interact with Environment
             state, reward, done, _ = env.step(action)
             r += reward
     print(r)
-            #env.render()
+
     env.close()
-    print(len(observations))
     np.save(file=save_to + 'Observations.npy', arr=observations)
     np.save(file=save_to + 'Actions.npy', arr=actions)
 
 
 if __name__ == "__main__":
-    main(1, 64, 64)
 
-    #for seed in range(1, 16):
-    #    main(seed, 2, 4)
-    #    main(seed, 64, 64)
+    for seed in range(1, 2):
+        print(seed)
+        #main(seed, 64, 64)
+        main(seed, 256, 0)
+
+
+"""
+1
+-1.2777066645432233
+-2.492701652007135
+2
+-119.85978969935202
+-121.3353643321041
+3
+-232.27027015377652
+-229.80714221503638
+4
+-130.1147025222528
+-122.61033272231212
+5
+-125.29420101444306
+-120.88741728080335
+6
+-117.15158056898993
+-117.80184923022763
+7
+-234.9650876058741
+-228.62577243909206
+8
+-137.81167075717465
+-122.32469877351645
+9
+-131.96307443162453
+-243.54067767102578
+10
+-236.047341486253
+-238.90864800735054
+11
+-127.89789549115983
+-126.0870405482137
+12
+-1.7809709119883814
+-2.425385165475506
+13
+-236.54110828851583
+-235.33758862350533
+14
+-239.28248879296316
+-344.5489577225242
+15
+-126.61432946629326
+-123.03310897109166
+"""

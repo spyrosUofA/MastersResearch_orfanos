@@ -157,7 +157,7 @@ p_new = simplify_program1(policy)
 print(p_new.to_string() + '\n')
 print("------------------")
 
-print(Environment({}, 200, 1).evaluate(p_new))
+print(Environment({}, 200, 1).collect_reward(p_new, 5, True))
 exit()
 
 
