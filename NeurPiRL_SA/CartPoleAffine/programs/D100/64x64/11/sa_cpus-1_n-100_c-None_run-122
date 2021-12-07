@@ -1,0 +1,16 @@
+0 
+(if (obs[2] > 0) then: act = 1 else: act = 0)
+1 
+(if (obs[3] > 0) then: act = 1 else: act = 0)
+0 
+(if (obs[2] > 0) then: act = 1 else: act = 0)
+1 
+(if (obs[3] > 0) then: act = 1 else: act = 0)
+0 
+(if (obs[2] > 0) then: act = 1 else: act = 0)
+1 
+(if (obs[3] > 0) then: act = 1 else: act = 0)
+0 
+(if (obs[2] > 0) then: act = 1 else: act = 0)
+1 
+(if (obs[3] > 0) then: act = 1 else: act = 0)
