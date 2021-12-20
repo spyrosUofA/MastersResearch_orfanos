@@ -2,6 +2,7 @@ import numpy as np
 from sklearn import tree
 import pandas as pd
 import re
+import numpy as np
 
 # Load trajectories
 trajs = pd.read_csv("trajectory.csv")

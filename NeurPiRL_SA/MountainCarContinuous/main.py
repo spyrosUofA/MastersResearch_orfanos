@@ -113,21 +113,22 @@ def main():
 
     if isinstance(algorithm, SimulatedAnnealing):
         
-        from DSL import Ite, Lt, AssignAction, Observation, Num, Addition, Multiplication, ReLU, \
+        from DSL import Ite, Lt, AssignAction, Observation, Num, Addition, Subtraction, Multiplication, ReLU, \
                                 Gt0, Gt, Affine, Lt0
 
-        OPERATIONS = [AssignAction, Ite, Gt0, Lt0, Num] #, Addition] #, Affine] #, Addition, Multiplication]
+        OPERATIONS = [AssignAction, Ite, Lt, Gt, Num] #, Addition, Subtraction] #, Addition, Subtraction] #, Affine] #, Addition, Multiplication]
 
         # Add ReLU node to DSL and load ReLU programs
         if parameters.augment_dsl:
             OPERATIONS.append(ReLU)
             accepted_relus = pickle.load(open("../MountainCarContinuous/Oracle/" + parameters.oracle + "/ReLUs.pkl", "rb"))
         else:
+            OPERATIONS.append(Affine)
             accepted_relus = None
 
         algorithm.search(parameters.approach,
                          OPERATIONS,
-                         [0.0], #[-2.0, -1.0, 0.0, 1.0, 2.0],
+                         [0.0],
                          [0, 1, 2],
                          [0.0],
                          accepted_relus,

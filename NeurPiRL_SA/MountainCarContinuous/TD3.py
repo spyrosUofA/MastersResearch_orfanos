@@ -23,7 +23,7 @@ def main(seed=0, l1_actor=4, l2_actor=8):
     env.seed(seed)
 
     # train oracle
-    model = TD3('MlpPolicy', env, verbose=0, policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=net_arch))
+    model = TD3('MlpPolicy', env, verbose=1, policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=net_arch))
     model.learn(int(1e5))
 
     # save oracle
@@ -66,8 +66,9 @@ if __name__ == "__main__":
 
     for seed in range(1, 16):
         print(seed)
-        main(seed, 64, 64)
-        main(seed, 256, 0)
+        main(seed, 32, 32)
+        #main(seed, 64, 64)
+        #main(seed, 256, 0)
 
 
 """

@@ -68,7 +68,6 @@ class BottomUpSearch():
                 namespace = {'obs': ob, 'act': 0}
                 p.interpret(namespace)
                 action = [namespace['act']]
-                # print(action)
                 ob, r_t, done, _ = env.step(action[0])  # changed
 
                 steps += 1
@@ -114,14 +113,14 @@ class BottomUpSearch():
         plist.init_plist(constant_values, observation_values, action_values,
                          relu_programs)  # extra agrument here with set o fprograms
 
-        best_reward = 0
+        best_reward = -500
         best_policy = None
         number_evaluations = 0
         score = None
 
         self.outputs = set()
 
-        env = gym.make('CartPole-v1')
+        env = gym.make('LunarLander-v2')
         env.seed(0)
 
         # configure files
@@ -147,7 +146,8 @@ class BottomUpSearch():
                     if PiRL:
                         parameter_finder.optimize(p_copy)
                     number_evaluations += 1
-                    reward = self.evaluate(p_copy, 25, env)
+                    reward = self.evaluate(p_copy, 30, env)
+                    print(p_copy.toString(), reward)
 
                     if reward > best_reward:
                         reward = self.evaluate(p_copy, 100, env)
@@ -177,17 +177,25 @@ class BottomUpSearch():
 if __name__ == '__main__':
 
     for oracle in range(1, 2):
+        n0 = [[0.28382367, 1.7934723, -0.11373619, 1.584884, 0.23984677, -0.42233634, 1.0650071, 2.0341644], 0.5301271]
+        n1 = [[0.36524048, -0.19711488, -0.16623792, -2.815942, -0.7019816, -0.32718712, -0.26316372, -0.2660255],
+              0.42466605]
+        n2 = [[-1.2129432, 0.37068072, -0.8900809, -0.8597776, 2.3637958, 2.5205786, -0.40225548, -0.35761788],
+              0.4344356]
+        n3 = [[0.38897833, 0.45173603, 1.38248, -0.85729873, -2.597608, -0.97952, -0.29168594, 0.31902564], 0.40432847]
+
+        relu_prog = [n0, n1, n2, n3]
 
         # WITH SMALL AUGMENTED DSL
-        path_to = "2x4/" + str(oracle)
+        path_to = "4x0/" + str(oracle)
         BOUND = 11
         OPERATIONS = [Ite, Lt]
         CONSTANTS = [0.0]
-        OBS_VALUES = [0, 1, 2, 3]
-        ACT_VALUES = [0, 1]
-        RELU_PROG = pickle.load(open("./Oracle/" + path_to + "/ReLUs.pkl", "rb"))
-        OBSERVATIONS = np.load("./Oracle/" + path_to + "/Observations_50.npy")
-        ACTIONS = np.load("./Oracle/" + path_to + "/Actions_50.npy")
+        OBS_VALUES = [] #0, 1, 2, 3]
+        ACT_VALUES = [0, 1, 2, 3]
+        RELU_PROG = relu_prog #pickle.load(open("./Oracle/" + path_to + "/ReLUs.pkl", "rb"))
+        OBSERVATIONS = np.load("./Oracle/" + path_to + "/Observations_20.npy")
+        ACTIONS = np.load("./Oracle/" + path_to + "/Actions_20.npy")
         synthesizer = BottomUpSearch()
 
 
@@ -198,7 +206,7 @@ if __name__ == '__main__':
 
         # WITH BIG AUGMENTED DSL
         path_to = "64x64/" + str(oracle)
-        BOUND = 11
+        BOUND = 22
         OPERATIONS = [Ite, Lt]
         CONSTANTS = [0.0]
         OBS_VALUES = []
@@ -217,7 +225,7 @@ if __name__ == '__main__':
             AssignAction(Num(1)))
         a1 = get_action(OBSERVATIONS, p)
 
-        env = gym.make("CartPole-v1")
+        env = gym.make("LunarLander-v2")
         print(np.sum(a1 == ACTIONS) / len(a1))
         print(synthesizer.evaluate(p, 500, env))
 
@@ -241,7 +249,7 @@ if __name__ == '__main__':
                 AssignAction(Num(1)))
         a1 = get_action(observations, p)
 
-        env = gym.make("CartPole-v1")
+        env = gym.make("LunarLander-v2")
         print(np.sum(a1 == actions) / len(a1))
         print(synthesizer.evaluate(p, 500, env))
         exit()

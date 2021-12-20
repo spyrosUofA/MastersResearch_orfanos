@@ -129,7 +129,7 @@ def simplify_program(p, changes):
 def simplify_program1(p):
     while True:
         changes = simplify_program(p, 0)
-        print(p.to_string() + '\n')
+        #print(p.to_string() + '\n')
         if changes == 0:
             return p
 
@@ -138,6 +138,27 @@ from DSL import *
 from evaluation import *
 import time
 
+
+
+rew = 0
+for i in range(8, 9, 1):
+    policy = pickle.load(open("./binary_programs/E010_D010/64x64/" + str(i) + "/sa_cpus-1_n-50_c-None_run-BEST.pkl", "rb"))
+    print(policy.to_string())
+
+    policy = simplify_program1(policy)
+
+    policy.children[0].children[0].replace_child(Num.new(-20), 0)
+    policy = simplify_program1(policy)
+    #print(policy.to_string())
+
+    policy.children[0].children[0].replace_child(Num.new(0), 0)
+    policy = simplify_program1(policy)
+    print(policy.to_string())
+
+    print(Environment({}, 200, 1).collect_reward(policy, 100, False))
+    print()
+
+exit()
 #policy = pickle.load(open("../binary_programs/D000/Oracle-15/sa_cpus-16_n-25_c-None_run-8.pkl", "rb"))
 #policy = pickle.load(open("../binary_programs/D010/Oracle-13/sa_cpus-16_n-25_c-None_run-3.pkl", "rb"))
 #policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-12/sa_cpus-16_n-25_c-None_run-3.pkl", "rb"))
@@ -145,6 +166,30 @@ import time
 #policy = pickle.load(open("../binary_programs/D010/Oracle-9/sa_cpus-16_n-25_c-None_run-9.pkl", "rb"))
 
 #policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-8/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
+
+policy = pickle.load(open("./binary_programs/E010_D010/64x64/1/sa_cpus-1_n-50_c-None_run-BEST.pkl", "rb"))
+policy = simplify_program1(policy)
+print(policy.to_string())
+print("------------------")
+
+print(Environment({}, 200, 1).collect_reward(policy, 5, True))
+print(Environment({}, 200, 1).collect_reward(policy, 100, False))
+exit()
+
+
+rew = 0
+for i in range(1, 16, 1):
+    policy = pickle.load(open("./binary_programs/E010_D010/64x64/" + str(i) + "/sa_cpus-1_n-50_c-None_run-BEST.pkl", "rb"))
+    policy = simplify_program1(policy)
+    r = Environment({}, 200, 1).collect_reward(policy, 100, False)
+    print(i, r, policy.to_string() + '\n')
+
+    rew += r
+
+print(rew / 15.0)
+# E010_D010_old: 163.48063343676603
+exit()
+
 policy = pickle.load(open("binary_programs/E010_D010_old/Oracle-6/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
 policy = pickle.load(open("binary_programs/E010_D010_old/Oracle-8/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
 policy = pickle.load(open("binary_programs/E010_D010_old/Oracle-12/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
@@ -152,13 +197,9 @@ policy = pickle.load(open("binary_programs/E010_D010_old/Oracle-13/sa_cpus-16_n-
 policy = pickle.load(open("binary_programs/E010_D010_old/Oracle-8/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
 
 
-print(policy.to_string() + '\n')
-p_new = simplify_program1(policy)
-print(p_new.to_string() + '\n')
-print("------------------")
 
-print(Environment({}, 200, 1).collect_reward(p_new, 5, True))
-exit()
+
+
 
 
 w = [0.081, -0.375,  0.113, -1.233, -0.265,  0.120, -0.070, -0.091]
@@ -171,14 +212,9 @@ rew = 0
 for i in range(1, 16, 1):
     policy = pickle.load(open("../binary_programs/E010_D010_old/Oracle-" + str(i) + "/sa_cpus-16_n-25_c-None_run-BEST.pkl", "rb"))
 
+    policy = simplify_program1(policy)
     print(policy.to_string() + '\n')
-    policy = simplify_program(policy)
-    policy = simplify_program(policy)
-    policy = simplify_program(policy)
-    policy = simplify_program(policy)
-    print(policy.to_string() + '\n')
-
-    rew += Environment({}, 200, 1).evaluate(policy)
+    rew += Environment({}, 100, 1).evaluate(policy)
 
 print(rew / 15.0)
 # E010_D010_old: 163.48063343676603

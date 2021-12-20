@@ -38,7 +38,7 @@ class ParameterFinderDiscrete():
                 name = "Num"+str(i)
                 i+=1
                 originals.append(node.value)
-                interval = create_interval(node.value, 1.0)
+                interval = create_interval(node.value, 3.0)
                 dict_ranges[name] = copy.deepcopy(interval)
                 #print(type(interval))
             elif type(node) is Ite:

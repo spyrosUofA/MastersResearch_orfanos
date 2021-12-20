@@ -285,7 +285,6 @@ class SimulatedAnnealing():
                 size += 1
             elif depth >= max_depth:
                 types = p.accepted_rules(i)
-                #print(types)
                 child = self.return_terminal_child(p, types)
                 p.add_child(child)
                 child_size = self.fill_random_program(child, depth + 1, max_depth)
@@ -415,7 +414,10 @@ class SimulatedAnnealing():
         Num.accepted_types = [set(numeric_constant_values)]
         AssignAction.accepted_types = [set(action_values)]
         Observation.accepted_types = [set(observation_values)]
-        Affine.accepted_types = [[0.0] * (len(observation_values) + 1)]
+        Affine.accepted_types = [[[0,0,0,0], [0,0,0,0]]] #[[[0.0] * (len(observation_values) + 1)]]
+
+        print(Affine.accepted_types)
+
         ReLU.accepted_types = [relu_values]
 
         self.operations = operations
@@ -430,18 +432,19 @@ class SimulatedAnnealing():
             current_program = copy.deepcopy(initial_program)
         else:
             current_program = self.random_program()
+            print(current_program.to_string())
             if bayes_opt:
                 self.eval_function.optimize(current_program)
 
         # Gather data
-        self.eval_function.update_trajectory0(current_program, 1)
+        #self.eval_function.update_trajectory0(current_program, 1)
 
         # Evaluate initial program
         best_reward_program = copy.deepcopy(current_program)
         best_reward = self.eval_function.collect_reward(best_reward_program, nb_evaluations)
 
         # Save
-        print(best_reward, best_reward_program.to_string())
+        print(best_reward, self.eval_function.evaluate(current_program), best_reward_program.to_string())
         self.update_log_file(0, best_reward, 0.0, time_start)
         self.update_program_file(0, best_reward_program)
         self.update_binary_file(best_reward_program)
@@ -453,7 +456,7 @@ class SimulatedAnnealing():
             self.current_temperature = self.initial_temperature
 
             # re-optimize best policy
-            current_program = best_reward_program
+            current_program = copy.deepcopy(best_reward_program)
             if bayes_opt:
                 self.eval_function.optimize(current_program)
             best_score_program = current_program
@@ -481,7 +484,6 @@ class SimulatedAnnealing():
 
                 # Improved score?
                 if next_score > best_score:
-                    #print("Improvement: ", next_scre - best_score)
                     best_score = next_score
                     best_score_program = mutation
 
@@ -489,35 +491,30 @@ class SimulatedAnnealing():
                 prob_accept = min(1, self.accept_function(current_score, next_score))
                 prob = random.uniform(0, 1)
                 if prob < prob_accept:
-                    #print("Current score: ", current_score, iteration_number, self.current_temperature, mutation.to_string())
                     current_program = mutation #simplify_program1(mutation)
                     current_score = next_score
 
                 iteration_number += 1
                 self.decrease_temperature(iteration_number)
             # END SA
-            print("Iter: ", iteration_number)
 
             # evaluate new policy
             current_reward = self.eval_function.collect_reward(best_score_program, nb_evaluations)
             print("Current:", current_reward, best_score, best_score_program.to_string())
             print("Best:", best_reward, self.eval_function.evaluate(best_reward_program), best_reward_program.to_string())
+            print(self.eval_function.collect_reward(best_reward_program, nb_evaluations))
 
             if current_reward > best_reward:
                 best_reward = current_reward
                 best_reward_program = best_score_program
-
                 # Update Files
                 self.update_log_file(id_log, best_reward, best_score, time_start)
                 self.update_program_file(id_log, best_reward_program)
-                self.update_binary_file(best_reward_program) 
+                self.update_binary_file(best_reward_program)
                 id_log += 1
 
-                if best_reward > 499.99:
-                  return best_reward, best_reward_program
-
             # DAgger step to update histories
-            self.eval_function.update_trajectory0(best_reward_program, 1)
+            self.eval_function.update_trajectory0(best_reward_program, 10)
             print("NB TIMESTEPS:", len(self.eval_function.actions))
 
         return best_reward, best_reward_program

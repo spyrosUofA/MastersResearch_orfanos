@@ -23,7 +23,7 @@ def main(seed=0, l1_actor=4, l2_actor=8):
 
     # train oracle
     model = PPO('MlpPolicy', env,
-                  policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=[dict(pi=[l1_actor, l2_actor], vf=[64, 64])]),
+                  policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=[dict(pi=[l1_actor], vf=[64, 64])]),
                   seed=seed,
                   batch_size=64,
                   ent_coef=0.01,
@@ -32,10 +32,10 @@ def main(seed=0, l1_actor=4, l2_actor=8):
                   n_epochs=4,
                   n_steps=1024,
                   verbose=0)
-    #model.learn(int(1e10), callback=eval_callback)
+    model.learn(int(1e10), callback=eval_callback)
 
     # save oracle
-    #model.save(save_to + 'model')
+    model.save(save_to + 'model')
     model = model.load(save_to + 'model')
 
     # save ReLU programs from actor network
@@ -69,6 +69,10 @@ def main(seed=0, l1_actor=4, l2_actor=8):
 
 
 if __name__ == "__main__":
+
+    main(1, 2, 0)
+    exit()
+
     for seed in range(1, 16):
         main(seed, 2, 4)
         main(seed, 64, 64)

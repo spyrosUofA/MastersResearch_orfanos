@@ -11,8 +11,8 @@ from shutil import copyfile
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-config', action='store', dest='config', default="D010")
-parser.add_argument('-hparam', action='store', dest='hparam', default="sa_cpus-16_n-25_c-None")
+parser.add_argument('-config', action='store', dest='config', default="E010_D010/64x64")
+parser.add_argument('-hparam', action='store', dest='hparam', default="sa_cpus-1_n-50_c-None")
 parser.add_argument('-nb_oracles', action='store', dest='nb_oracles', default=15)
 parser.add_argument('-nb_resets', action='store', dest='nb_resets', default=30)
 parameters = parser.parse_args()
@@ -33,7 +33,7 @@ def plot_one(oracle_nb):
     best_score = WORST_SCORE
     
     for r in range(1, NB_RESETS + 1, 1):
-        file = "../logs/" + parameters.config + '/Oracle-' + str(oracle_nb) + '/' + parameters.hparam + "_run-" + str(r)
+        file = "../logs/" + parameters.config + '/' + str(oracle_nb) + '/' + parameters.hparam + "_run-" + str(r)
 
         with open(file) as f:
             output = np.array([line.strip().split(', ') for line in f], dtype=float)
@@ -57,8 +57,8 @@ def plot_one(oracle_nb):
     scores_Y = np.maximum.accumulate(scores_Y)
 
     # save best policy
-    copy_from = parameters.config + '/Oracle-' + str(oracle_nb) + '/' + parameters.hparam + "_run-" + best_policy
-    save_to = parameters.config + '/Oracle-' + str(oracle_nb) + '/' + parameters.hparam + "_run-BEST"
+    copy_from = parameters.config + '/' + str(oracle_nb) + '/' + parameters.hparam + "_run-" + best_policy
+    save_to = parameters.config + '/' + str(oracle_nb) + '/' + parameters.hparam + "_run-BEST"
 
     copyfile("../logs/" + copy_from, "../logs/" + save_to)
     copyfile("../programs/" + copy_from, "../programs/" + save_to)
@@ -102,7 +102,7 @@ def get_line():
         times_i = results[i-1][0]
         scores_i = results[i-1][1]
         # Vector of length all_times
-        extended_scores_i = [WORST_SCORE] * len(extended_times)
+        extended_scores_i = [scores_i[0]] * len(extended_times)
         # Indices of current times in all_times vector
         indexes_i = [i in times_i for i in extended_times]
         indexes_i = np.where(indexes_i)[0]

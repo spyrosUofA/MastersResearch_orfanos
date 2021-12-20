@@ -107,8 +107,8 @@ def simplify_node(p, changes):
     program, changes = num_plus_num(program, changes)
     program, changes = num_times_num(program, changes)
     program, changes = num_lt_num(program, changes)
-    program, changes = relu_lt_0(program, changes)
-    program, changes = negative_lt_relu(program, changes)
+    #program, changes = relu_lt_0(program, changes)
+    #program, changes = negative_lt_relu(program, changes)
     return program, changes - c0
 
 
@@ -147,8 +147,13 @@ import time
 
 
 
-policy = pickle.load(open("OLD/binary_programs/D110_D110/64x64/2/sa_cpus-1_n-100_c-5000_run-21.pkl", "rb"))
+#policy = pickle.load(open("OLD/binary_programs/D110_D110/64x64/2/sa_cpus-1_n-100_c-5000_run-21.pkl", "rb"))
 
+
+
+# GOOD:
+policy = pickle.load(open("./binary_programs/D110/256x0/1/sa_cpus-1_n-100_c-2000_run-1_v0.pkl", "rb"))
+#policy = pickle.load(open("./binary_programs/D110/32x32/1/sa_cpus-1_n-100_c-None_run-2.pkl", "rb"))
 
 
 
@@ -156,7 +161,15 @@ policy = pickle.load(open("OLD/binary_programs/D110_D110/64x64/2/sa_cpus-1_n-100
 
 
 #policy = pickle.load(open("./binary_programs/D110/64x64/1/sa_cpus-1_n-100_c-5000_run-122.pkl", "rb"))
-print("MEAN:", Environment({}, 200, 1, "Pendulum-v0").collect_reward(policy, 100, True))
+
+print(policy.to_string())
+policy = simplify_program1(policy)
+print()
+print(policy.to_string())
+
+
+print("MEAN:", Environment({}, 200, 1, "Pendulum-v0").collect_reward(policy, 10, True))
+print("MEAN:", Environment({}, 200, 1, "Pendulum-v0").collect_reward(policy, 100, False))
 
 exit()
 

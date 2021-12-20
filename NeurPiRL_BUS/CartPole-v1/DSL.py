@@ -423,7 +423,7 @@ class ReLU(Node):
     def __eq__(self, other):
         if type(other) != ReLU:
             return False
-        if (self.weight == other.weight).all() and (self.bias == other.bias):
+        if (self.weight == other.weight) and (self.bias == other.bias):
             return True
         return False
 

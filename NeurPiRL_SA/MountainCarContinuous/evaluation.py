@@ -52,7 +52,7 @@ class Evaluate():
             ob = self.env.reset()
             reward = 0.0
             while True:
-                if render and i == 15:
+                if render:
                     self.env.render()
                 namespace = {'obs': ob, 'act': 0}
                 p.interpret(namespace)
@@ -83,7 +83,7 @@ class Evaluate():
     def find_distance_bo(self, **kwargs):
         # For bayesian optimization, pass dictionary of the Nums
         numNodes = kwargs # np.fromiter(kwargs.values(), dtype=float)
-        self.tree.set_Num_value(numNodes) #.tolist())
+        self.tree.set_Num_value(numNodes)
         return self.find_distance(self.tree)
 
     def optimize(self, p):

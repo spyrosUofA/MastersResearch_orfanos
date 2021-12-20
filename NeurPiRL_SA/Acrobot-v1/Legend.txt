@@ -1,0 +1,18 @@
+FOLDER NAME for logs, programs, binary_programs, etc:
+
+Character 1: Evaluation
+"E" ==> Environment
+"I" ==> Imitation
+"D" ==> DAgger
+
+Character 2: Bayesian Optimization Y/N
+0 ==> False
+1 ==> True
+
+Character 3: Augmented DSL Y/N
+0 ==> False
+1 ==> True
+
+Character 4: Approach 0/1 
+0 ==> objective=score (imitation or reward), evaluation=reward 
+1 ==> objective=evaluation=reward (i.e. either RL or Imitation Learning)

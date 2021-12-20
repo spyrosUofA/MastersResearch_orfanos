@@ -60,11 +60,11 @@ class Node:
             elif type(node) is StartSymbol:
                 q.append(node.children[0])
             elif type(node) is Affine:
-                print(node, type(node), node.children[0])
+                #print(type(node), node.children[0])
                 for k in range(4):
                     name = "w" + str(j) + '.' + str(k)
                     originals.append(node.children[0][k])
-                    interval = create_interval(node.children[0][k], 2)
+                    interval = create_interval(node.children[0][k], 1)
                     dict_ranges[name] = copy.deepcopy(interval)
                     #print(dict_ranges)
                     #print(interval)
@@ -133,20 +133,7 @@ class Node:
                     node.children[0] = w
                     #print("w", w)
                     j += 1
-                # print("Values", values)
-                # name = "w" + str(j)
-                # node.children = [values[name + ".0"], values[name + ".1"], values[name + ".2"], values[name + ".3"], values[name + ".4"]]
-                # j += 1
-                continue
 
-                for k in range(5):
-                    name = "w" + str(j) + '.' + str(k)
-                    if type(values) is not list:
-                        node.children[0] = values[name]
-                        # print("broke")
-                    else:
-                        node.children[0] = values.pop(0)
-                #j += 1
 
         return
 
@@ -281,7 +268,16 @@ class Node:
                                     ReLU.class_name(),
                                     Addition.class_name(),
                                     Multiplication.class_name()]
+        #Addition.accepted_types = [Addition.accepted_nodes, Addition.accepted_nodes]
         Addition.accepted_types = [[ReLU.class_name(), Observation.class_name()], [ReLU.class_name(), Observation.class_name()]]
+
+        Subtraction.accepted_nodes = [Num.class_name(),
+                                   Observation.class_name(),
+                                   ReLU.class_name(),
+                                   Addition.class_name(),
+                                   Multiplication.class_name()]
+        #Subtraction.accepted_types = [Subtraction.accepted_nodes, Subtraction.accepted_nodes]
+        Subtraction.accepted_types = [[ReLU.class_name(), Observation.class_name()], [ReLU.class_name(), Observation.class_name()]]
 
         Ite.accepted_nodes_bool = [Lt.class_name(), Gt.class_name(), Lt0.class_name(), Gt0.class_name()]
         Ite.accepted_nodes_block = [AssignAction.class_name(), Ite.class_name()]
@@ -294,12 +290,12 @@ class Node:
                                  Multiplication.class_name()]
         Lt.accepted_types = [Lt.accepted_nodes, Lt.accepted_nodes]
 
-        Gt.accepted_nodes = [  # Num.class_name(),
+        Gt.accepted_nodes = [Num.class_name(),
             Observation.class_name(),
             ReLU.class_name(),
             Addition.class_name(),
             Multiplication.class_name()]
-        Gt.accepted_types = [Gt.accepted_nodes, [Num.class_name()]]  # Lt.accepted_nodes]
+        Gt.accepted_types = [Gt.accepted_nodes, Gt.accepted_nodes]
 
         Gt0.accepted_nodes = [Observation.class_name(),
                                      ReLU.class_name(),
@@ -495,15 +491,12 @@ class Affine(Node):
     def new(cls, weight_bias):
         inst = cls()
         inst.add_child(weight_bias)
-        #inst.add_child(bias)
-
         return inst
 
     def to_string(self):
         return '(' + str(np.round(self.children[0][0], 3)) + " + " + str(np.around(self.children[0][1:], 3)) + " *dot* obs[:] " + ")"
 
     def interpret(self, env):
-        #print("Affine Child: ", self.children[0])
         return self.children[0][0] + np.dot(self.children[0][1:], env['obs'])
 
     def __eq__(self, other):

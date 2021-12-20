@@ -15,7 +15,7 @@ def main():
 
     # Task setup block starts
     # Do not change
-    env = gym.make('CartPole-v1')
+    env = gym.make('CartPole-v0')
     env.seed(seed)
     o_dim = env.observation_space.shape[0]
     a_dim = env.action_space.n
@@ -27,7 +27,7 @@ def main():
 
     ####### Start
     # Actor & Critic networks
-    ah1 = 2
+    ah1 = 4
     ah2 = 4
 
 
@@ -40,11 +40,11 @@ def main():
         nn.Softmax(dim=-1))  #5
 
     critic = nn.Sequential(
-        nn.Linear(o_dim, 32),
+        nn.Linear(o_dim, 128),
         nn.ReLU(),
-        nn.Linear(32, 32),
+        nn.Linear(128, 128),
         nn.ReLU(),
-        nn.Linear(32, 1))
+        nn.Linear(128, 1))
 
     # Actor & Critic optimizers
     opt_act = torch.optim.Adam(actor.parameters(), lr=0.005)
