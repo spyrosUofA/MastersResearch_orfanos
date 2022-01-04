@@ -19,7 +19,7 @@ def main(seed=0, l1_actor=4, l2_actor=8):
         net_arch = [l1_actor, l2_actor]
 
     # create environment
-    env = gym.make("HalfCheetah-v2")
+    env = gym.make("BipedalWalker-v3")
     env.seed(seed)
 
     # train oracle

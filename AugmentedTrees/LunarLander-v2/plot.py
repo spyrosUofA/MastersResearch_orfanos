@@ -31,9 +31,10 @@ def data_oracle(oracle, nb_seeds):
         if oracle == "BaseDSL":
             rewards_Y.append(np.load("./Oracle/" + name + "/BaseTreeRewards.npy").tolist())
         else:
-            rewards_Y.append(np.load("./Oracle/" + name + "/AugTreeRewards.npy").tolist())
+            rewards_Y.append(np.load("./Oracle/" + name + "/AugTreeRewards.npy").tolist()[0])
+            print(name, np.load("./Oracle/" + name + "/AugTreeRewards.npy").tolist()[0])
 
-    depths_X = [2, 3, 4]
+    depths_X = [2] #, 3, 4]
     mean_Y = np.mean(rewards_Y, axis=0)
     std_Y = np.std(rewards_Y, axis=0) #* (nb_seeds ** -0.5)
     print(mean_Y, std_Y)
@@ -56,6 +57,9 @@ def plot_all(configs, seeds):
     plt.pause(20)
     plt.savefig('TreePlot.png', dpi=1080, bbox_inches="tight")
 
+
+
+plot_all(["256x0"], 29)
 
 plot_all(["4x0", "32x0", "64x64", "256x256", "256x0", "BaseDSL"], 15)
 

@@ -1,8 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#configs = ['D000', 'D010', 'D100', 'D110', 'E010_D010_old']
-configs = ['D010b', 'D010', 'D000']
+configs = ['D000', 'D010', 'D100', 'D110', 'E010_D010']
+names = ["NDPS", "AugNDPS", "NDPS_BO", "AugNDPS_BO", "AugProg", "AugSketch"]
+
+#configs = ['D010b', 'D010', 'D000']
 
 for count, config in enumerate(configs):
 
@@ -17,7 +19,9 @@ plt.xlabel('Sequential Runtime (s)')
 plt.ylabel('Reward')
 plt.title('LunarLander-v2 (without BayesOpt)')
 plt.ylim([-200, 250])
-plt.legend(['Aug 32', 'Aug 64', 'NDPS'], loc='lower right')
-#plt.legend(configs, loc='lower right')
-plt.savefig('./plots/COMPARE.png', dpi=1080, bbox_inches="tight")
+#plt.legend(['Aug 32', 'Aug 64', 'NDPS'], loc='lower right')
+plt.legend(names, loc='lower right')
+plt.show()
+
+#plt.savefig('./plots/COMPARE.png', dpi=1080, bbox_inches="tight")
 

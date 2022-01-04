@@ -48,6 +48,7 @@ import tensorflow as tf
 from tensorflow.keras import layers
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn import tree
 
 """
 We use [OpenAIGym](http://gym.openai.com/docs) to create the environment.
@@ -55,6 +56,7 @@ We will use the `upper_bound` parameter to scale our actions later.
 """
 
 problem = "Pendulum-v0"
+problem = "LunarLanderContinuous-v2"
 env = gym.make(problem)
 
 num_states = env.observation_space.shape[0]
@@ -227,7 +229,7 @@ def get_actor():
     inputs = layers.Input(shape=(num_states,))
     out = layers.Dense(256, activation="relu")(inputs)
     out = layers.Dense(256, activation="relu")(out)
-    outputs = layers.Dense(1, activation="tanh", kernel_initializer=last_init)(out)
+    outputs = layers.Dense(num_actions, activation="tanh", kernel_initializer=last_init)(out)
 
     # Our upper bound is 2.0 for Pendulum.
     outputs = outputs * upper_bound
@@ -276,6 +278,26 @@ def policy(state, noise_object):
     return [np.squeeze(legal_action)]
 
 
+
+"""
+## Reg tree
+"""
+lam_mix = 0.5
+tree_policy = None
+
+
+def pirl_program(obs, action, tree):
+    if tree is None:
+        return action[0]
+    return tree.predict([obs])[0]
+
+
+def fit_tree(states, actions_h, depth):
+    regr_tree = tree.DecisionTreeRegressor(max_depth=depth)
+    return regr_tree.fit(states, actions_h)
+
+
+
 """
 ## Training hyperparameters
 """
@@ -300,7 +322,7 @@ actor_lr = 0.001
 critic_optimizer = tf.keras.optimizers.Adam(critic_lr)
 actor_optimizer = tf.keras.optimizers.Adam(actor_lr)
 
-total_episodes = 100
+total_episodes = 2000
 # Discount factor for future rewards
 gamma = 0.99
 # Used to update target networks
@@ -308,23 +330,21 @@ tau = 0.005
 
 buffer = Buffer(50000, 64)
 
-lam_mix = 0.9
-print(lam_mix)
-exit()
 
-def pirl_program(obs, tree):
-    return 0
 
 """
-Now we implement our main training loop, and iterate over episodes.
-We sample actions using `policy()` and train with `learn()` at each time step,
-along with updating the Target networks at a rate `tau`.
+## Now we implement our main training loop, and iterate over episodes.
+## We sample actions using `policy()` and train with `learn()` at each time step,
+## along with updating the Target networks at a rate `tau`.
 """
 
 # To store reward history of each episode
 ep_reward_list = []
 # To store average reward history of last few episodes
 avg_reward_list = []
+
+states_h = []
+actions_h = []
 
 # Takes about 4 min to train
 for ep in range(total_episodes):
@@ -340,14 +360,16 @@ for ep in range(total_episodes):
         tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
 
         action = policy(tf_prev_state, ou_noise)
+        action_pirl = pirl_program(prev_state, action, tree_policy)
+        mixed_action = [(lam_mix * action[0][i] + (1.0 - lam_mix) * action_pirl[i]) for i in range(num_actions)]
 
-        #action_pirl = my_program(prev_state, None)
-        #mixed_action = lam_mix * action + (1.0 - lam_mix) * action_pirl
+        states_h.append(prev_state)
+        actions_h.append(mixed_action)
 
         # Recieve state and reward from environment.
-        state, reward, done, info = env.step(action)
+        state, reward, done, info = env.step(mixed_action)
 
-        buffer.record((prev_state, action, reward, state))
+        buffer.record((prev_state, action[0], reward, state))
         episodic_reward += reward
 
         buffer.learn()
@@ -356,6 +378,9 @@ for ep in range(total_episodes):
 
         # End this episode when `done` is True
         if done:
+            tree_policy = fit_tree(states_h, actions_h, 5)
+            states_h = []
+            actions_h = []
             break
 
         prev_state = state

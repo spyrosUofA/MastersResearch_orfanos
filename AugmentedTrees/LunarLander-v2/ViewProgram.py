@@ -13,16 +13,28 @@ def relu_string(relus):
     return relu_names
 
 
-rews = np.load("Oracle/32x0/1/AugTreeRewards.npy").tolist()
-relus = pickle.load(open("Oracle/32x0/1/ReLUs.pkl", "rb"))
+
+
+rews = np.load("Oracle/4x0/2/AugTreeRewards.npy").tolist()
+print(rews)
+
+relus = pickle.load(open("Oracle/4x0/2/ReLUs.pkl", "rb"))
 #relu_names = relu_string(relus)
-relu_names = ["w" + str(i).zfill(1) for i in range(32)]
-trees = pickle.load(open("Oracle/32x0/1/AugTreePrograms.pkl", "rb"))
+relu_names = ["w" + str(i).zfill(1) for i in range(4)]
+relu_names.extend(["x", "y", "v_x", "v_y", "theta", "v_th", "c_l", "c_r"])
+
+trees = pickle.load(open("Oracle/4x0/2/AugTreePrograms.pkl", "rb"))
 
 regr_1 = trees[0]
 tree_rules = tree.export_text(regr_1, feature_names=relu_names)
 
 print(tree_rules)
+
+print(relus[0])
+print(relus[2])
+print(relus[3])
+
+
 
 
 # Extract decision rules as strings
